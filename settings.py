@@ -107,26 +107,28 @@ class Settings():
         header += ["num patients"] + [f"num {p} patients" for p in patgroups]
         # header += [f"num {eth} patients" for eth in ethnicities]
         header += ["num units requested"] + [f"num units requested {p}" for p in patgroups]
-        header += [f"num requests {i+1} units" for i in range(12)]
-        header += ["num supplied products"] + [f"num supplied {i}" for i in ABOD_names] + [f"num requests {i}" for i in ABOD_names]
+        # header += [f"num requests {i+1} units" for i in range(12)]
+        header += ["num supplied products"]
+        # header += [f"num supplied {i}" for i in ABOD_names] + [f"num requests {i}" for i in ABOD_names]
         header += [f"num {i} in inventory" for i in ABOD_names]
         header += ["num Fya-Fyb- in inventory", "num Fya+Fyb- in inventory", "num Fya-Fyb+ in inventory", "num Fya+Fyb+ in inventory", "num R0 in inventory"]
 
         # Only if the offline model is used.
-        if self.line == "off":
-            header += ["products available today", "products in inventory today"]
+        # header += ["products available today", "products in inventory today"]
 
         # Which products were issued to which patiens.
         header += ["avg issuing age"]
-        header += [f"{i} to {j}" for i in ABOD_names for j in ABOD_names]
+        # header += [f"{i} to {j}" for i in ABOD_names for j in ABOD_names]
         # header += [f"{eth0} to {eth1}" for eth0 in ethnicities for eth1 in ethnicities]
         # header += [f"num allocated at dc {p}" for p in patgroups]
 
         # Matching performance.
         header += ["num outdates"] + [f"num outdates {i}" for i in ABOD_names]
-        header += ["num shortages"] + [f"num shortages {i}" for i in ABOD_names]
-        header += [f"num shortages {p}" for p in patgroups] + [f"num {p} {i+1} units short" for p in patgroups for i in range(12)] + ["num unavoidable shortages"]
-        header += [f"num mismatches {p} {k}" for p in patgroups for k in antigens] + [f"num mismatched units {p} {k}" for p in patgroups for k in antigens]
+        header += ["num shortages"]
+        header += [f"num shortages {i}" for i in ABOD_names]
+        header += [f"num shortages {p}" for p in patgroups]
+        # header += [f"num {p} {i+1} units short" for p in patgroups for i in range(12)] + ["num unavoidable shortages"]
+        header += [f"num mismatched patients{p} {k}" for p in patgroups for k in antigens] + [f"num mismatched units {p} {k}" for p in patgroups for k in antigens]
         # header += [f"num mismatches {eth} {k}" for eth in ethnicities for k in antigens]
 
         # Set the dataframe's index to each combination of day and location name.

@@ -36,13 +36,13 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=[]):
         logs[ri,ci[f"num units requested {P[p]}"]] = sum([rq.num_units for rq in rq_today if rq.patgroup == p])           # number of units requested per patient group
         # logs[ri,ci[f"num allocated at dc {P[p]}"]] = sum([rq.allocated_from_dc for rq in R if rq.patgroup == p])   # number of products allocated from the distribution center per patient group
 
-    for u in range(1,5):
-        logs[ri,ci[f"num requests {u} units"]] = sum([1 for rq in rq_today if rq.num_units == u])                         # number of requests asking for [1-4] units
+    # for u in range(1,13):
+    #     logs[ri,ci[f"num requests {u} units"]] = sum([1 for rq in rq_today if rq.num_units == u])                         # number of requests asking for [1-4] units
 
     logs[ri,ci["num supplied products"]] = sum([1 for ip in I if ip.age == 0])                                   # number of products added to the inventory at the end of the previous day
     for major in ABOD_names:
-        logs[ri,ci[f"num supplied {major}"]] = sum([1 for ip in I if ip.major == major and ip.age == 0])         # number of products per major blood group added to the inventory at the end of the previous day
-        logs[ri,ci[f"num requests {major}"]] = sum([1 for rq in rq_today if rq.major == major])                           # number of patients per major blood group
+        # logs[ri,ci[f"num supplied {major}"]] = sum([1 for ip in I if ip.major == major and ip.age == 0])         # number of products per major blood group added to the inventory at the end of the previous day
+        # logs[ri,ci[f"num requests {major}"]] = sum([1 for rq in rq_today if rq.major == major])                           # number of patients per major blood group
         logs[ri,ci[f"num {major} in inventory"]] = sum([1 for ip in I if ip.major == major])                     # number of products in inventory per major blood group
 
     logs[ri,ci["num Fya-Fyb- in inventory"]] = sum([1 for ip in I if (ip.vector[9] == 0) and (ip.vector[10] == 0)])
@@ -66,7 +66,7 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=[]):
 
             age_sum += ip.age
             issued_sum += 1
-            logs[ri,ci[f"{ip.major} to {rq.major}"]] += 1                                 # number of products per major blood group issued to requests per major blood group
+            # logs[ri,ci[f"{ip.major} to {rq.major}"]] += 1                                 # number of products per major blood group issued to requests per major blood group
             # logs[ri,ci[f"{ethnicities[ip.ethnicity]} to {ethnicities[rq.ethnicity]}"]] += 1                         # number of products per ethnicity issued to requests per ethnicity
             
             # Get all antigens k on which product ip and request rq are mismatched.
@@ -77,7 +77,7 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=[]):
                     logs[ri,ci[f"num mismatched units {P[rq.patgroup]} {A[k]}"]] += 1        # number of mismatched units per patient group and antigen
                      
         for k in range(len(A)):
-            logs[ri,ci[f"num mismatches {P[rq.patgroup]} {A[k]}"]] += mismatch[k]           # number of mismatched patients per patient group and antigen
+            logs[ri,ci[f"num mismatched patients {P[rq.patgroup]} {A[k]}"]] += mismatch[k]           # number of mismatched patients per patient group and antigen
             # logs[ri,ci[f"num mismatches {ethnicities[rq.ethnicity]} {A[k]}"]] += mismatch[k]          # number of mismatched patients per patient ethnicity and antigen
 
     logs[ri,ci[f"avg issuing age"]] = age_sum / max(1, issued_sum)                        # average age of all issued products
@@ -86,13 +86,13 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=[]):
         logs[ri,ci["num outdates"]] += 1                                                  # number of outdated inventory products
         logs[ri,ci[f"num outdates {ip.major}"]] += 1                                      # number of outdated inventory products per major blood group
 
-    logs[ri,ci["num unavoidable shortages"]] = max(0, sum([R[r].num_units for r in r_today]) - len(I))                # difference between the number of requested units and number of products in inventory, in case the former is larger
+    # logs[ri,ci["num unavoidable shortages"]] = max(0, sum([R[r].num_units for r in r_today]) - len(I))                # difference between the number of requested units and number of products in inventory, in case the former is larger
     for r in [r for r in r_today if sum(x[:,r]) < R[r].num_units]:
         rq = R[r]
         logs[ri,ci["num shortages"]] += 1                                                 # number of today's requests that were left unsatisfied
         logs[ri,ci[f"num shortages {rq.major}"]] += 1                                     # number of unsatisfied requests per major blood group
         logs[ri,ci[f"num shortages {P[rq.patgroup]}"]] += 1                                  # number of unsatisfied requests per patient group
-        logs[ri,ci[f"num {P[rq.patgroup]} {int(rq.num_units - xr[r])} units short"]] += 1    # difference between the number units requested and issued
+        # logs[ri,ci[f"num {P[rq.patgroup]} {int(rq.num_units - xr[r])} units short"]] += 1    # difference between the number units requested and issued
 
 
     return logs
