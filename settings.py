@@ -12,7 +12,7 @@ class Settings():
         # "demand": generate demand data
         # "supply": generate supply data
         # "optimize": run simulations and optimize matching
-        self.mode = "demand"
+        self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
         self.model_name = "LHD testing"
@@ -39,7 +39,7 @@ class Settings():
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,1)
+        self.episodes = (0,20)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
