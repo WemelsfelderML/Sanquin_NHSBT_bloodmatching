@@ -33,6 +33,29 @@ def generate_supply(SETTINGS, PARAMS):
 
         # Generate the required number of products.
         supply = generate_products(SETTINGS, PARAMS, size)
+
+    
+        # if i in range(0,5):
+        #     SETTINGS.majors_init = [0, 0, 0]
+        # elif i in range(5,10):
+        #     SETTINGS.majors_init = [0, 0, 1]
+        # elif i in range(10,15):
+        #     SETTINGS.majors_init = [0, 1, 0]
+        # elif i in range(15,20):
+        #     SETTINGS.majors_init = [0, 1, 1]
+        # elif i in range(20,25):
+        #     SETTINGS.majors_init = [1, 0, 0]
+        # elif i in range(25,30):
+        #     SETTINGS.majors_init = [1, 0, 1]
+        # elif i in range(30,35):
+        #     SETTINGS.majors_init = [1, 1, 0]
+        # elif i in range(35,40):
+        #     SETTINGS.majors_init = [1, 1, 1]
+
+        if len(SETTINGS.majors_init) == 3:
+            htype = [h for h in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[h] == 1][0]
+            inventory_size = SETTINGS.inv_size_factor_hosp * round(sum(PARAMS.weekly_demand[htype])/7)
+            supply[:inventory_size, :3] = np.tile(SETTINGS.majors_init, (inventory_size,1))
         
         # Write numpy array to pickle file.
         with open(SETTINGS.home_dir + f"supply/{size}/{name}_{i}.pickle", 'wb') as f:

@@ -25,6 +25,6 @@ def alloimmunize(SETTINGS, PARAMS, hospital, e, day, x):
                     
     requests_SCD = np.array([[R[r].num_units] + list(R[r].vector) + list(R[r].antibodies) + list(R[r].mism_units) for r in r_SCD])
     
-    path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{hospital.htype[:3]}/{day}"
+    path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{hospital.htype}/{day}"
     with open(path+".pickle", 'wb') as f:
         pickle.dump(requests_SCD, f, pickle.HIGHEST_PROTOCOL)

@@ -93,14 +93,6 @@ def read_minrar_solution(SETTINGS, PARAMS, df, model, dc, hospitals, episode, da
 
             return df, x, y, z
 
-    # Write the values found to pickle files.
-    # with open(SETTINGS.generate_filename("results") + f"x_{SETTINGS.strategy}_{hospital.htype[:3]}_{episode}-{day}.pickle", "wb") as f:
-    #     pickle.dump(x, f)
-    # with open(SETTINGS.generate_filename("results") + f"y_{SETTINGS.strategy}_{hospital.htype[:3]}_{e}.pickle", "wb") as f:
-    #     pickle.dump(y, f)
-    # with open(SETTINGS.generate_filename("results") + f"z_{SETTINGS.strategy}_{hospital.htype[:3]}_{e}.pickle", "wb") as f:
-    #     pickle.dump(z, f)
-
 
 # Take a solved MINRAR model and abstract the optimal variable values.
 def read_transports_solution(model, size_I, size_H):

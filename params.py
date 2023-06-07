@@ -45,25 +45,45 @@ class Params():
 
         # Note: all objectives are normalized so no need to consider
         # that in determining these weights.
-        ranges = np.array([
-            [10, 1000], # shortages
-            [10, 500],  # mismatches
-            [0, 100],   # youngblood
-            [0, 100],   # FIFO
-            [0, 100],   # usability
-            [0, 100],   # substitution
-            [10, 500]]) # today
         # ranges = np.array([
-        #     [1000, 1000],   # shortages
-        #     [5, 5],         # mismatches
-        #     [1, 1],         # youngblood
-        #     [1, 1],         # FIFO
-        #     [1, 1],         # usability
-        #     [1, 1],         # substitution
-        #     [1, 1]])        # today
+        #     [10, 1000], # shortages
+        #     [10, 500],  # mismatches
+        #     [0, 100],   # youngblood
+        #     [0, 100],   # FIFO
+        #     [0, 100],   # usability
+        #     [0, 100],   # substitution
+        #     [10, 500]]) # today
+        ranges = np.array([
+            [1000, 1000],   # shortages
+            [5, 5],         # mismatches
+            [1, 1],         # youngblood
+            [1, 1],         # FIFO
+            [1, 1],         # usability
+            [1, 1],         # substitution
+            [1, 1]])        # today
 
         # LHD configurations
         LHD = np.array([
+            [0, 10, 15, 1, 16, 11, 8],
+            [1, 0, 12, 9, 6, 1, 10],
+            [2, 12, 13, 17, 15, 7, 18],
+            [3, 13, 8, 14, 2, 14, 3],
+            [4, 4, 9, 6, 5, 17, 19],
+            [5, 9, 5, 13, 19, 3, 2],
+            [6, 16, 2, 4, 7, 4, 13],
+            [7, 14, 3, 10, 18, 19, 12],
+            [8, 1, 1, 2, 11, 13, 4],
+            [9, 15, 19, 11, 9, 0, 5],
+            [10, 2, 0, 18, 10, 9, 14],
+            [11, 19, 18, 7, 8, 15, 16],
+            [12, 3, 16, 15, 13, 16, 6],
+            [13, 6, 17, 0, 1, 10, 7],
+            [14, 8, 14, 16, 0, 6, 17],
+            [15, 17, 10, 3, 14, 12, 0],
+            [16, 7, 11, 5, 17, 5, 15],
+            [17, 5, 6, 12, 4, 2, 1],
+            [18, 18, 7, 19, 12, 8, 9],
+            [19, 11, 4, 8, 3, 18, 11],
             [0, 10, 15, 1, 16, 11, 8],
             [1, 0, 12, 9, 6, 1, 10],
             [2, 12, 13, 17, 15, 7, 18],

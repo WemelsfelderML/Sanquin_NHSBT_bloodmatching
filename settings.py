@@ -6,8 +6,8 @@ class Settings():
 
     def __init__(self):
 
-        # self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
-        self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
+        self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
+        # self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
 
         # "demand": generate demand data
         # "supply": generate supply data
@@ -16,6 +16,14 @@ class Settings():
 
         # Output files will be stored in directory results/[model_name].
         self.model_name = "LHD testing"
+
+        
+        ##########
+        # SUPPLY #
+        ##########
+
+        # Initialize hospital inventory with certain major antigen profile, [] for normal initialization.
+        self.majors_init = []
 
         #########################
         # OPTIMIZATION SETTINGS #
@@ -34,12 +42,12 @@ class Settings():
         #########################
 
         # Only the results of test days will be logged.
-        self.test_days = 11 * 7
-        self.init_days = 2 * 35
+        self.test_days = 365 # 11 * 7
+        self.init_days = 0   # 2 * 35
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,20)
+        self.episodes = (0,40)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -128,7 +136,7 @@ class Settings():
         header += [f"num shortages {i}" for i in ABOD_names]
         header += [f"num shortages {p}" for p in patgroups]
         # header += [f"num {p} {i+1} units short" for p in patgroups for i in range(12)] + ["num unavoidable shortages"]
-        header += [f"num mismatched patients{p} {k}" for p in patgroups for k in antigens] + [f"num mismatched units {p} {k}" for p in patgroups for k in antigens]
+        header += [f"num mismatched patients {p} {k}" for p in patgroups for k in antigens] + [f"num mismatched units {p} {k}" for p in patgroups for k in antigens]
         # header += [f"num mismatches {eth} {k}" for eth in ethnicities for k in antigens]
 
         # Set the dataframe's index to each combination of day and location name.

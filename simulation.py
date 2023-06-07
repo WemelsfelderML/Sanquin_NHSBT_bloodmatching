@@ -132,7 +132,7 @@ def simulation(SETTINGS, PARAMS):
                 df.iloc[:,ci["avg daily demand"]] = [hospital.avg_daily_demand] * len(df)
                 df.iloc[:,ci["inventory size"]] = [hospital.inventory_size] * len(df)
 
-                df.to_csv(SETTINGS.generate_filename("results") + f"{SETTINGS.strategy}_{htype[:3]}_{e}.csv", sep=',', index=True)
+                df.to_csv(SETTINGS.generate_filename("results") + f"{SETTINGS.strategy}_{htype}_{e}.csv", sep=',', index=True)
 
 
             # Offline model: all days in the simulation are solved simultaniously, having full knowledge about all demand and supply involved.
@@ -163,7 +163,7 @@ def simulation(SETTINGS, PARAMS):
                 #     df = log_results(SETTINGS, PARAMS, df, hospital, e, day, x=x, y=y, z=z, a=a, b=b)
 
                 # # Write the created output dataframe to a csv file in the 'results' directory.
-                # df.to_csv(SETTINGS.generate_filename("results") + f"offline_{SETTINGS.strategy}_{htype[:3]}_{e}.csv", sep=',', index=True)
+                # df.to_csv(SETTINGS.generate_filename("results") + f"offline_{SETTINGS.strategy}_{htype}_{e}.csv", sep=',', index=True)
 
             else:
                 print("Please set the 'line' variable in settings.py to a valid value (either 'off' or 'on').")
