@@ -19,10 +19,10 @@ def alloimmunize(SETTINGS, PARAMS, hospital, e, day, x):
         for i in range(len(I)):                            # Loop over all inventory products.
             for k in A.keys():                            # Loop over all antigens.
                 if x[i,r] * Iv[i,k] * Rm[r,k] == 1:        # If there is a mismatch ...
-                    if np.random.rand() <= PARAMS.alloimmunization_risks[int(min(R[r].mism_units[k], 19)),k]:  
-                        R[r].antibodies[k] = 1             # Alloimmunization happens with given probability.
                     R[r].mism_units[k] += 1                # Increase the number of mismatched units received by 1.
-
+                    if np.random.rand() <= PARAMS.alloimmunization_risks[int(min(R[r].mism_units[k], 10)),k]:  
+                        R[r].antibodies[k] = 1             # Alloimmunization happens with given probability.
+                    
     requests_SCD = np.array([[R[r].num_units] + list(R[r].vector) + list(R[r].antibodies) + list(R[r].mism_units) for r in r_SCD])
     
     path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{hospital.htype[:3]}/{day}"

@@ -12,8 +12,7 @@ class Distribution_center():
         self.name = f"dc_{e}"
 
         # Read the supply that was generated using SETTINGS.mode = "supply"
-        data = pd.read_csv(SETTINGS.home_dir + f"supply/{SETTINGS.supply_size}/cau{round(SETTINGS.donor_eth_distr[0]*100)}_afr{round(SETTINGS.donor_eth_distr[1]*100)}_asi{round(SETTINGS.donor_eth_distr[2]*100)}_{e}.csv")
-        self.supply_data = np.array(data.loc[:,["Index", "Ethnicity"] + list(PARAMS.antigens.values())]).astype(int)
+        self.supply_data = unpickle(SETTINGS.home_dir + f"supply/{PARAMS.supply_size}/{'-'.join([str(SETTINGS.n_hospitals[ds])+ds[:3] for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0])}_{e}")
 
         # Keep track of the supply index to know which item of the supply data to read next.
         self.supply_index = supply_index
@@ -60,7 +59,7 @@ class Distribution_center():
 
         # Select the next part of the supply scenario.
         data = self.supply_data[self.supply_index : self.supply_index + n_products, :]
-        supply = [Blood(PARAMS, index=ip[0], ethnicity=ip[1], major=ip[2:5], minor=ip[5:19], age=age) for ip in data]
+        supply = [Blood(PARAMS, antigens=antigens, age=age) for antigens in data]
 
         self.supply_index += n_products
 
@@ -70,3 +69,7 @@ class Distribution_center():
     def pickle(self, path):
         with open(path+".pickle", 'wb') as f:
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+
+def unpickle(path):
+    with open(path+".pickle", 'rb') as f:
+        return pickle.load(f)

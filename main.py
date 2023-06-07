@@ -22,7 +22,7 @@ def main():
     if SETTINGS.mode == "demand":
         for htype in SETTINGS.n_hospitals.keys():
             for _ in range(SETTINGS.n_hospitals[htype]):
-                generate_demand(SETTINGS, PARAMS, htype, SETTINGS.avg_daily_demand[htype])
+                generate_demand(SETTINGS, PARAMS, htype)
 
     # Sample RBC units to be used as supply in the simulation, and write to csv file.
     elif SETTINGS.mode == "supply":

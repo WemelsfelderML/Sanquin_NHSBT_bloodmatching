@@ -1,6 +1,7 @@
 import math
 import os
 import pandas as pd
+import pickle
 
 from blood import *
 
@@ -8,9 +9,8 @@ from blood import *
 # Generate a given number of supply files, where each file contains enough supply for one simulation episode.
 def generate_supply(SETTINGS, PARAMS):
 
-    size = SETTINGS.supply_size                                                     # Total number of products to be generated.
-    eth = SETTINGS.donor_eth_distr                                                  # Proportion of Caucasian, African and Asian donors.
-    name = f"cau{round(eth[0]*100)}_afr{round(eth[1]*100)}_asi{round(eth[2]*100)}"  # Name to give the supply file.
+    size = PARAMS.supply_size           # Total number of products to be generated.
+    name = '-'.join([str(SETTINGS.n_hospitals[ds])+ds[:3] for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0])
 
     # Make sure all required folders exist.
     path = SETTINGS.home_dir + "supply"
@@ -23,7 +23,7 @@ def generate_supply(SETTINGS, PARAMS):
 
     # Find already existing supply files of the chosen size and duration, and make sure not to overwrite them.
     i = 0
-    while os.path.exists(SETTINGS.home_dir + f"supply/{size}/{name}_{i}.csv"):
+    while os.path.exists(SETTINGS.home_dir + f"supply/{size}/{name}_{i}.pickle"):
         i += 1
 
     # For every episode in the given range, generate enough supply for each simulation.
@@ -31,65 +31,89 @@ def generate_supply(SETTINGS, PARAMS):
 
         print(f"Generating supply '{name}_{i}'.")
 
-        # Generate the required number of products and write to a pandas dataframe.
-        products = generate_products(SETTINGS, PARAMS, size)
-        df = pd.DataFrame(products, columns = list(PARAMS.antigens.values()) + ["Ethnicity"])
+        # Generate the required number of products.
+        supply = generate_products(SETTINGS, PARAMS, size)
         
-        # Shuffle the supplied products.
-        index = list(df.index)
-        random.shuffle(index)
-        df = df.loc[index]
-
-        # # Uncomment the code below to let the initial inventory consist of products of only one major blood type.
-        # if sum(SETTINGS.n_hospitals.values()) > 1:
-        #     inventory_size = SETTINGS.inv_size_factor_dc * sum([SETTINGS.n_hospitals[htype] * SETTINGS.avg_daily_demand[htype] for htype in SETTINGS.n_hospitals.keys()])
-        # else:
-        #     inventory_size = SETTINGS.inv_size_factor_hosp * sum([SETTINGS.n_hospitals[htype] * SETTINGS.avg_daily_demand[htype] for htype in SETTINGS.n_hospitals.keys()])
-        # products = []
-        # for _ in range(inventory_size):
-        #     ip = Blood(PARAMS, ethnicity=0, major="AB+")    # Change the 'major' argument to the major blood group to use for the initial inventory.
-        #     products.append(ip.vector + [ip.ethnicity])
-        # df = pd.concat([pd.DataFrame(products, columns = list(PARAMS.antigens.values()) + ["Ethnicity"]), df.iloc[inventory_size:]])
-
-        df["Index"] = range(len(df))
-        
-        # Write the dataframe to a csv file.
-        df.to_csv(SETTINGS.home_dir + f"supply/{size}/{name}_{i}.csv", index=False)
+        # Write numpy array to pickle file.
+        with open(SETTINGS.home_dir + f"supply/{size}/{name}_{i}.pickle", 'wb') as f:
+            pickle.dump(supply, f, pickle.HIGHEST_PROTOCOL)
 
         i += 1
 
 # Generate a list of products with a specific ethnic distribution and a specific ABODistribution, in random order
 def generate_products(SETTINGS, PARAMS, size):
 
-    products = []
-    majors_sampled = {major : 0 for major in PARAMS.ABOD}
+    R0_size = int(size * 0.095)
+    non_R0_size = size - R0_size
 
-    # Sample African donors.
-    for _ in range(round(size * SETTINGS.donor_eth_distr[1])):
-        ip = Blood(PARAMS, ethnicity=1)
-        products.append(list(ip.vector) + [1])
-        majors_sampled[ip.major] += 1
+    #################
+    # NON-R0 DEMAND #
+    #################
 
-    # Sample Asian donors.
-    for _ in range(round(size * SETTINGS.donor_eth_distr[2])):
-        ip = Blood(PARAMS, ethnicity=2)
-        products.append(list(ip.vector) + [2])
-        majors_sampled[ip.major] += 1
+    # Draw randomly from donation distribution of A, B, and Rh antigens to get the first 90.5% of the RBC issues
+    non_R0_phenotypes = PARAMS.donor_ABO_Rhesus_distr[:,:7]
+    non_R0_prevalences = PARAMS.donor_ABO_Rhesus_distr[:,7]
 
-    # For each major blood group determine how many products should be additionally sampled, to make sure that the overall list has the correct ABOD distribution
-    for major in PARAMS.ABOD:
-        vector = major_to_vector(major)
-        num_to_sample = round(PARAMS.donor_ABOD_distr[major] * size) - majors_sampled[major]
-        
-        for _ in range(max(0,num_to_sample)):
-            ip = Blood(PARAMS, ethnicity=0, major=vector)
-            products.append(list(ip.vector) + [0])
+    # non_R0_size × 7 array with ABO-Rhesus phenotypes for 90.5% of donations.
+    non_R0_ABRh = np.array(random.choices(non_R0_phenotypes, weights = non_R0_prevalences, k=non_R0_size))
 
-    return products
+    # Sample 1% of remaining antigens for non-R0 donations from African population.
+    s = int(round(non_R0_size*0.01))
+    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[1], k=s))
+    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[1], k=s))
+    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[1], k=s))
+    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[1], k=s))
+    non_R0_minor_African = np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
 
-def major_to_vector(major):
-    vector = []
-    vector.append(1) if "A" in major else vector.append(0)
-    vector.append(1) if "B" in major else vector.append(0)
-    vector.append(1) if "+" in major else vector.append(0)
-    return vector
+    # Sample 99% of remaining antigens for non-R0 donations from Caucasian population.
+    s = int(round(non_R0_size*0.99))
+    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[0], k=s))
+    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[0], k=s))
+    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[0], k=s))
+    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[0], k=s))
+    non_R0_minor_Caucasian = np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
+    
+    # Put all sampled non-R0 demand together.
+    non_R0_supply = np.concatenate([non_R0_ABRh, np.concatenate([non_R0_minor_African, non_R0_minor_Caucasian], axis=0)], axis=1)
+
+
+    #############
+    # R0 DEMAND #
+    #############
+
+    # Fix R0 phenotype for all R0 demand.
+    R0_Rh = np.tile([1,0,1,0,1], (R0_size, 1))
+
+    # Sample antigens A and B according to their frequencies in national R0 donations.
+    AB = np.array(random.choices(PARAMS.ABO_phenotypes, weights = PARAMS.ABO_prevalences[3], k=R0_size))
+
+    # Sample 20.5% of remaining antigens for R0 donations from African population.
+    s = int(round(R0_size*0.205))
+    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[1], k=s))
+    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[1], k=s))
+    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[1], k=s))
+    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[1], k=s))
+    R0_minor_African = np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
+
+    # Sample 79.5% of remaining antigens for R0 donations from Caucasian population.
+    s = int(round(R0_size*0.795))
+    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[0], k=s))
+    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[0], k=s))
+    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[0], k=s))
+    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[0], k=s))
+    R0_minor_Caucasian = np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
+    
+    # Put all sampled R0 demand together.
+    R0_supply = np.concatenate([AB, R0_Rh, np.concatenate([R0_minor_African, R0_minor_Caucasian], axis=0)], axis=1)
+
+
+    #####################
+    # MERGE AND SHUFFLE #
+    #####################
+
+    supply = np.concatenate([non_R0_supply, R0_supply], axis=0)
+
+    np.random.shuffle(supply)
+
+    return supply
+

@@ -6,7 +6,7 @@ class Settings():
 
     def __init__(self):
 
-        self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Paper patient groups/blood_matching_LHD/"
+        self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
 
         # "demand": generate demand data
         # "supply": generate supply data
@@ -33,26 +33,21 @@ class Settings():
         #########################
 
         # Only the results of test days will be logged.
-        self.test_days = 365
+        self.test_days = 11 * 7
         self.init_days = 2 * 35
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,10)
+        self.episodes = (10,20)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
-        # "regional": Use the patient group distribution of the OLVG, a regional hospital, with average daily demand of 50 products.
-        # "university": Use the patient group distribution of the AMC, a university hospital, with average daily demand of 100 products.
+        # "UCLH" : University College London Hospitals
+        # "NMUH" : North Middlesex University Hospital
+        # "WH" : Whittington Health
         self.n_hospitals = {
-            "regional" : 0,
-            "university" : 0,
-            "manual" : 1,
-        }
-
-        self.avg_daily_demand = {
-            "regional" : 50,
-            "university" : 100,
-            "manual" : 50,
+            "UCLH" : 0,
+            "NMUH" : 0,
+            "WH" : 1,
         }
 
         # Size factor for distribution center and hospitals.
@@ -63,35 +58,9 @@ class Settings():
         # "major": Only match on the major antigens.
         # "relimm": Use relative immunogenicity weights for mismatching.
         # "patgroups": Use patient group specific mismatching weights.
-        self.strategy = "relimm"
+        self.strategy = "patgroups"
         self.patgroup_musts = True
-
-        ##############################
-        # GENERATING DEMAND / SUPPLY #
-        ##############################
-
-        self.donor_eth_distr = [1, 0, 0]  # [Caucasian, African, Asian]
         
-        if sum(self.n_hospitals.values()) > 1:
-            self.supply_size = (self.init_days + self.test_days) * self.inv_size_factor_dc * sum([self.n_hospitals[htype] * self.avg_daily_demand[htype] for htype in self.n_hospitals.keys()])
-        else:
-            self.supply_size = (self.init_days + self.test_days) * self.inv_size_factor_hosp * sum([self.n_hospitals[htype] * self.avg_daily_demand[htype] for htype in self.n_hospitals.keys()])
-
-
-        ##########################
-        # REINFORCEMENT LEARNING #
-        ##########################
-
-        # "train" for training the RL model
-        # "test" for running simulations with saved model
-        self.RL_mode = "train"
-
-        self.epsilon = 1.0
-        self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
-        self.alpha = 0.01           # learning rate
-        self.gamma = 0.99           # discount factor
-        self.batch_size = 50
 
         ####################
         # GUROBI OPTIMIZER #
@@ -117,26 +86,27 @@ class Settings():
 
         antigens = PARAMS.antigens.values()
         ABOD_names = PARAMS.ABOD
-        patgroups = PARAMS.patgroups.values()
-        ethnicities = ["Caucasian", "African", "Asian"]
+        patgroups = [PARAMS.patgroups[p] for p in PARAMS.patgroups.keys() if np.array([PARAMS.weekly_demand[hospital.htype] for hospital in hospitals]).sum(axis=0)[p] > 0]
+        # ethnicities = ["Caucasian", "African", "Asian"]
         days = list(range(self.init_days + self.test_days))
 
+    
         ##########
         # HEADER #
         ##########
 
         # General information.
-        header = ["logged", "day", "location", "model name", "supply scenario", "demand scenario", "avg daily demand", "inventory size", "test days", "init days"]
+        header = ["logged", "day", "location", "model name", "supply scenario", "avg daily demand", "inventory size", "test days", "init days"]
 
         # Gurobi optimizer info.
         header += ["gurobi status", "nvars", "calc time", "ncons"]
-        header += ["objval shortages", "objval mismatches", "objval FIFO", "objval usability", "objval substitution"]
+        # header += ["objval shortages", "objval mismatches", "objval FIFO", "objval usability", "objval substitution"]
         
         # Information about patients, donors, demand and supply.
-        header += ["num patients"] + [f"num {eth} patients" for eth in ethnicities]
-        header += [f"num {p} patients" for p in patgroups]
-        header += ["num units requested"]  + [f"num units requested {p}" for p in patgroups]
-        header += [f"num requests {i+1} units" for i in range(4)]
+        header += ["num patients"] + [f"num {p} patients" for p in patgroups]
+        # header += [f"num {eth} patients" for eth in ethnicities]
+        header += ["num units requested"] + [f"num units requested {p}" for p in patgroups]
+        header += [f"num requests {i+1} units" for i in range(12)]
         header += ["num supplied products"] + [f"num supplied {i}" for i in ABOD_names] + [f"num requests {i}" for i in ABOD_names]
         header += [f"num {i} in inventory" for i in ABOD_names]
         header += ["num Fya-Fyb- in inventory", "num Fya+Fyb- in inventory", "num Fya-Fyb+ in inventory", "num Fya+Fyb+ in inventory", "num R0 in inventory"]
@@ -148,15 +118,15 @@ class Settings():
         # Which products were issued to which patiens.
         header += ["avg issuing age"]
         header += [f"{i} to {j}" for i in ABOD_names for j in ABOD_names]
-        header += [f"{eth0} to {eth1}" for eth0 in ethnicities for eth1 in ethnicities]
-        header += [f"num allocated at dc {p}" for p in patgroups]
+        # header += [f"{eth0} to {eth1}" for eth0 in ethnicities for eth1 in ethnicities]
+        # header += [f"num allocated at dc {p}" for p in patgroups]
 
         # Matching performance.
         header += ["num outdates"] + [f"num outdates {i}" for i in ABOD_names]
         header += ["num shortages"] + [f"num shortages {i}" for i in ABOD_names]
-        header += [f"num shortages {p}" for p in patgroups] + [f"num {p} {i+1} units short" for p in patgroups for i in range(4)] + ["num unavoidable shortages"]
+        header += [f"num shortages {p}" for p in patgroups] + [f"num {p} {i+1} units short" for p in patgroups for i in range(12)] + ["num unavoidable shortages"]
         header += [f"num mismatches {p} {k}" for p in patgroups for k in antigens] + [f"num mismatched units {p} {k}" for p in patgroups for k in antigens]
-        header += [f"num mismatches {eth} {k}" for eth in ethnicities for k in antigens]
+        # header += [f"num mismatches {eth} {k}" for eth in ethnicities for k in antigens]
 
         # Set the dataframe's index to each combination of day and location name.
         locations = [hospital.name for hospital in hospitals]

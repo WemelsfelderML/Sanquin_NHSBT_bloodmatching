@@ -4,64 +4,17 @@ import numpy as np
 class Blood:
 
     # An instance of this class is created for both patient requests and inventory products, to contain their phenotype.
-    def __init__(self, PARAMS, index = None, ethnicity = None, patgroup = None, major = [], minor = [], num_units = 0, day_issuing = 0, day_available = 0, age = 0, antibodies = [], mism_units = []):
+    def __init__(self, PARAMS, index = None, ethnicity = None, patgroup = None, antigens = [], num_units = 0, day_issuing = 0, day_available = 0, age = 0, antibodies = [], mism_units = []):
 
-        vector = np.zeros(len(PARAMS.antigens))
-
-        # If no major blood group is given, randomly generate a phenotype for the ABO and Rhesus systems.
-        if major == []:
-            vector[:2] = random.choices(PARAMS.ABO_phenotypes, weights = PARAMS.ABO_prevalences[ethnicity], k=1)[0]
-            vector[2:7] = random.choices(PARAMS.Rhesus_phenotypes, weights = PARAMS.Rhesus_prevalences[ethnicity], k=1)[0]
-
-        else:
-            vector[:3] = major
-
-            # If no minor blood group is given..
-            if minor == []:
-                Rhesus_phenotypes_Dpos = []
-                Rhesus_phenotypes_Dneg = []
-                Rhesus_prevalences_Dpos = []
-                Rhesus_prevalences_Dneg = []
-
-                for i in range(len(PARAMS.Rhesus_phenotypes)):
-                    phenotype = PARAMS.Rhesus_phenotypes[i]
-                    prevalence = PARAMS.Rhesus_prevalences[ethnicity][i]
-                    if phenotype[0] == 1:
-                        Rhesus_phenotypes_Dpos.append(phenotype)
-                        Rhesus_prevalences_Dpos.append(prevalence)
-                    else:
-                        Rhesus_phenotypes_Dneg.append(phenotype)
-                        Rhesus_prevalences_Dneg.append(prevalence)
-
-                # Add RhD+ or RhD- to the blood vector, and randomly generate other Rhesus antigens based on their prevalences given RhD.
-                if major[2] == 1:
-                    vector[2:7] = random.choices(Rhesus_phenotypes_Dpos, weights = Rhesus_prevalences_Dpos, k=1)[0]
-                else:
-                    vector[2:7] = random.choices(Rhesus_phenotypes_Dneg, weights = Rhesus_prevalences_Dneg, k=1)[0]
-
-        # If no minor blood group is given, randomly generate a phenotype for the Kell, MNS, Duffy and Kidd systems.
-        if minor == []:
-            vector[7:9] = random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[ethnicity], k=1)[0]
-            vector[9:11] = random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[ethnicity], k=1)[0]
-            vector[11:13] = random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[ethnicity], k=1)[0]
-            vector[13:] = random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[ethnicity], k=1)[0]
-        else:
-            vector[3:] = minor
-        
-        self.vector = vector
-
-        # # Binary string for antigens considered mandatory per patient group.
-        # if ("patgroups" in SETTINGS.strategy) or SETTINGS.patgroup_musts:
-        #     self.vector_strings = {p : "".join([str(self.vector[ag]) for ag in (PARAMS.antigens.keys()) if PARAMS.patgroup_weights.loc[p,ag] == 10]) for p in SETTINGS.patgroups}
-        # else:
-        #     self.vector_string = "".join([str(self.vector[ag]) for ag in (PARAMS.antigens.keys()) if PARAMS.relimm_weights[ag][0] == 10])
+        # Store antigen profile of the blood product or patient request
+        self.vector = antigens
 
         # Retrieve the major blood group name from the phenotype vector.
-        self.major = vector_to_major(vector)
-        self.R0 = 1 if list(self.vector[2:7]) == [1,0,1,0,1] else 0
+        self.major = vector_to_major(antigens)
+        self.R0 = 1 if list(antigens[2:7]) == [1,0,1,0,1] else 0
 
         # Only used for inventory products.
-        self.ethnicity = ethnicity
+        # self.ethnicity = ethnicity
         self.age = age
         self.index = index
 
@@ -83,8 +36,8 @@ class Blood:
     def get_usability(self, PARAMS, hospitals, antigens = []):
 
         # TODO this is now hardcoded for the case where SCD patients are Africans and all others are Caucasions.
-        avg_daily_demand_african = sum([PARAMS.patgroup_distr[hospital.htype][1] * hospital.avg_daily_demand for hospital in hospitals])
-        avg_daily_demand_total = sum([hospital.avg_daily_demand for hospital in hospitals])
+        avg_daily_demand_african = sum([PARAMS.weekly_demand[hospital.htype][1] / 7 for hospital in hospitals])
+        avg_daily_demand_total = sum([sum(PARAMS.weekly_demand[hospital.htype]) / 7 for hospital in hospitals])
         part_african = avg_daily_demand_african / avg_daily_demand_total
 
         if antigens == []:
