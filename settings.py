@@ -6,8 +6,8 @@ class Settings():
 
     def __init__(self):
 
-        # self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
-        self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
+        self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
+        # self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
 
         # "demand": generate demand data
         # "supply": generate supply data
@@ -47,7 +47,7 @@ class Settings():
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (3,20)
+        self.episodes = (0,20)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
