@@ -45,22 +45,22 @@ class Params():
 
         # Note: all objectives are normalized so no need to consider
         # that in determining these weights.
-        # ranges = np.array([
-        #     [10, 1000], # shortages
-        #     [10, 500],  # mismatches
-        #     [0, 100],   # youngblood
-        #     [0, 100],   # FIFO
-        #     [0, 100],   # usability
-        #     [0, 100],   # substitution
-        #     [10, 500]]) # today
         ranges = np.array([
-            [1000, 1000],   # shortages
-            [5, 5],         # mismatches
-            [1, 1],         # youngblood
-            [1, 1],         # FIFO
-            [1, 1],         # usability
-            [1, 1],         # substitution
-            [1, 1]])        # today
+            [10, 1000], # shortages
+            [10, 500],  # mismatches
+            [0, 100],   # youngblood
+            [0, 100],   # FIFO
+            [0, 100],   # usability
+            [0, 100],   # substitution
+            [10, 500]]) # today
+        # ranges = np.array([
+        #     [1000, 1000],   # shortages
+        #     [5, 5],         # mismatches
+        #     [1, 1],         # youngblood
+        #     [1, 1],         # FIFO
+        #     [1, 1],         # usability
+        #     [1, 1],         # substitution
+        #     [1, 1]])        # today
 
         # LHD configurations
         LHD = np.array([
