@@ -185,7 +185,7 @@ def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day):
         logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=x)
 
     else:
-        logs = log_results(SETTINGS, PARAMS, logs, [0, 2, 0, 0], hospital, e, day, np.zeros([2,2]))
+        logs = log_results(SETTINGS, PARAMS, logs, [0, 2, 0, 0], hospital, e, day, np.zeros([len(hospital.inventory),1]))
     
     # Update the hospital's inventory, by removing issued or outdated products, increasing product age, and sampling new supply.
     supply_size = hospital.update_inventory(SETTINGS, PARAMS, x, day)
