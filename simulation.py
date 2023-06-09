@@ -175,16 +175,17 @@ def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day):
     # Update the set of available requests, by removing requests for previous days (regardless of 
     # whether they were satisfied or not) and sampling new requests that become known today.
     hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
-    hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
+    num_requests = hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
 
-    # Solve the MINRAR model, matching the hospital's inventory products to the available requests.
-    gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e)
+    if num_requests > 0:
+        # Solve the MINRAR model, matching the hospital's inventory products to the available requests.
+        gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e)
 
-    alloimmunize(SETTINGS, PARAMS, hospital, e, day, x)
+        alloimmunize(SETTINGS, PARAMS, hospital, e, day, x)
+        logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=x)
 
-    # Abstract the optimal variable values from the solved model and write the corresponding results to a csv file.
-    # df, x, y, z = read_minrar_solution(SETTINGS, PARAMS, df, model, dc, [hospital], e, day)
-    logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=x)
+    else:
+        logs = log_results(SETTINGS, PARAMS, logs, [0, 2, 0, 0], hospital, e, day, np.zeros([2,2]))
     
     # Update the hospital's inventory, by removing issued or outdated products, increasing product age, and sampling new supply.
     supply_size = hospital.update_inventory(SETTINGS, PARAMS, x, day)
@@ -200,7 +201,7 @@ def simulate_multiple_hospitals(SETTINGS, PARAMS, logs, dc, hospitals, e, day):
     # (regardless of whether they were satisfied or not) and sampling new requests that become known today.
     for hospital in hospitals:
         hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
-        hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
+        num_requests = hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
 
         for rq in hospital.requests:
             rq.allocated_from_dc = 0

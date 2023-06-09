@@ -29,7 +29,6 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
     num_units = np.array([rq.num_units for rq in R])
     Iv = np.array([ip.vector for ip in I])      # I × A matrix, antigens for each inventory product
     Rv = np.array([rq.vector for rq in R])      # R × A matrix, antigens for each request
-    print(Rv)
     Rb = np.array([rq.antibodies for rq in R])  # R × A matrix, antibodies for each request
 
     Is = (np.ones(Iv.shape) - Iv)       # invert 0s and 1s in Iv for substitution penalty

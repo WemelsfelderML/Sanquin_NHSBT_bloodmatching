@@ -66,6 +66,10 @@ class Hospital():
 
         self.requests += requests
 
+        # In order to check if there are any requests to perform matching on.
+        return len(self.requests)
+
+
     def pickle(self, path):
         with open(path+".pickle", 'wb') as f:
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
