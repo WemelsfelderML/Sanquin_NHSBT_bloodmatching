@@ -10,8 +10,8 @@ def main():
     PARAMS = Params(SETTINGS)
 
     # If a directory to store log files or results does not yet exist, make one.
-    paths = ["results", "results/"+SETTINGS.model_name]
-    paths += ["wip", f"wip/{SETTINGS.model_name}"] + [f"wip/{SETTINGS.model_name}/{e}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])]
+    paths =  ["wip", f"wip/{SETTINGS.model_name}"] + [f"wip/{SETTINGS.model_name}/{e}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])]
+    paths += ["results", "results/"+SETTINGS.model_name] + [f"results/{SETTINGS.model_name}/{e}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])]
     paths += [f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{htype}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1]) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
     # paths += ["NN_training_data"] + [f"NN_training_data/{htype}_{''.join(PARAMS.antigens.values())}" for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
     for path in paths:

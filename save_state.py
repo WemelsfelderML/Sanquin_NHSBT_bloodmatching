@@ -5,7 +5,7 @@ from hospital import *
 
 def save_state(SETTINGS, logs, e, day, dc, hospitals):
 
-	path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[ds]) + ds[:3] for ds in SETTINGS.n_hospitals.keys()])}"	
+	path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[ds]) + ds for ds in SETTINGS.n_hospitals.keys()])}"	
 
 	# df.to_csv(path + "_df.csv", sep=',', index=True)
 	with open(path + "_logs.pickle", 'wb') as f:
@@ -19,7 +19,7 @@ def save_state(SETTINGS, logs, e, day, dc, hospitals):
 
 def load_state(SETTINGS, PARAMS, e, logs, dc, hospitals):
 
-	path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[ds]) + ds[:3] for ds in SETTINGS.n_hospitals.keys()])}"	
+	path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[ds]) + ds for ds in SETTINGS.n_hospitals.keys()])}"	
 
 	if os.path.exists(path + "_logs.pickle") == True:
 
