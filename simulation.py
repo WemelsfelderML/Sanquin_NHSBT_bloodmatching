@@ -180,13 +180,13 @@ def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day):
     if num_requests > 0:
         # Solve the MINRAR model, matching the hospital's inventory products to the available requests.
         gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e)
-
         alloimmunize(SETTINGS, PARAMS, hospital, e, day, x)
-        logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=x)
-
     else:
-        logs = log_results(SETTINGS, PARAMS, logs, [0, 2, 0, 0], hospital, e, day, np.zeros([len(hospital.inventory),1]))
+        gurobi_logs = [0, 2, 0, 0]
+        x = np.zeros([len(hospital.inventory),1])
     
+    logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=x)
+
     # Update the hospital's inventory, by removing issued or outdated products, increasing product age, and sampling new supply.
     supply_size = hospital.update_inventory(SETTINGS, PARAMS, x, day)
     hospital.inventory += dc.sample_supply_single_day(PARAMS, supply_size)
