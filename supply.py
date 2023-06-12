@@ -2,6 +2,8 @@ import math
 import os
 import pandas as pd
 import pickle
+import multiprocessing
+
 
 from blood import *
 
@@ -45,11 +47,22 @@ def generate_supply(SETTINGS, PARAMS):
 
         i += 1
 
+def generate_minor_antigens(PARAMS, ethnicity, size):
+
+    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[ethnicity], k=size))
+    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[ethnicity], k=size))
+    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[ethnicity], k=size))
+    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[ethnicity], k=size))
+    
+    return np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
+
+
 # Generate a list of products with a specific ethnic distribution and a specific ABODistribution, in random order
 def generate_products(SETTINGS, PARAMS, size):
 
     R0_size = int(size * 0.095)
     non_R0_size = size - R0_size
+    
 
     #################
     # NON-R0 DEMAND #
@@ -62,21 +75,11 @@ def generate_products(SETTINGS, PARAMS, size):
     # non_R0_size × 7 array with ABO-Rhesus phenotypes for 90.5% of donations.
     non_R0_ABRh = np.array(random.choices(non_R0_phenotypes, weights = non_R0_prevalences, k=non_R0_size))
 
-    # Sample 1% of remaining antigens for non-R0 donations from African population.
-    s = int(round(non_R0_size*0.01))
-    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[1], k=s))
-    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[1], k=s))
-    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[1], k=s))
-    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[1], k=s))
-    non_R0_minor_African = np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
+    # # Sample 1% of remaining antigens for non-R0 donations from African population.
+    non_R0_minor_African = generate_minor_antigens(PARAMS, 1, int(round(non_R0_size*0.01)))
 
-    # Sample 99% of remaining antigens for non-R0 donations from Caucasian population.
-    s = int(round(non_R0_size*0.99))
-    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[0], k=s))
-    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[0], k=s))
-    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[0], k=s))
-    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[0], k=s))
-    non_R0_minor_Caucasian = np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
+    # # Sample 99% of remaining antigens for non-R0 donations from Caucasian population.
+    non_R0_minor_Caucasian = generate_minor_antigens(PARAMS, 0, int(round(non_R0_size*0.99)))
     
     # Put all sampled non-R0 demand together.
     non_R0_supply = np.concatenate([non_R0_ABRh, np.concatenate([non_R0_minor_African, non_R0_minor_Caucasian], axis=0)], axis=1)
@@ -92,21 +95,11 @@ def generate_products(SETTINGS, PARAMS, size):
     # Sample antigens A and B according to their frequencies in national R0 donations.
     AB = np.array(random.choices(PARAMS.ABO_phenotypes, weights = PARAMS.ABO_prevalences[3], k=R0_size))
 
-    # Sample 20.5% of remaining antigens for R0 donations from African population.
-    s = int(round(R0_size*0.205))
-    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[1], k=s))
-    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[1], k=s))
-    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[1], k=s))
-    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[1], k=s))
-    R0_minor_African = np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
+    # # Sample 20.5% of remaining antigens for R0 donations from African population.
+    R0_minor_African = generate_minor_antigens(PARAMS, 1, int(round(R0_size*0.205)))
 
-    # Sample 79.5% of remaining antigens for R0 donations from Caucasian population.
-    s = int(round(R0_size*0.795))
-    Kell = np.array(random.choices(PARAMS.Kell_phenotypes, weights = PARAMS.Kell_prevalences[0], k=s))
-    MNS = np.array(random.choices(PARAMS.MNS_phenotypes, weights = PARAMS.MNS_prevalences[0], k=s))
-    Duffy = np.array(random.choices(PARAMS.Duffy_phenotypes, weights = PARAMS.Duffy_prevalences[0], k=s))
-    Kidd = np.array(random.choices(PARAMS.Kidd_phenotypes, weights = PARAMS.Kidd_prevalences[0], k=s))
-    R0_minor_Caucasian = np.concatenate([Kell, Duffy, Kidd, MNS], axis=1)
+    # # Sample 79.5% of remaining antigens for R0 donations from Caucasian population.
+    R0_minor_Caucasian = generate_minor_antigens(PARAMS, 0, int(round(R0_size*0.795)))
     
     # Put all sampled R0 demand together.
     R0_supply = np.concatenate([AB, R0_Rh, np.concatenate([R0_minor_African, R0_minor_Caucasian], axis=0)], axis=1)

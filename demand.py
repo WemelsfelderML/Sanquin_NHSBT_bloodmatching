@@ -3,8 +3,36 @@ import pandas as pd
 import random
 import math
 import os
+import multiprocessing
 
 from blood import *
+
+
+def generate_demand_for_week(args):
+
+    SETTINGS, PARAMS, htype, first_weekday = args
+
+    weekly_demand = PARAMS.weekly_demand[htype]
+    data = []
+
+    for patgroup in PARAMS.patgroups.keys():
+        requests = sample_requests_for_week(SETTINGS, PARAMS, patgroup, weekly_demand[patgroup])
+
+        daily_demand = np.random.rand(7)
+        daily_demand *= weekly_demand[patgroup] / np.sum(daily_demand)
+        ordered_days = np.argsort(daily_demand)[::-1]
+        
+        for day in ordered_days:
+
+            num_units = 0
+            while (num_units < daily_demand[day]) and (len(requests) > 0):
+
+                rq = requests.pop()
+                lead_time = random.choices(range(8), weights = PARAMS.request_lead_time_probabilities[patgroup], k=1)[0]
+                data.append([first_weekday + day, max(0, first_weekday + day - lead_time), rq[1], patgroup, rq[0]] + rq[2:])
+                num_units += rq[1]
+
+    return data
 
 
 def get_random_request(SETTINGS, PARAMS, patgroup):
@@ -67,28 +95,13 @@ def generate_demand(SETTINGS, PARAMS, htype):
 
         print(f"Generating demand '{htype}_{i}'.")
 
-        df = pd.DataFrame(columns = ["day issuing", "day available", "num units", "patgroup", "ethnicity"] + list(PARAMS.antigens.values()))
+        num_processes = multiprocessing.cpu_count()  # Get the number of CPU cores
 
-        for first_weekday in range(0, duration, 7):
+        with multiprocessing.Pool(num_processes) as pool:
+            all_weekly_demands = np.concatenate(pool.map(generate_demand_for_week, [(SETTINGS, PARAMS, htype, first_weekday) for first_weekday in range(0, duration, 7)]), axis=0)
 
-            weekly_demand = PARAMS.weekly_demand[htype]
-
-            for patgroup in PARAMS.patgroups.keys():
-                requests = sample_requests_for_week(SETTINGS, PARAMS, patgroup, weekly_demand[patgroup])
-
-                daily_demand = np.random.rand(7)
-                daily_demand *= weekly_demand[patgroup] / np.sum(daily_demand)
-                ordered_days = np.argsort(daily_demand)[::-1]
-                
-                for day in ordered_days:
-
-                    num_units = 0
-                    while (num_units < daily_demand[day]) and (len(requests) > 0):
-
-                        rq = requests.pop()
-                        lead_time = random.choices(range(8), weights = PARAMS.request_lead_time_probabilities[patgroup], k=1)[0]
-                        df.loc[len(df)] = [first_weekday + day, max(0, first_weekday + day - lead_time), rq[1], patgroup, rq[0]] + list(rq[2:])
-                        num_units += rq[1]
+        # Convert list of numpy arrays to pandas DataFrame
+        df = pd.DataFrame(all_weekly_demands, columns = ["day issuing", "day available", "num units", "patgroup", "ethnicity"] + list(PARAMS.antigens.values()))
 
         df.to_csv(SETTINGS.home_dir + f"demand/{duration}/{htype}_{i}.csv", index=False)
 
