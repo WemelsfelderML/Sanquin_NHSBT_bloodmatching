@@ -4,10 +4,9 @@ htype = "UCLH"
 init_days = 2 * 35
 test_days = 14
 
-for day in range(init_days + test_days):
-    print(unpickle(HOME_DIR + f"{log_type}/{folders[0]}/{episode}/patients_patgroups_{htype}/{day}"))
-
-
 def unpickle(path):
     with open(path+".pickle", 'rb') as f:
         return pickle.load(f)
+
+for day in range(init_days + test_days):
+    print(unpickle(HOME_DIR + f"{log_type}/{folders[0]}/{episode}/patients_patgroups_{htype}/{day}"))
