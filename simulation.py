@@ -122,15 +122,14 @@ def simulation(SETTINGS, PARAMS):
                 df = pd.DataFrame(logs, columns = sorted(SETTINGS.column_indices, key=SETTINGS.column_indices.get))
                 ci = SETTINGS.column_indices
 
-
-                df.loc[:,ci["model name"]] = SETTINGS.model_name
-                df.loc[:,ci["test days"]] += SETTINGS.test_days
-                df.loc[:,ci["init days"]] += SETTINGS.init_days
-                df.loc[:,ci["supply scenario"]] = '-'.join([str(SETTINGS.n_hospitals[ds])+ds[:3] for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0]) + f"_{e}"
+                df.iloc[:,ci["model name"]] = SETTINGS.model_name
+                df.iloc[:,ci["test days"]] += SETTINGS.test_days
+                df.iloc[:,ci["init days"]] += SETTINGS.init_days
+                df.iloc[:,ci["supply scenario"]] = '-'.join([str(SETTINGS.n_hospitals[ds])+ds[:3] for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0]) + f"_{e}"
                 
-                df.loc[:,ci["location"]] = hospital.name
-                df.loc[:,ci["avg daily demand"]] = hospital.avg_daily_demand
-                df.loc[:,ci["inventory size"]] = hospital.inventory_size
+                df.iloc[:,ci["location"]] = hospital.name
+                df.iloc[:,ci["avg daily demand"]] = hospital.avg_daily_demand
+                df.iloc[:,ci["inventory size"]] = hospital.inventory_size
 
                 df.to_csv(SETTINGS.generate_filename("results") + f"{SETTINGS.strategy}_{htype}_{e}.csv", sep=',', index=True)
 
