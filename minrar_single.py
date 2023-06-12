@@ -111,6 +111,9 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
             if (I[i].age > 14) and (R[r].patgroup == 1):
                 model.remove(x[i,r])
 
+            # if values[(i, r)] is not None:
+            #     x[i, r].Start = values[(i, r)]
+
     #################
     ## CONSTRAINTS ##
     #################
@@ -145,6 +148,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
 
     stop = time.perf_counter()
     print(f"model initialization: {(stop - start):0.4f} seconds")
+
 
     start = time.perf_counter()
     model.optimize()

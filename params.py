@@ -18,9 +18,9 @@ class Params():
         self.antigens = {0:"A", 1:"B", 2:"D", 3:"C", 4:"c", 5:"E", 6:"e", 7:"K", 8:"k", 9:"Fya", 10:"Fyb", 11:"Jka", 12:"Jkb", 13:"M", 14:"N", 15:"S", 16:"s"}
         self.ethnicities = {0 : "Caucasian", 1 : "African", 2 : "Asian"}
 
-        ##################
-        # PATIENT GROUPS #
-        ##################
+        #####################
+        # DEMAND AND SUPPLY #
+        #####################
 
         # Names of all considered patient groups.
         self.patgroups = {0 : "Allo", 1 : "SCD", 2 : "Thal", 3 : "MDS", 4 : "AIHA", 5 : "Wu45", 6 : "Other"}
@@ -30,8 +30,9 @@ class Params():
         #                       Allo    SCD     Thal    MDS     AIHA    Wu45    Other
             "UCLH" : np.array([ 0,      34,     0,      0,      0,      0,      572]),
             "NMUH": np.array([  0,      11,     0,      0,      0,      0,      197]),
-            "WH" : np.array([   0,      10,     0,      0,      0,      0,      230]),
+            "WH" : np.array([   0,      10,     0,      0,      0,      0,      230])
         }
+        self.weekly_demand["London"] = self.weekly_demand["UCLH"] + self.weekly_demand["NMUH"] + self.weekly_demand["WH"]
 
         if sum(SETTINGS.n_hospitals.values()) > 1:
             self.supply_size = round((SETTINGS.init_days + SETTINGS.test_days) * SETTINGS.inv_size_factor_dc * sum([SETTINGS.n_hospitals[htype] * (sum(self.weekly_demand[htype])/7) for htype in SETTINGS.n_hospitals.keys()]))
@@ -194,6 +195,8 @@ class Params():
             [1, 1, 1, 0.00005649, 0.00009574, 0.00154019, 0.00000604, 0.00341214, 0, 0.00004936, 0.00000306, 0.00005653, 0.00000379, 0.00001154, 0, 0.00000723, 0], # 9 units
             [1, 1, 1, 0.0000587,  0.0000936,  0.0035428,  0.0000014,  0.0117878,  0, 0.0000651,  0.0000094,  0.0000886,  0.0000088,  0.0000201,  0, 0.0000328 , 0]  # average probability  
         ])
+
+        # self.alloimmunization_risks[:,-4:] = 1
 
 
         #####################

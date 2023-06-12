@@ -10,7 +10,7 @@ from blood import *
 def generate_supply(SETTINGS, PARAMS):
 
     size = PARAMS.supply_size           # Total number of products to be generated.
-    name = '-'.join([str(SETTINGS.n_hospitals[ds])+ds[:3] for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0])
+    name = '-'.join([str(SETTINGS.n_hospitals[ds])+ds for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0])
 
     # Make sure all required folders exist.
     path = SETTINGS.home_dir + "supply"
