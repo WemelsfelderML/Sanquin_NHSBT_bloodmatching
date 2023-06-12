@@ -117,6 +117,8 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
 
     # Each request can not receive more products than requested.
     # model.addConstrs(quicksum(x[i,r] for i in I.keys()) <= R[r].num_units for r in R.keys())
+    print(num_units)
+    print(np.ones(len(I)))
     model.addConstr((x.T @ np.ones(len(I))) <= num_units)
 
     # For each inventory product i∈I, ensure that i can not be issued more than once.
