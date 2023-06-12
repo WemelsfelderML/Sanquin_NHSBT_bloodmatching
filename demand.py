@@ -96,7 +96,6 @@ def generate_demand(SETTINGS, PARAMS, htype):
         print(f"Generating demand '{htype}_{i}'.")
 
         num_processes = multiprocessing.cpu_count()  # Get the number of CPU cores
-
         with multiprocessing.Pool(num_processes) as pool:
             all_weekly_demands = np.concatenate(pool.map(generate_demand_for_week, [(SETTINGS, PARAMS, htype, first_weekday) for first_weekday in range(0, duration, 7)]), axis=0)
 

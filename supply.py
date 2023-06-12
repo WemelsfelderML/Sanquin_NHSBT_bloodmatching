@@ -28,24 +28,32 @@ def generate_supply(SETTINGS, PARAMS):
     while os.path.exists(SETTINGS.home_dir + f"supply/{size}/{name}_{i}.pickle"):
         i += 1
 
-    # For every episode in the given range, generate enough supply for each simulation.
-    for _ in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+    print(f"Generating supply '{name}_{SETTINGS.episodes[0]+i}' to '{name}_{SETTINGS.episodes[1]+i}'.")
 
-        print(f"Generating supply '{name}_{i}'.")
+    processes = []
+    for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        p = multiprocessing.Process(target=generate_episode, args=(SETTINGS, PARAMS, name, size, e+i))
+        p.start()
+        processes.append(p)
 
-        # Generate the required number of products.
-        supply = generate_products(SETTINGS, PARAMS, size)
+    for p in processes:
+        p.join()
 
-        if len(SETTINGS.majors_init) == 3:
-            htype = [h for h in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[h] == 1][0]
-            inventory_size = SETTINGS.inv_size_factor_hosp * round(sum(PARAMS.weekly_demand[htype])/7)
-            supply[:inventory_size, :3] = np.tile(SETTINGS.majors_init, (inventory_size,1))
-        
-        # Write numpy array to pickle file.
-        with open(SETTINGS.home_dir + f"supply/{size}/{name}_{i}.pickle", 'wb') as f:
-            pickle.dump(supply, f, pickle.HIGHEST_PROTOCOL)
 
-        i += 1
+def generate_episode(SETTINGS, PARAMS, name, size, episode):
+
+    # Generate the required number of products.
+    supply = generate_products(SETTINGS, PARAMS, size)
+
+    if len(SETTINGS.majors_init) == 3:
+        htype = [h for h in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[h] == 1][0]
+        inventory_size = SETTINGS.inv_size_factor_hosp * round(sum(PARAMS.weekly_demand[htype])/7)
+        supply[:inventory_size, :3] = np.tile(SETTINGS.majors_init, (inventory_size,1))
+    
+    # Write numpy array to pickle file.
+    with open(SETTINGS.home_dir + f"supply/{size}/{name}_{episode}.pickle", 'wb') as f:
+        pickle.dump(supply, f, pickle.HIGHEST_PROTOCOL)
+
 
 def generate_minor_antigens(PARAMS, ethnicity, size):
 
@@ -62,7 +70,7 @@ def generate_products(SETTINGS, PARAMS, size):
 
     R0_size = int(size * 0.095)
     non_R0_size = size - R0_size
-    
+
 
     #################
     # NON-R0 DEMAND #

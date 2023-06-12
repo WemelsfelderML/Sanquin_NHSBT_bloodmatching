@@ -1,3 +1,5 @@
+import multiprocessing
+
 from settings import *
 from params import *
 from demand import *
