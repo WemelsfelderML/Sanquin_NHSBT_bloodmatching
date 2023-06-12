@@ -1,3 +1,5 @@
+import pickle
+
 HOME_DIR = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
 episode = 0
 folder = "LHD testing"
