@@ -119,9 +119,11 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
     # model.addConstrs(quicksum(x[i,r] for i in I.keys()) <= R[r].num_units for r in R.keys())
     print(num_units)
     print(np.zeros([len(I), 1]).T @ np.ones(len(I)))
-    print(x.T.shape)
-    # model.addConstr((x.T @ np.ones(len(I))) <= num_units)
-    model.addMConstr(x.T, np.ones(len(I)), "<=", num_units)
+    print(x.T)
+    if len(R) > 1:
+        model.addConstr((x.T @ np.ones(len(I))) <= num_units)
+    else:
+        model.addConstr((x.T @ np.ones(len(I)))[0] <= num_units[0])
 
     # For each inventory product i∈I, ensure that i can not be issued more than once.
     # model.addConstrs(quicksum(x[i,r] for r in R.keys()) <= 1 for i in I.keys())
