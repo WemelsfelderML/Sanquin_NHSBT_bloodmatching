@@ -17,7 +17,7 @@ class Hospital():
         data = pd.read_csv(SETTINGS.home_dir + f"demand/{SETTINGS.test_days + SETTINGS.init_days}/{htype}_{e}.csv")
 
         # Only sample SCD patients for the first 6 weeks after the initialization period (they will return afterwards).
-        data = data.loc[(SETTINGS.init_days + data["day issuing"] < 42) | (data["patgroup"] != 1)]
+        data = data.loc[(data["day issuing"] < SETTINGS.init_days + 42) | (data["patgroup"] != 1)]
 
         self.demand_data = []
         for day in range(SETTINGS.init_days + SETTINGS.test_days):
