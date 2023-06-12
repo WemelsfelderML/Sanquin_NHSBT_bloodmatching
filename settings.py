@@ -47,7 +47,7 @@ class Settings():
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,20)
+        self.episodes = (2,20)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
