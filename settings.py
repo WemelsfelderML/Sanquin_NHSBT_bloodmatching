@@ -55,8 +55,8 @@ class Settings():
         # "WH" : Whittington Health
         self.n_hospitals = {
             "UCLH" : 0,
-            "NMUH" : 1,
-            "WH" : 0,
+            "NMUH" : 0,
+            "WH" : 1,
         }
 
         # Size factor for distribution center and hospitals.
