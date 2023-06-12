@@ -6,8 +6,8 @@ class Settings():
 
     def __init__(self):
 
-        self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
-        # self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
+        # self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
+        self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
 
         # "demand": generate demand data
         # "supply": generate supply data
