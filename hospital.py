@@ -15,6 +15,7 @@ class Hospital():
 
         # Read the demand that was generated using SETTINGS.mode = "demand".
         data = pd.read_csv(SETTINGS.home_dir + f"demand/{SETTINGS.test_days + SETTINGS.init_days}/{htype}_{e}.csv")
+        data["index"] = range(len(data))
 
         # Only sample SCD patients for the first 6 weeks after the initialization period (they will return afterwards).
         data = data.loc[(data["day issuing"] < SETTINGS.init_days + 42) | (data["patgroup"] != 1)]
@@ -22,9 +23,8 @@ class Hospital():
         self.demand_data = []
         for day in range(SETTINGS.init_days + SETTINGS.test_days):
             indices = data.loc[data["day available"] == day].index
-            self.demand_data.append(np.array(data.loc[indices,["ethnicity", "patgroup"] + list(PARAMS.antigens.values()) + ["num units", "day issuing", "day available"]]).astype(int))
+            self.demand_data.append(np.array(data.loc[indices,["ethnicity", "patgroup"] + list(PARAMS.antigens.values()) + ["num units", "day issuing", "day available", "index"]]).astype(int))
 
-        # TODO maybe have inventory and requests already be a index-product dictionary as used in MINRAR?
         self.inventory = []
         self.requests = []
 
@@ -32,21 +32,21 @@ class Hospital():
     # At the end of a day in the simulation, remove all issued or outdated products, and increase the age of remaining products.
     def update_inventory(self, SETTINGS, PARAMS, x, day):
 
-        I = {i : self.inventory[i] for i in range(len(self.inventory))}
+        I = self.inventory
         remove = []
 
-        # Remove all products form inventory that were issued to requests with today as their issuing date
+        # Remove all products form inventory that were issued to requests with today as their issuing date.
         for r in [r for r in range(len(self.requests)) if self.requests[r].day_issuing == day]:
-            remove += list(np.where(x[:,r]==1)[0])
+            remove += list(np.where(x[:,r]>0)[0])
 
         # If a product will be outdated at the end of this day, remove from inventory, otherwise increase its age.
-        for i in I.keys():
+        for i in range(len(I)):
             if I[i].age >= (PARAMS.max_age-1):
                 remove.append(i)
             else:
                 I[i].age += 1
  
-        self.inventory = [I[i] for i in I.keys() if i not in remove]
+        self.inventory = [I[i] for i in range(len(I)) if i not in remove]
 
         # Return the number of products to be supplied, in order to fill the inventory upto its maximum capacity.
         return max(0, self.inventory_size - len(self.inventory))
@@ -58,11 +58,11 @@ class Hospital():
         data = self.demand_data[day]
 
         zeros_A = np.zeros(len(PARAMS.antigens))
-        requests = [Blood(PARAMS, ethnicity=rq[0], patgroup=rq[1], antigens=rq[2:19], num_units=rq[19], day_issuing=rq[20], day_available=rq[21], antibodies=zeros_A.copy(), mism_units=zeros_A.copy()) for rq in data]
+        requests = [Blood(PARAMS, index=rq[22], ethnicity=rq[0], patgroup=rq[1], antigens=rq[2:19], num_units=rq[19], day_issuing=rq[20], day_available=rq[21], antibodies=zeros_A.copy(), mism_units=zeros_A.copy()) for rq in data]
 
         if day >= (SETTINGS.init_days + (5*7)):
             data_SCD = unpickle(SETTINGS.home_dir + f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{self.htype}/{day-(5*7)}")
-            requests += [Blood(PARAMS, ethnicity=1, patgroup=1, antigens=rq[1:18], num_units=rq[0], day_issuing=day+7, day_available=day, antibodies=rq[18:35], mism_units=rq[35:]) for rq in data_SCD]
+            requests += [Blood(PARAMS, index=rq[52], ethnicity=1, patgroup=1, antigens=rq[1:18], num_units=rq[0], day_issuing=day+7, day_available=day, antibodies=rq[18:35], mism_units=rq[35:52]) for rq in data_SCD]
 
         self.requests += requests
 

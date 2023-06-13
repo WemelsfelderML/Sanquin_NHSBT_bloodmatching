@@ -8,7 +8,7 @@ from blood import *
 from log import *
 
 # Single-hospital setup: MINRAR model for matching within a single hospital.
-def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
+def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
 
     start = time.perf_counter()
 
@@ -21,10 +21,6 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
 
     # Mapping of the patient groups to their index in the list of patient groups.
     P = PARAMS.patgroups.keys()
-
-    # Sets of all inventory products and patient requests.
-    I = hospital.inventory
-    R = hospital.requests
     
     num_units = np.array([rq.num_units for rq in R])
     Iv = np.array([ip.vector for ip in I])      # I × A matrix, antigens for each inventory product
@@ -98,7 +94,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
     ###############
 
     # x: For each request r∈R and inventory product i∈I, x[i,r] = 1 if r is satisfied by i, 0 otherwise.
-    x = model.addMVar((len(I), len(R)), name='x', vtype=grb.GRB.BINARY, lb=0, ub=1)
+    x = model.addMVar((len(I), len(R)), name='x', vtype=grb.GRB.CONTINUOUS, lb=0, ub=1)
 
     model.update()
     model.ModelSense = grb.GRB.MINIMIZE
@@ -111,8 +107,9 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
             if (I[i].age > 14) and (R[r].patgroup == 1):
                 model.remove(x[i,r])
 
-            # if values[(i, r)] is not None:
-            #     x[i, r].Start = values[(i, r)]
+    # # Initialize x with matches from previous day.
+    # for ir in heuristic:
+    #     x[ir].Start = 1
 
     #################
     ## CONSTRAINTS ##
@@ -162,6 +159,11 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
             index0 = int(re.split(r'\W+', var.varName)[1])
             index1 = int(re.split(r'\W+', var.varName)[2])
             x[index0, index1] = var.X
+
+    partial_matches = np.where((x>0) & (x<1))
+    if len(partial_matches[0]) > 0:
+        with open(SETTINGS.home_dir + f"results/partial_matches.txt", 'a') as file:
+            file.write(f"{SETTINGS.model_name}, {SETTINGS.strategy}_{hospital.htype}, episode {e}, day {day}: {len(partial_matches[0])} partial products assigned.\n")
 
     gurobi_logs = [stop - start, model.status, len(model.getVars()), len(model.getConstrs())]
 

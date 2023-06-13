@@ -52,13 +52,13 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=[]):
     logs[ri,ci["num R0 in inventory"]] = sum([ip.R0 for ip in I])                                                # number of R0 products in inventory
 
     xi = x.sum(axis=1)  # For each inventory product i∈I, xi[i] = 1 if the product is issued, 0 otherwise.
-    xr = x.sum(axis=0)  # For each request r∈R, xr[r] = the number of products issued to this request.
+    # xr = x.sum(axis=0)  # For each request r∈R, xr[r] = the number of products issued to this request.
     
     age_sum = 0
     issued_sum = 0
     for r in r_today:
         # Get all products from inventory that were issued to request r.
-        issued = np.where(x[:,r]==1)[0]
+        issued = np.where(x[:,r]>0)[0]
         rq = R[r]
 
         mismatch = np.zeros(len(A))

@@ -109,11 +109,12 @@ def simulation(SETTINGS, PARAMS):
                 logs, day, dc, hospitals = load_state(SETTINGS, PARAMS, e, logs, dc, [hospital])
                 hospital = hospitals[0]
                 days = [d for d in days if d >= day]
+                matches_indices = []
 
                 # Run the simulation for the given number of days, and write outputs for all 'test days' to the dataframe.
                 for day in days:
                     print(f"\nDay {day}")
-                    logs = simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day)
+                    logs, matches_indices = simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day, matches_indices)
 
                     # if day % 5 == 0:
                     save_state(SETTINGS, logs, e, day, dc, [hospital])
@@ -169,71 +170,84 @@ def simulation(SETTINGS, PARAMS):
 
 
 # Single-hospital setup: perform matching within one hospital.
-def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day):
+def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day, matches_indices):
 
     # Update the set of available requests, by removing requests for previous days (regardless of 
     # whether they were satisfied or not) and sampling new requests that become known today.
     hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
     num_requests = hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
 
+    # Sets of all inventory products and patient requests.
+    I = hospital.inventory
+    R = hospital.requests
+
+    # Ii = {ip.index: idx for idx, ip in enumerate(I)}
+    # Ri = {rq.index: idx for idx, rq in enumerate(R)}
+    # heuristic = [(Ii[m[0]], Ri[m[1]]) for m in set(matches_indices) if m[0] in set(Ii.keys()) and m[1] in set(Ri.keys())] if len(matches_indices) > 0 else []
+    heuristic = []
+
     if num_requests > 0:
         # Solve the MINRAR model, matching the hospital's inventory products to the available requests.
-        gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e)
+        gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic)
         alloimmunize(SETTINGS, PARAMS, hospital, e, day, x)
     else:
         gurobi_logs = [0, 2, 0, 0]
         x = np.zeros([len(hospital.inventory),1])
     
+    # matches = np.where(x>0)
+    # matches_indices = [(I[m[0]].index, R[m[1]].index) for m in zip(matches[0], matches[1])] if len(matches) > 0 else []
+    matches_indices = []
+
     logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=x)
 
     # Update the hospital's inventory, by removing issued or outdated products, increasing product age, and sampling new supply.
     supply_size = hospital.update_inventory(SETTINGS, PARAMS, x, day)
     hospital.inventory += dc.sample_supply_single_day(PARAMS, supply_size)
 
-    return logs
+    return logs, matches_indices
 
 
-# Multi-hospital setup: perform matching simultaniously for multiple hospitals, and strategically distribute new supply over all hospitals.
-def simulate_multiple_hospitals(SETTINGS, PARAMS, logs, dc, hospitals, e, day):
+# # Multi-hospital setup: perform matching simultaniously for multiple hospitals, and strategically distribute new supply over all hospitals.
+# def simulate_multiple_hospitals(SETTINGS, PARAMS, logs, dc, hospitals, e, day):
 
-    # For each hospital, update the set of available requests, by removing requests for previous days 
-    # (regardless of whether they were satisfied or not) and sampling new requests that become known today.
-    for hospital in hospitals:
-        hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
-        num_requests = hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
+#     # For each hospital, update the set of available requests, by removing requests for previous days 
+#     # (regardless of whether they were satisfied or not) and sampling new requests that become known today.
+#     for hospital in hospitals:
+#         hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
+#         num_requests = hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
 
-        for rq in hospital.requests:
-            rq.allocated_from_dc = 0
+#         for rq in hospital.requests:
+#             rq.allocated_from_dc = 0
 
-    # Solve the MINRAR model, matching the inventories of all hospitals and the distribution center to all available requests.
-    gurobi_logs, xh, xdc = minrar_multiple_hospitals(SETTINGS, PARAMS, dc, hospitals, day, e)
+#     # Solve the MINRAR model, matching the inventories of all hospitals and the distribution center to all available requests.
+#     gurobi_logs, xh, xdc = minrar_multiple_hospitals(SETTINGS, PARAMS, dc, hospitals, day, e)
 
-    # Get all distribution center products that were allocated to requests with tomorrow as their issuing date.
-    allocations_from_dc = np.zeros([len(dc.inventory),len(hospitals)])
-    for h in range(len(hospitals)):
-        for r in range(len(hospitals[h].requests)):
-            if hospitals[h].requests[r].day_issuing == (day + 1):
+#     # Get all distribution center products that were allocated to requests with tomorrow as their issuing date.
+#     allocations_from_dc = np.zeros([len(dc.inventory),len(hospitals)])
+#     for h in range(len(hospitals)):
+#         for r in range(len(hospitals[h].requests)):
+#             if hospitals[h].requests[r].day_issuing == (day + 1):
                 
-                issued = np.where(xdc[h][:,r]==1)[0]
-                for i in issued:
-                    allocations_from_dc[i,h] = 1
-                    hospitals[h].requests[r].allocated_from_dc += 1     # total number of products allocated to this request from DC
+#                 issued = np.where(xdc[h][:,r]==1)[0]
+#                 for i in issued:
+#                     allocations_from_dc[i,h] = 1
+#                     hospitals[h].requests[r].allocated_from_dc += 1     # total number of products allocated to this request from DC
 
-        # Write the results to a csv file.
-        logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospitals[h], e, day, x=xh[h], y=y[h], z=z[h])
+#         # Write the results to a csv file.
+#         logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospitals[h], e, day, x=xh[h], y=y[h], z=z[h])
 
-    # Update the hospital's inventory, by removing issued or outdated products and sampling new supply.
-    supply_sizes = np.array([hospitals[h].update_inventory(SETTINGS, PARAMS, xh[h], day) for h in range(len(hospitals))])
+#     # Update the hospital's inventory, by removing issued or outdated products and sampling new supply.
+#     supply_sizes = np.array([hospitals[h].update_inventory(SETTINGS, PARAMS, xh[h], day) for h in range(len(hospitals))])
 
-    # Allocate products to each of the hospitals to restock them upto their maximum capacity.
-    model = allocate_remaining_supply_from_dc(SETTINGS, PARAMS, day, dc.inventory, hospitals, supply_sizes, allocations_from_dc)
+#     # Allocate products to each of the hospitals to restock them upto their maximum capacity.
+#     model = allocate_remaining_supply_from_dc(SETTINGS, PARAMS, day, dc.inventory, hospitals, supply_sizes, allocations_from_dc)
     
-    # Abstract the remaining supply from the solved model, and ship all allocated products to the hospitals.
-    x = read_transports_solution(model, len(dc.inventory), len(hospitals))
-    for h in range(len(hospitals)):
-        hospitals[h].inventory += [dc.inventory[i] for i in range(len(dc.inventory)) if x[i,h] >= 1]
+#     # Abstract the remaining supply from the solved model, and ship all allocated products to the hospitals.
+#     x = read_transports_solution(model, len(dc.inventory), len(hospitals))
+#     for h in range(len(hospitals)):
+#         hospitals[h].inventory += [dc.inventory[i] for i in range(len(dc.inventory)) if x[i,h] >= 1]
 
-    # Update the distribution centers's inventory, by removing shipped or outdated products, and increasing product age.
-    dc.update_inventory(SETTINGS, PARAMS, x, day)
+#     # Update the distribution centers's inventory, by removing shipped or outdated products, and increasing product age.
+#     dc.update_inventory(SETTINGS, PARAMS, x, day)
 
-    return logs
+#     return logs

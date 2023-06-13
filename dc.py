@@ -59,7 +59,7 @@ class Distribution_center():
 
         # Select the next part of the supply scenario.
         data = self.supply_data[self.supply_index : self.supply_index + n_products, :]
-        supply = [Blood(PARAMS, antigens=antigens, age=age) for antigens in data]
+        supply = [Blood(PARAMS, index=self.supply_index+i, antigens=data[i], age=age) for i in range(len(data))]
 
         self.supply_index += n_products
 
