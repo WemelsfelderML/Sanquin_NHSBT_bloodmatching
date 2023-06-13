@@ -123,22 +123,23 @@ def timewise_possible(SETTINGS, PARAMS, I, R, day):
 def precompute_compatibility(SETTINGS, PARAMS, R, Iv, Rv, Rb):
 
     A = range(len(PARAMS.antigens))
-
-    # If a patient has antibodies against a certain antigen, inventory products 
-    # that are positive for that antigen are not considered compatible
-    C = 1 - (Iv @ Rb.T)
+    C = np.zeros([len(Iv), len(R)])
 
     if ("patgroups" in SETTINGS.strategy) or SETTINGS.patgroup_musts:
         for r in range(len(R)):
-            for i in range(len(Iv)):
-                v_musts_ir = [(Iv[i,k], Rv[r,k]) for k in A if PARAMS.patgroup_weights[R[r].patgroup,k] == 10]
-                if all(vi <= vr for vi, vr in v_musts_ir):
-                    C[i,r] = 1
+            mask = PARAMS.patgroup_weights[R[r].patgroup, :] == 10
+            v_musts_ir = np.stack((Iv[:, mask], np.repeat(Rv[r, mask][np.newaxis, :], len(Iv), axis=0)))
+            C[:, r] = np.where(np.all(v_musts_ir[0, :] <= v_musts_ir[1, :], axis=1), 1, 0)
 
     else:
         for i in range(len(Iv)):
             for r in range(len(Rv)):
-                if all(vi <= vr for vi, vr in zip(Iv[i,:3], Rv[r,:3])):
-                    C[i,r] = 1
+                if np.all(Iv[i, :3] <= Rv[r, :3]):
+                    C[i, r] = 1
+
+
+    # If a patient has antibodies against a certain antigen, inventory products 
+    # that are positive for that antigen are not considered compatible
+    C[np.any(Iv[:, np.newaxis] * Rb == 1, axis=2)] = 0
 
     return C

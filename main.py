@@ -19,7 +19,6 @@ def main():
     for path in paths:
         SETTINGS.check_dir_existence(SETTINGS.home_dir + path)
 
-
     # Sample demand for each day in the simulation, and write to a csv file.
     if SETTINGS.mode == "demand":
         for htype in SETTINGS.n_hospitals.keys():
