@@ -181,10 +181,10 @@ def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day, match
     I = hospital.inventory
     R = hospital.requests
 
-    # Ii = {ip.index: idx for idx, ip in enumerate(I)}
-    # Ri = {rq.index: idx for idx, rq in enumerate(R)}
-    # heuristic = [(Ii[m[0]], Ri[m[1]]) for m in set(matches_indices) if m[0] in set(Ii.keys()) and m[1] in set(Ri.keys())] if len(matches_indices) > 0 else []
-    heuristic = []
+    Ii = {ip.index: idx for idx, ip in enumerate(I)}
+    Ri = {rq.index: idx for idx, rq in enumerate(R)}
+    heuristic = [(Ii[m[0]], Ri[m[1]]) for m in set(matches_indices) if m[0] in set(Ii.keys()) and m[1] in set(Ri.keys())] if len(matches_indices) > 0 else []
+    # heuristic = []
 
     if num_requests > 0:
         # Solve the MINRAR model, matching the hospital's inventory products to the available requests.
@@ -194,9 +194,9 @@ def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day, match
         gurobi_logs = [0, 2, 0, 0]
         x = np.zeros([len(hospital.inventory),1])
     
-    # matches = np.where(x>0)
-    # matches_indices = [(I[m[0]].index, R[m[1]].index) for m in zip(matches[0], matches[1])] if len(matches) > 0 else []
-    matches_indices = []
+    matches = np.where(x>0)
+    matches_indices = [(I[m[0]].index, R[m[1]].index) for m in zip(matches[0], matches[1])] if len(matches) > 0 else []
+    # matches_indices = []
 
     logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=x)
 
