@@ -35,10 +35,14 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
     Rm = (np.ones(Rv.shape) - Rv)       # Count mismatches if inventory product is positive for some antigen, and request is negative.
     Rm[:,10] *= Rv[:,9]                 # Only count Fyb mismatches if patient is positive for Fya.
 
-    IR_SCD = np.zeros([len(I),len(R)])
+    IR_SCD = np.zeros([len(I),len(R)])              # I × R matrix with columns filled with 1s for SCD patients and columns with 0s for all other patients.
     for r in [r for r in range(len(R)) if R[r].patgroup == 0]:
         IR_SCD[:,r] = np.ones(len(I))
-    IR_nonSCD = np.ones([len(I),len(R)]) - IR_SCD
+    IR_nonSCD = np.ones([len(I),len(R)]) - IR_SCD   # Inverse of IR_SCD.
+
+    # maxage_SCD = np.zeros([len(I), len(R)])
+    # maxage_SCD[np.array([ip.age for ip in I]) > 14] = 1
+    # maxage_SCD = np.ones([len(I), len(R)]) - (maxage_SCD * IR_SCD)
 
     # Get the usability of all inventory products and patient requests with respect to the
     # distribution of major blood types in the patient population.
@@ -95,6 +99,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
 
     # x: For each request r∈R and inventory product i∈I, x[i,r] = 1 if r is satisfied by i, 0 otherwise.
     x = model.addMVar((len(I), len(R)), name='x', vtype=grb.GRB.CONTINUOUS, lb=0, ub=1)
+    # x_indices = set([(i, r) for i in range(I) for r in range(R)])
 
     model.update()
     model.ModelSense = grb.GRB.MINIMIZE
@@ -103,10 +108,15 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
     for r in range(len(R)):
         for i in range(len(I)):
             if (C[i,r] == 0) or (T[i,r] == 0):
-                model.remove(x[i,r])
+                # model.remove(x[i,r])
+                x[i,r].ub = 0
             if (I[i].age > 14) and (R[r].patgroup == 1):
-                model.remove(x[i,r])
-
+                # model.remove(x[i,r])
+                x[i,r].ub = 0
+                
+    # model.addConstr(x <= C * T)
+    # model.addConstr(x <= maxage_SCD)
+    
     # # Initialize x with matches from previous day.
     # for ir in heuristic:
     #     x[ir].Start = 1
@@ -152,23 +162,21 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
     stop = time.perf_counter()
     print(f"Optimize: {(stop - start):0.4f} seconds")
 
-    x = np.zeros([len(I), len(R)])
+
+    # x_solved = np.zeros([len(I), len(R)])
     # for var in model.getVars():
     #     var_name = re.split(r'\W+', var.varName)[0]
     #     if var_name == "x":
     #         index0 = int(re.split(r'\W+', var.varName)[1])
     #         index1 = int(re.split(r'\W+', var.varName)[2])
-    #         x[index0, index1] = var.X
-    x_vars = model.getVars()
-    for i in range(len(I)):
-        for r in range(len(R)):
-            x[i, r] = x_vars[i, r].X
+    #         x_solved[index0, index1] = var.X
+    x_solved = x.X
 
-    partial_matches = np.where((x>0) & (x<1))
+    partial_matches = np.where((x_solved>0) & (x_solved<1))
     if len(partial_matches[0]) > 0:
         with open(SETTINGS.home_dir + f"results/partial_matches.txt", 'a') as file:
             file.write(f"{SETTINGS.model_name}, {SETTINGS.strategy}_{hospital.htype}, episode {e}, day {day}: {len(partial_matches[0])} partial products assigned.\n")
 
     gurobi_logs = [stop - start, model.status, len(model.getVars()), len(model.getConstrs())]
 
-    return gurobi_logs, x
+    return gurobi_logs, x_solved

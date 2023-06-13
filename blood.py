@@ -118,6 +118,7 @@ def timewise_possible(SETTINGS, PARAMS, I, R, day):
             T[i,r] = 1 if (PARAMS.max_age - 1 - I[i].age) >= (R[r].day_issuing - day) else 0
     return T
 
+
 # For each inventory product i∈I and request r∈R, C[i,r] = 1 if 
 # i and r are compatible on the major and mandatory antigens.
 def precompute_compatibility(SETTINGS, PARAMS, R, Iv, Rv, Rb):
