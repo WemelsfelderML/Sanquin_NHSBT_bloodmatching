@@ -6,8 +6,8 @@ class Settings():
 
     def __init__(self):
 
-        self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
-        # self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
+        # self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
+        self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
 
         # "demand": generate demand data
         # "supply": generate supply data
@@ -42,12 +42,12 @@ class Settings():
         #########################
 
         # Only the results of test days will be logged.
-        self.test_days = 10 #26 * (7 * 6)   # Follow SCD patients over 26 transfusion episodes (~3 years)
-        self.init_days = 0 #2 * 35
+        self.test_days = 26 * (7 * 6)   # Follow SCD patients over 26 transfusion episodes (~3 years)
+        self.init_days = 2 * 35
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,1)
+        self.episodes = (0,7)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
