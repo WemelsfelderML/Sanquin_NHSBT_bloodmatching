@@ -130,13 +130,12 @@ def precompute_compatibility(SETTINGS, PARAMS, R, Iv, Rv, Rb):
             mask = PARAMS.patgroup_weights[R[r].patgroup, :] == 10
             v_musts_ir = np.stack((Iv[:, mask], np.repeat(Rv[r, mask][np.newaxis, :], len(Iv), axis=0)))
             C[:, r] = np.where(np.all(v_musts_ir[0, :] <= v_musts_ir[1, :], axis=1), 1, 0)
-
+            
     else:
         for i in range(len(Iv)):
             for r in range(len(Rv)):
                 if np.all(Iv[i, :3] <= Rv[r, :3]):
                     C[i, r] = 1
-
 
     # If a patient has antibodies against a certain antigen, inventory products 
     # that are positive for that antigen are not considered compatible

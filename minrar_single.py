@@ -153,12 +153,16 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
     print(f"Optimize: {(stop - start):0.4f} seconds")
 
     x = np.zeros([len(I), len(R)])
-    for var in model.getVars():
-        var_name = re.split(r'\W+', var.varName)[0]
-        if var_name == "x":
-            index0 = int(re.split(r'\W+', var.varName)[1])
-            index1 = int(re.split(r'\W+', var.varName)[2])
-            x[index0, index1] = var.X
+    # for var in model.getVars():
+    #     var_name = re.split(r'\W+', var.varName)[0]
+    #     if var_name == "x":
+    #         index0 = int(re.split(r'\W+', var.varName)[1])
+    #         index1 = int(re.split(r'\W+', var.varName)[2])
+    #         x[index0, index1] = var.X
+    x_vars = model.getVars()
+    for i in range(len(I)):
+        for r in range(len(R)):
+            x[i, r] = x_vars[i, r].X
 
     partial_matches = np.where((x>0) & (x<1))
     if len(partial_matches[0]) > 0:
