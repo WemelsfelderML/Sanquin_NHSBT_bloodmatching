@@ -109,12 +109,11 @@ def simulation(SETTINGS, PARAMS):
                 logs, day, dc, hospitals = load_state(SETTINGS, PARAMS, e, logs, dc, [hospital])
                 hospital = hospitals[0]
                 days = [d for d in days if d >= day]
-                matches_indices = []
 
                 # Run the simulation for the given number of days, and write outputs for all 'test days' to the dataframe.
                 for day in days:
                     print(f"\nDay {day}")
-                    logs, matches_indices = simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day, matches_indices)
+                    logs = simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day)
 
                     # if day % 5 == 0:
                     save_state(SETTINGS, logs, e, day, dc, [hospital])
@@ -170,33 +169,27 @@ def simulation(SETTINGS, PARAMS):
 
 
 # Single-hospital setup: perform matching within one hospital.
-def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day, matches_indices):
+def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day):
 
     # Update the set of available requests, by removing requests for previous days (regardless of 
     # whether they were satisfied or not) and sampling new requests that become known today.
     hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
     num_requests = hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
 
-    # Sets of all inventory products and patient requests.
-    I = hospital.inventory
-    R = hospital.requests
-
-    Ii = {ip.index: idx for idx, ip in enumerate(I)}
-    Ri = {rq.index: idx for idx, rq in enumerate(R)}
-    heuristic = [(Ii[m[0]], Ri[m[1]]) for m in set(matches_indices) if m[0] in set(Ii.keys()) and m[1] in set(Ri.keys())] if len(matches_indices) > 0 else []
-    # heuristic = []
+    # Ii = {ip.index: idx for idx, ip in enumerate(I)}
+    # Ri = {rq.index: idx for idx, rq in enumerate(R)}
+    # heuristic = [(Ii[m[0]], Ri[m[1]]) for m in set(matches_indices) if m[0] in set(Ii.keys()) and m[1] in set(Ri.keys())] if len(matches_indices) > 0 else []
 
     if num_requests > 0:
         # Solve the MINRAR model, matching the hospital's inventory products to the available requests.
-        gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic)
+        gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e)
         alloimmunize(SETTINGS, PARAMS, hospital, e, day, x)
     else:
         gurobi_logs = [0, 2, 0, 0]
         x = np.zeros([len(hospital.inventory),1])
     
-    matches = np.where(x>0)
-    matches_indices = [(I[m[0]].index, R[m[1]].index) for m in zip(matches[0], matches[1])] if len(matches) > 0 else []
-    # matches_indices = []
+    # matches = np.where(x>0)
+    # matches_indices = [(I[m[0]].index, R[m[1]].index) for m in zip(matches[0], matches[1])] if len(matches) > 0 else []
 
     logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=x)
 
@@ -204,7 +197,7 @@ def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day, match
     supply_size = hospital.update_inventory(SETTINGS, PARAMS, x, day)
     hospital.inventory += dc.sample_supply_single_day(PARAMS, supply_size)
 
-    return logs, matches_indices
+    return logs
 
 
 # # Multi-hospital setup: perform matching simultaniously for multiple hospitals, and strategically distribute new supply over all hospitals.

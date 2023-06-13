@@ -8,7 +8,7 @@ from blood import *
 from log import *
 
 # Single-hospital setup: MINRAR model for matching within a single hospital.
-def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
+def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
 
     start = time.perf_counter()
 
@@ -21,6 +21,10 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
 
     # Mapping of the patient groups to their index in the list of patient groups.
     P = PARAMS.patgroups.keys()
+
+    # Sets of all inventory products and patient requests.
+    I = hospital.inventory
+    R = hospital.requests
     
     num_units = np.array([rq.num_units for rq in R])
     Iv = np.array([ip.vector for ip in I])      # I × A matrix, antigens for each inventory product
@@ -107,10 +111,9 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, I, R, day, e, heuristic):
             if (I[i].age > 14) and (R[r].patgroup == 1):
                 x[i,r].ub = 0
                 
-
     # Initialize x with matches from previous day.
-    for ir in heuristic:
-        x[ir].Start = 1
+    # for ir in heuristic:
+    #     x[ir].Start = 1
 
     #################
     ## CONSTRAINTS ##
