@@ -70,9 +70,11 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
     w_subst[:5,:] = 0
     w_subst[:,:3] = 0
 
-    # Latin hypercube designs for parameter testing.
-    LHD = PARAMS.LHD[e]
-    LHD_today = (np.full(len(R),LHD[6]) * t) + np.ones(len(R))  # length R
+    if e < PARAMS.LHD.shape[0]:
+        # Latin hypercube designs for parameter testing.
+        obj_params = PARAMS.LHD[e]
+    else:
+        obj_params = PARAMS.BO_params
     
 
     ############
@@ -136,14 +138,14 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
     ################
 
     # These are all I×R matrices.
-    short = np.full([len(I),len(R)], LHD[0] * -1)
-    mism = LHD[1] * (Iv @ ((Rp @ w) * Rm).T)
-    youngblood = LHD[2] * IR_SCD * np.tile(np.array([(math.exp(ip.age - 8.5) - ip.age) / 238.085 for ip in I]), (len(R), 1)).T    # /238.085 is for normalization
-    FIFO = LHD[3] * IR_nonSCD * np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T
-    usab = LHD[4] * (bi - br)
-    subst = LHD[5] * (Is @ ((Rp @ w_subst) * Rv).T) 
+    short = np.full([len(I),len(R)], obj_params[0] * -1)
+    mism = obj_params[1] * (Iv @ ((Rp @ w) * Rm).T)
+    youngblood = obj_params[2] * IR_SCD * np.tile(np.array([(math.exp(ip.age - 8.5) - ip.age) / 238.085 for ip in I]), (len(R), 1)).T    # /238.085 is for normalization
+    FIFO = obj_params[3] * IR_nonSCD * np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T
+    usab = obj_params[4] * (bi - br)
+    subst = obj_params[5] * (Is @ ((Rp @ w_subst) * Rv).T) 
 
-    x_penalties = (short + mism + youngblood + FIFO + usab + subst) * np.tile(LHD_today,(len(I),1))
+    x_penalties = (short + mism + youngblood + FIFO + usab + subst) * np.tile((obj_params[6] * t) + 1, (len(I), 1))
     
     model.setObjective(expr = grb.quicksum(grb.quicksum(x_penalties * x)))
 
