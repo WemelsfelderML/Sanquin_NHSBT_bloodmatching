@@ -54,7 +54,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
     T = timewise_possible(SETTINGS, PARAMS, I, R, day)          # The product is not outdated before issuing date of request.
 
     # For each request r∈R, t[r] = 1 if the issuing day is today, 0 if it lies in the future.
-    t = [1 - min(1, rq.day_issuing - day) for rq in R]
+    t = np.array([1 - min(1, rq.day_issuing - day) for rq in R])
     
     # Retrieve the antigen (and patient group) weights.
     if "patgroups" in SETTINGS.strategy:
