@@ -15,7 +15,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "3years_noweights"
+        self.model_name = "3years_noweights_0137"
 
         
         ##########
