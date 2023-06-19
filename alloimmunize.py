@@ -20,7 +20,7 @@ def alloimmunize(SETTINGS, PARAMS, hospital, e, day, x):
             for k in A.keys():                          # Loop over all antigens.
                 if x[i,r] * Iv[i,k] * Rm[r,k] > 0:      # If there is a mismatch ...
                     R[r].mism_units[k] += 1             # Increase the number of mismatched units received by 1.
-                    if np.random.rand() <= PARAMS.alloimmunization_risks[int(min(R[r].mism_units[k], 10)),k]:  
+                    if np.random.rand() <= PARAMS.alloimmunization_risks[int(min(R[r].mism_units[k], 21)),k]:  
                         R[r].antibodies[k] = 1          # Alloimmunization happens with given probability.
                     
     requests_SCD = np.array([[R[r].num_units] + list(R[r].vector) + list(R[r].antibodies) + list(R[r].mism_units) + [R[r].index] for r in r_SCD])
