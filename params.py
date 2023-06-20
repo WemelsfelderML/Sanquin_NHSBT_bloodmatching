@@ -94,7 +94,7 @@ class Params():
         ])
 
         if LHD.shape[0] < SETTINGS.episodes[1]:
-            LHD = np.tile(LHD, (np.ceil(SETTINGS.episodes[1] / LHD.shape[0]), 1))
+            LHD = np.tile(LHD, (int(np.ceil(SETTINGS.episodes[1] / LHD.shape[0])), 1))
         
         self.LHD = ranges[:, 0].reshape(1, -1) + LHD * ((ranges[:,1] - ranges[:,0]) / LHD.shape[0]).reshape(1, -1)
 
