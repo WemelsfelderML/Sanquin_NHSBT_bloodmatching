@@ -12,7 +12,7 @@ def main():
     PARAMS = Params(SETTINGS)
 
     # If a directory to store log files or results does not yet exist, make one.
-    paths =  ["wip", f"wip/{SETTINGS.model_name}"] + [f"wip/{SETTINGS.model_name}/{e}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])]
+    paths =  ["param_opt", "wip", f"wip/{SETTINGS.model_name}"] + [f"wip/{SETTINGS.model_name}/{e}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])]
     paths += ["results", "results/"+SETTINGS.model_name] + [f"results/{SETTINGS.model_name}/{e}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])]
     paths += [f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{htype}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1]) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
     # paths += ["NN_training_data"] + [f"NN_training_data/{htype}_{''.join(PARAMS.antigens.values())}" for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
@@ -43,10 +43,10 @@ def main():
 
         if SETTINGS.method == "LP":
             simulation(SETTINGS, PARAMS)
-        elif SETTINGS.method == "RL":
-            reinforcement_learning(SETTINGS, PARAMS)
+        elif SETTINGS.method == "BO":
+            bayes_opt_tuning(SETTINGS, PARAMS)
         else:
-            print("Parameter 'mode' is set to 'optimize', but no existing method for optimization is given. Try 'RL' or 'LP'.")
+            print("Parameter 'mode' is set to 'optimize', but no existing method for optimization is given. Try 'BO' or 'LP'.")
     else:
         print("No mode for running the code is given. Please change the 'mode' parameter in 'settings.py' to one of the following values:")
         print("'demand': generate demand scenarios")

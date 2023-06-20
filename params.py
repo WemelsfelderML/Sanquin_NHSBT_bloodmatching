@@ -2,7 +2,7 @@ import numpy as np
 
 class Params():
     
-    def __init__(self, SETTINGS, BO_params=[]):
+    def __init__(self, SETTINGS):
 
 
         ####################
@@ -43,62 +43,36 @@ class Params():
         ###########################
         # LATIN HYPERCUBE DESIGNS #
         ###########################
+        # Note: all objectives are normalized so no need to consider that in determining these weights.
 
-        # Note: all objectives are normalized so no need to consider
-        # that in determining these weights.
-        ranges = np.array([
-            [10, 1000], # shortages
-            [10, 500],  # mismatches
-            [0, 100],   # youngblood
-            [0, 100],   # FIFO
-            [0, 100],   # usability
-            [0, 100],   # substitution
-            [10, 500]]) # today
-        # ranges = np.array([
-        #     [1000, 1000],   # shortages
-        #     [10, 10],       # mismatches
-        #     [1, 1],         # youngblood
-        #     [1, 1],         # FIFO
-        #     [1, 1],         # usability
-        #     [1, 1],         # substitution
-        #     [10, 10]        # today
+        # LHD = np.array([
+        #     # shortages, mismatches, youngblood, FIFO, usability, substitution, today 
+        #     [1,          0.1,        0.01,       0.01, 0.01,      0.01,         0.1]
         # ])
 
         # LHD configurations
         LHD = np.array([
-            [0, 19, 9, 21, 6, 9, 7],
-            [1, 8, 22, 18, 21, 16, 10],
-            [2, 9, 20, 13, 3, 12, 24],
-            [3, 17, 8, 3, 19, 20, 5],
-            [4, 1, 14, 0, 15, 7, 13],
-            [5, 0, 2, 15, 10, 18, 9],
-            [6, 20, 11, 11, 24, 2, 17],
-            [7, 18, 6, 17, 16, 22, 23],
-            [8, 23, 17, 2, 4, 6, 11],
-            [9, 13, 0, 9, 5, 5, 22],
-            [10, 4, 21, 12, 1, 11, 2],
-            [11, 3, 12, 23, 13, 0, 14],
-            [12, 11, 3, 8, 12, 1, 0],
-            [13, 22, 19, 16, 8, 24, 6],
-            [14, 10, 10, 1, 2, 23, 15],
-            [15, 15, 7, 24, 22, 15, 4],
-            [16, 14, 23, 4, 20, 17, 20],
-            [17, 16, 24, 14, 18, 4, 3],
-            [18, 21, 18, 22, 9, 8, 21],
-            [19, 5, 1, 10, 23, 10, 18],
-            [20, 2, 16, 19, 11, 21, 19],
-            [21, 12, 4, 20, 0, 13, 8],
-            [22, 6, 13, 6, 17, 19, 1],
-            [23, 24, 5, 7, 14, 14, 12],
-            [24, 7, 15, 5, 7, 3, 16],
+            [0, 0, 3, 8, 6, 5, 5],
+            [1, 8, 1, 3, 7, 1, 2],
+            [2, 5, 9, 0, 5, 4, 6],
+            [3, 9, 5, 7, 0, 6, 4],
+            [4, 2, 2, 1, 1, 7, 0],
+            [5, 7, 7, 9, 8, 2, 8],
+            [6, 4, 0, 2, 3, 3, 9],
+            [7, 6, 4, 4, 9, 9, 3],
+            [8, 1, 8, 6, 2, 8, 7],
+            [9, 3, 6, 5, 4, 0, 1],
         ])
+
+        # LHD = ranges[:, 0].reshape(1, -1) + LHD * ((ranges[:,1] - ranges[:,0]) / LHD.shape[0]).reshape(1, -1)
+        LHD /= LHD.shape[0]
 
         if LHD.shape[0] < SETTINGS.episodes[1]:
             LHD = np.tile(LHD, (int(np.ceil(SETTINGS.episodes[1] / LHD.shape[0])), 1))
-        
-        self.LHD = ranges[:, 0].reshape(1, -1) + LHD * ((ranges[:,1] - ranges[:,0]) / LHD.shape[0]).reshape(1, -1)
 
-        self.BO_params = np.array(BO_params)
+        self.LHD = LHD
+
+        self.BO_params = []
     
         ###########
         # WEIGHTS #

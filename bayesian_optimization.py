@@ -13,13 +13,10 @@ from emukit.model_wrappers import GPyModelWrapper
 from tuning import *
 
 class Evaluator:
-    """Class to evaluate the simulator for a given set of parameters.
 
-    :param replications: number of replications
-    """
-
-    def __init__(self, replications: int = 10):
-        self.replications = replications
+    def __init__(self, SETTINGS):
+        self.replications = SETTINGS.replications
+        self.num_init_points = SETTINGS.num_init_points
 
     def evaluate(self, X: np.ndarray) -> np.ndarray:
         """Evaluate the simulator for a given set of parameters.
@@ -28,23 +25,51 @@ class Evaluator:
         :return: numpy array of shape (n_points, 1)
         """
         fitness = np.zeros((X.shape[0], 1))
-        for i, x in enumerate(X):
-            alloimmunisations = tuning(weights=x, replications=self.replications)
+        for i, weights in enumerate(X):
+            alloimmunisations = tuning(weights, self.num_init_points, self.replications)
             fitness[i] = alloimmunisations.sum()
         return fitness
 
 
-def bayes_opt_tuning(init_points_count=20, num_iterations=50, X_init=None, Y_init=None, replications=10):
-    evaluator = Evaluator(replications)
-    var_obj_names = ['immunogenicity', 'usability', 'substitutions', 'fifo', 'young_blood', 'alloimmunisations']
+def find_init_points(SETTINGS, PARAMS, htype):
+
+    num_init_points = SETTINGS.num_init_points
+
+    X_init = PARAMS.LHD[:num_init_points ,:]
+    antigens = PARAMS.antigens.keys()
+
+    Y_init = []
+    for p in range(num_init_points):
+
+        antibodies_per_patient = defaultdict(set)
+        for r in range(SETTINGS.replications):
+            
+            e = (r * num_init_points) + p
+            for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
+                data = unpickle(SETTINGS.home_dir + f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{htype}/{day}").astype(int)
+                for rq in data:
+                    rq_antibodies = rq[18:35]
+                    rq_index = f"{e}_{rq[52]}"
+                    antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
+
+        all_antibodies = list(chain.from_iterable(antibodies_per_patient.values()))
+        Y_init.append(len(all_antibodies))
+
+    return X_init, np.array(Y_init).reshape(-1, 1)
+
+
+def bayes_opt_tuning(SETTINGS, PARAMS):
+
+    # Get the hospital's type ('regional' or 'university')
+    htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
+
+    X_init, Y_init = find_init_points(SETTINGS, PARAMS, htype)
+
+    evaluator = Evaluator(SETTINGS)
+    var_obj_names = ["shortages", "mismatches", "youngblood", "FIFO", "usability", "substitution", "today", "antibodies"]
     var_names = var_obj_names[:-1]
     space = ParameterSpace([ContinuousParameter(w,0,1) for w in var_names])
     
-    lhs_design = LatinDesign(space)
-    # init_points_count = 25
-    if X_init is None:
-        X_init = lhs_design.get_samples(init_points_count)
-        Y_init = evaluator.evaluate(X_init)
     func = UserFunctionWrapper(evaluator.evaluate)
     
     gpy_model = GPy.models.GPRegression(
@@ -54,8 +79,7 @@ def bayes_opt_tuning(init_points_count=20, num_iterations=50, X_init=None, Y_ini
     model = GPyModelWrapper(gpy_model)
     
     bo_loop = BayesianOptimizationLoop(model=model, space=space)
-    # num_iterations = 50
-    stopping_condition = FixedIterationsStoppingCondition(num_iterations)
+    stopping_condition = FixedIterationsStoppingCondition(SETTINGS.num_iterations)
     
     bo_loop.run_loop(func, stopping_condition)
     
@@ -68,36 +92,5 @@ def bayes_opt_tuning(init_points_count=20, num_iterations=50, X_init=None, Y_ini
     points_df = pd.DataFrame(points, columns=var_obj_names)
 
     now = datetime.datetime.now()
-    folder = os.path.realpath('out/experiments/exp3/tuning/' + now.strftime('%Y%m%d'))
-    os.makedirs(folder, exist_ok=True)
-    results_df.to_csv(os.path.join(folder, now.strftime('%H-%M') + '_tuning_results.tsv'), index=False, sep='\t')
-    points_df.to_csv(os.path.join(folder, now.strftime('%H-%M') + '_tuning_points.tsv'), index=False, sep='\t')
-
-
-def unpack_previous_evaluations(
-        files: Union[List, str, Tuple],
-        var_obj_names: List = ['immunogenicity', 'usability', 'substitutions', 'fifo', 'young_blood',
-                               'alloimmunisations']) -> Dict:
-    """Unpack the previous evaluations from the tuning points file.
-    
-    :param files: path to the tuning points file or list of paths
-    :param list var_obj_names: list of variable and objective names
-    :return dict: dict with keys 'X_init' and 'Y_init'
-    """
-    if isinstance(files, str):
-        results_df = pd.read_csv(files, sep='\t')
-        X_init = results_df[var_obj_names[:-1]].to_numpy()
-        Y_init = results_df[var_obj_names[-1:]].to_numpy()
-    elif isinstance(files, (list, tuple)):
-        all_X_init = []
-        all_Y_init = []
-        for file in files:
-            results_df = pd.read_csv(file, sep='\t')
-            all_X_init.append(results_df[var_obj_names[:-1]].to_numpy())
-            all_Y_init.append(results_df[var_obj_names[-1:]].to_numpy())
-        X_init = np.vstack(all_X_init)
-        Y_init = np.vstack(all_Y_init)
-    result = {'X_init': X_init, 'Y_init': Y_init}
-    return result
-
-
+    results_df.to_csv(HOME_DIR + "param_opt/", now.strftime("%H-%M") + "_tuning_results.csv", index=False, sep=",")
+    points_df.to_csv(HOME_DIR + "param_opt/", now.strftime("%H-%M") + "_tuning_points.csv", index=False, sep=",")

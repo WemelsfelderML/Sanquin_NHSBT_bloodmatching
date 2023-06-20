@@ -70,7 +70,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e):
     w_subst[:5,:] = 0
     w_subst[:,:3] = 0
 
-    if e < PARAMS.LHD.shape[0]:
+    if len(PARAMS.BO_params) == 0:
         # Latin hypercube designs for parameter testing.
         obj_params = PARAMS.LHD[e]
     else:
