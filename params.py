@@ -62,7 +62,7 @@ class Params():
             [7, 6, 4, 4, 9, 9, 3],
             [8, 1, 8, 6, 2, 8, 7],
             [9, 3, 6, 5, 4, 0, 1],
-        ])
+        ]).astype(float)
 
         # LHD = ranges[:, 0].reshape(1, -1) + LHD * ((ranges[:,1] - ranges[:,0]) / LHD.shape[0]).reshape(1, -1)
         LHD /= LHD.shape[0]
