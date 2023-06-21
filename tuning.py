@@ -8,7 +8,8 @@ from simulation import *
 def tuning(weights, num_init_points, replications):
 
     
-    PARAMS.BO_params = np.array(weights)
+    # 10 = weight for shortages
+    PARAMS.BO_params = np.array([10] + weights)     
 
     SETTINGS
     

@@ -12,6 +12,7 @@ from emukit.model_wrappers import GPyModelWrapper
 
 from tuning import *
 
+
 class Evaluator:
 
     def __init__(self, SETTINGS):
@@ -66,7 +67,7 @@ def bayes_opt_tuning(SETTINGS, PARAMS):
     X_init, Y_init = find_init_points(SETTINGS, PARAMS, htype)
 
     evaluator = Evaluator(SETTINGS)
-    var_obj_names = ["shortages", "mismatches", "youngblood", "FIFO", "usability", "substitution", "today", "antibodies"]
+    var_obj_names = ["mismatches", "youngblood", "FIFO", "usability", "substitution", "today", "antibodies"]
     var_names = var_obj_names[:-1]
     space = ParameterSpace([ContinuousParameter(w,0,1) for w in var_names])
     
