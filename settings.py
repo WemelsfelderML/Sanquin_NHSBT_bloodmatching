@@ -77,7 +77,7 @@ class Settings():
         # BAYESIAN OPTIMIZATION #
         #########################
 
-        self.num_init_points = 10
+        self.num_init_points = 11
         self.num_iterations = 50
         self.replications = 4
         
