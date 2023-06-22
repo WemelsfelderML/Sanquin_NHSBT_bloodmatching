@@ -86,6 +86,13 @@ def simulation(SETTINGS, PARAMS):
         for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1]):
             print(f"\nEpisode: {e}")
 
+
+            obj_params = PARAMS.BO_params
+            if len(obj_params) == 0:
+                obj_params = PARAMS.LHD[e]
+            with open(SETTINGS.home_dir + f"param_opt/params_{e}.pickle", 'wb') as f:
+                pickle.dump(obj_params, f, pickle.HIGHEST_PROTOCOL)
+                
             # Initialize the hospital. A distribution center is also initialized to provide the hospital with random supply.
             hospital = Hospital(SETTINGS, PARAMS, htype, e)
             dc = Distribution_center(SETTINGS, PARAMS, [hospital], e)
@@ -113,7 +120,7 @@ def simulation(SETTINGS, PARAMS):
                 # Run the simulation for the given number of days, and write outputs for all 'test days' to the dataframe.
                 for day in days:
                     print(f"\nDay {day}")
-                    logs = simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day)
+                    logs = simulate_single_hospital(SETTINGS, PARAMS, obj_params, logs, dc, hospital, e, day)
 
                     # if day % 5 == 0:
                     save_state(SETTINGS, logs, e, day, dc, [hospital])
@@ -169,7 +176,7 @@ def simulation(SETTINGS, PARAMS):
 
 
 # Single-hospital setup: perform matching within one hospital.
-def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day):
+def simulate_single_hospital(SETTINGS, PARAMS, obj_params, logs, dc, hospital, e, day):
 
     # Update the set of available requests, by removing requests for previous days (regardless of 
     # whether they were satisfied or not) and sampling new requests that become known today.
@@ -182,7 +189,7 @@ def simulate_single_hospital(SETTINGS, PARAMS, logs, dc, hospital, e, day):
 
     if num_requests > 0:
         # Solve the MINRAR model, matching the hospital's inventory products to the available requests.
-        gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, hospital, day, e)
+        gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, day, e)
         alloimmunize(SETTINGS, PARAMS, hospital, e, day, x)
     else:
         gurobi_logs = [0, 2, 0, 0]

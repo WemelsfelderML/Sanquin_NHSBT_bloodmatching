@@ -1,23 +1,26 @@
+import numpy as np
 import datetime
-import os
-from typing import Dict, List, Tuple, Union
 import GPy
+import pickle
+import os
 
 from emukit.bayesian_optimization.loops import BayesianOptimizationLoop
 from emukit.core import ContinuousParameter, ParameterSpace
-from emukit.core.initial_designs.latin_design import LatinDesign
 from emukit.core.loop import UserFunctionWrapper
 from emukit.core.loop.stopping_conditions import FixedIterationsStoppingCondition
 from emukit.model_wrappers import GPyModelWrapper
+from collections import defaultdict
+from itertools import chain
 
-from tuning import *
+from simulation import *
 
 
 class Evaluator:
 
-    def __init__(self, SETTINGS):
-        self.replications = SETTINGS.replications
-        self.num_init_points = SETTINGS.num_init_points
+    def __init__(self, SETTINGS, PARAMS, htype):
+        self.SETTINGS = SETTINGS
+        self.PARAMS = PARAMS
+        self.htype = htype
 
     def evaluate(self, X: np.ndarray) -> np.ndarray:
         """Evaluate the simulator for a given set of parameters.
@@ -27,8 +30,8 @@ class Evaluator:
         """
         fitness = np.zeros((X.shape[0], 1))
         for i, weights in enumerate(X):
-            alloimmunisations = tuning(weights, self.num_init_points, self.replications)
-            fitness[i] = alloimmunisations.sum()
+            alloimmunisations = tuning(self.SETTINGS, self.PARAMS, self.htype, weights)
+            fitness[i] = sum(alloimmunisations)
         return fitness
 
 
@@ -36,9 +39,9 @@ def find_init_points(SETTINGS, PARAMS, htype):
 
     num_init_points = SETTINGS.num_init_points
 
-    X_init = PARAMS.LHD[:num_init_points ,:]
+    X_init = PARAMS.LHD[:num_init_points, 1:]
+    
     antigens = PARAMS.antigens.keys()
-
     Y_init = []
     for p in range(num_init_points):
 
@@ -66,7 +69,7 @@ def bayes_opt_tuning(SETTINGS, PARAMS):
 
     X_init, Y_init = find_init_points(SETTINGS, PARAMS, htype)
 
-    evaluator = Evaluator(SETTINGS)
+    evaluator = Evaluator(SETTINGS, PARAMS, htype)
     var_obj_names = ["mismatches", "youngblood", "FIFO", "usability", "substitution", "today", "antibodies"]
     var_names = var_obj_names[:-1]
     space = ParameterSpace([ContinuousParameter(w,0,1) for w in var_names])
@@ -95,3 +98,38 @@ def bayes_opt_tuning(SETTINGS, PARAMS):
     now = datetime.datetime.now()
     results_df.to_csv(HOME_DIR + "param_opt/", now.strftime("%H-%M") + "_tuning_results.csv", index=False, sep=",")
     points_df.to_csv(HOME_DIR + "param_opt/", now.strftime("%H-%M") + "_tuning_points.csv", index=False, sep=",")
+
+
+def tuning(SETTINGS, PARAMS, htype, weights):
+
+    # Add objective value parameters to be tested to the parameters class.
+    PARAMS.BO_params = np.concatenate([[10], weights])     # 10 = weight for shortages
+
+    # Find already existing results and continue from the lowest episode number without results.
+    e = 0
+    while os.path.exists(SETTINGS.generate_filename("results") + f"{SETTINGS.strategy}_{htype}_{e}.csv"):
+        e += 1
+    episodes = (e, e + SETTINGS.replications)
+
+    # Execute simulations for the selected episodes.
+    SETTINGS.episodes = episodes
+    simulation(SETTINGS, PARAMS)
+
+    # Retrieve all logged antibodies for the simulated episodes.
+    antigens = PARAMS.antigens.keys()
+    antibodies_per_patient = defaultdict(set)
+    for e in range(episodes[0], episodes[1]):
+        for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
+            data = unpickle(SETTINGS.home_dir + f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{htype}/{day}").astype(int)
+            for rq in data:
+                rq_antibodies = rq[18:35]
+                rq_index = f"{e}_{rq[52]}"
+                antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
+
+    # Return a list with all formed antibodies during the tested episodes.
+    return list(chain.from_iterable(antibodies_per_patient.values()))
+
+
+def unpickle(path):
+    with open(path+".pickle", 'rb') as f:
+        return pickle.load(f)

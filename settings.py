@@ -6,8 +6,8 @@ class Settings():
 
     def __init__(self):
 
-        # self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
-        self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
+        self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
+        # self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
 
         # "demand": generate demand data
         # "supply": generate supply data
@@ -31,7 +31,7 @@ class Settings():
 
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
-        self.method = "LP"
+        self.method = "BO"
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -48,7 +48,7 @@ class Settings():
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,10)
+        self.episodes = (0,100)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -117,6 +117,7 @@ class Settings():
 
         # General information.
         header = ["logged", "day", "location", "model name", "supply scenario", "avg daily demand", "inventory size", "test days", "init days"]
+        header += ["shortages", "mismatches", "youngblood", "FIFO", "usability", "substitution", "today"]
 
         # Gurobi optimizer info.
         header += ["gurobi status", "nvars", "calc time", "ncons"]

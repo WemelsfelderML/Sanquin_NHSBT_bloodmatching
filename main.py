@@ -6,6 +6,8 @@ from demand import *
 from supply import *
 from simulation import *
 
+from bayesian_optimization import *
+
 def main():
     
     SETTINGS = Settings()
