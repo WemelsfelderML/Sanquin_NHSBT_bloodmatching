@@ -48,7 +48,7 @@ class Settings():
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,100)
+        self.episodes = (0,20)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -77,7 +77,7 @@ class Settings():
         # BAYESIAN OPTIMIZATION #
         #########################
 
-        self.num_init_points = 11
+        self.num_init_points = 36
         self.num_iterations = 50
         self.replications = 4
         
@@ -117,11 +117,9 @@ class Settings():
 
         # General information.
         header = ["logged", "day", "location", "model name", "supply scenario", "avg daily demand", "inventory size", "test days", "init days"]
-        header += ["shortages", "mismatches", "youngblood", "FIFO", "usability", "substitution", "today"]
 
         # Gurobi optimizer info.
         header += ["gurobi status", "nvars", "calc time", "ncons"]
-        # header += ["objval shortages", "objval mismatches", "objval FIFO", "objval usability", "objval substitution"]
         
         # Information about patients, donors, demand and supply.
         header += ["num patients"] + [f"num {p} patients" for p in patgroups]
@@ -144,9 +142,7 @@ class Settings():
 
         # Matching performance.
         header += ["num outdates"] + [f"num outdates {i}" for i in ABOD_names]
-        header += ["num shortages"]
-        header += [f"num shortages {i}" for i in ABOD_names]
-        header += [f"num shortages {p}" for p in patgroups]
+        header += ["num shortages"] + [f"num shortages {i}" for i in ABOD_names] + [f"num shortages {p}" for p in patgroups]
         # header += [f"num {p} {i+1} units short" for p in patgroups for i in range(12)] + ["num unavoidable shortages"]
         header += [f"num mismatched patients {p} {k}" for p in patgroups for k in antigens] + [f"num mismatched units {p} {k}" for p in patgroups for k in antigens]
         # header += [f"num mismatches {eth} {k}" for eth in ethnicities for k in antigens]
@@ -155,6 +151,7 @@ class Settings():
         locations = [hospital.name for hospital in hospitals]
         if len(hospitals) > 1:
             locations.append(f"dc_{episode}")
+            header += ["num outdates dc"] + [f"num outdates dc {i}" for i in ABOD_names]
 
         self.column_indices = {header[i] : i for i in range(len(header))}
         self.row_indices = {(day, location): i for i, (day, location) in enumerate(product(days, locations))}

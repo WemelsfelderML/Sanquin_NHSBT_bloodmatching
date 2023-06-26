@@ -13,10 +13,20 @@ def main():
     SETTINGS = Settings()
     PARAMS = Params(SETTINGS)
 
+    if SETTINGS.method == "LP":
+        episodes_min = SETTINGS.episodes[0]
+        episodes_max = SETTINGS.episodes[1]
+    elif SETTINGS.method == "BO":
+        episodes_min = 0
+        episodes_max = (SETTINGS.num_init_points * SETTINGS.replications) + (SETTINGS.num_iterations * SETTINGS.replications)
+    else:
+        print("Unknown method selected, check self.method in settings.py.")
+
     # If a directory to store log files or results does not yet exist, make one.
-    paths =  ["param_opt", "wip", f"wip/{SETTINGS.model_name}"] + [f"wip/{SETTINGS.model_name}/{e}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])]
-    paths += ["results", "results/"+SETTINGS.model_name] + [f"results/{SETTINGS.model_name}/{e}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])]
-    paths += [f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{htype}" for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1]) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
+    paths =  ["param_opt", "param_opt/single", "param_opt/multi"]
+    paths += ["wip", f"wip/{SETTINGS.model_name}"] + [f"wip/{SETTINGS.model_name}/{e}" for e in range(episodes_min, episodes_max)]
+    paths += ["results", "results/"+SETTINGS.model_name] + [f"results/{SETTINGS.model_name}/{e}" for e in range(episodes_min, episodes_max)]
+    paths += [f"results/{SETTINGS.model_name}/patients_{SETTINGS.strategy}_{htype}_{e}" for e in range(episodes_min, episodes_max) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
     # paths += ["NN_training_data"] + [f"NN_training_data/{htype}_{''.join(PARAMS.antigens.values())}" for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
     for path in paths:
         SETTINGS.check_dir_existence(SETTINGS.home_dir + path)
@@ -38,7 +48,7 @@ def main():
         print(f"Results will be written to {SETTINGS.model_name} folder.")
         print(f"Simulating {SETTINGS.init_days + SETTINGS.test_days} days ({SETTINGS.init_days} init, {SETTINGS.test_days} test).")
         if sum(SETTINGS.n_hospitals.values()) > 1:
-            print(f"Multi-hospital scenario with {SETTINGS.n_hospitals['regional']} regional and {SETTINGS.n_hospitals['university']} university hospitals.")
+            print(f"Multi-hospital scenario with {', '.join([f'{SETTINGS.n_hospitals[ds]} {ds}' for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0])} hospitals.")
         else:
             print(f"Single-hospital scenario, {max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])} hospital.")
         print(f"Using {SETTINGS.strategy} strategy for matching, with patgroup_musts = {SETTINGS.patgroup_musts}.")

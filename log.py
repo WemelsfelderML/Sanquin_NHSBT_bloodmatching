@@ -4,7 +4,7 @@ import pickle
 import os
 
 # After obtaining the optimal variable values from the solved model, write corresponding results to a csv file.
-def log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=[]):
+def log_results(SETTINGS, PARAMS, logs, gurobi_logs, dc, hospital, e, day, x=[]):
 
     # Name of the hospital
     ri = SETTINGS.row_indices[(day, hospital.name)]
@@ -81,6 +81,10 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, hospital, e, day, x=[]):
             # logs[ri,ci[f"num mismatches {ethnicities[rq.ethnicity]} {A[k]}"]] += mismatch[k]          # number of mismatched patients per patient ethnicity and antigen
 
     logs[ri,ci[f"avg issuing age"]] = age_sum / max(1, issued_sum)                        # average age of all issued products
+
+    for ip in [ip for ip in dc.inventory if ip.age >= (PARAMS.max_age-1)]:
+        logs[ri,ci["num outdates dc"]] += 1
+        logs[ri,ci[f"num outdates dc {ip.major}"]] += 1
 
     for ip in [I[i] for i in range(len(I)) if (xi[i] == 0) and (I[i].age >= (PARAMS.max_age-1))]:
         logs[ri,ci["num outdates"]] += 1                                                  # number of outdated inventory products

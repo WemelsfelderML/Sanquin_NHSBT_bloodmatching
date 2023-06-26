@@ -14,7 +14,6 @@ def alloimmunize(SETTINGS, PARAMS, hospital, e, day, x):
     Rm = (np.ones(Rv.shape) - Rv)           # R × A matrix with a 1 if the request is negative for some antigen, 0 if positive.
     Rm[:,10] *= Rv[:,9]                        # Only count Fyb mismatches if patient is positive for Fya.
 
-
     for r in r_SCD:                                     # Loop over all requests for SCD patients.
         for i in range(len(I)):                         # Loop over all inventory products.
             for k in A.keys():                          # Loop over all antigens.
@@ -25,6 +24,6 @@ def alloimmunize(SETTINGS, PARAMS, hospital, e, day, x):
                     
     requests_SCD = np.array([[R[r].num_units] + list(R[r].vector) + list(R[r].antibodies) + list(R[r].mism_units) + [R[r].index] for r in r_SCD])
     
-    path = SETTINGS.home_dir + f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{hospital.htype}/{day}"
+    path = SETTINGS.home_dir + f"results/{SETTINGS.model_name}/patients_{SETTINGS.strategy}_{hospital.name}/{day}"
     with open(path+".pickle", 'wb') as f:
         pickle.dump(requests_SCD, f, pickle.HIGHEST_PROTOCOL)

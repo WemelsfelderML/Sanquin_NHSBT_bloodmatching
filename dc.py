@@ -17,18 +17,19 @@ class Distribution_center():
         # Keep track of the supply index to know which item of the supply data to read next.
         self.supply_index = supply_index
 
+        inventory = []
         # In the multi-hospital scenario, the distribution center also has its own inventory.
         if len(hospitals) > 1:
 
             self.inventory_size = SETTINGS.inv_size_factor_dc * sum([hospital.avg_daily_demand for hospital in hospitals])
 
             # Initialize the inventory with products from the supply data, where the product's age is uniformly distributed between 0 and the maximum shelf life.
-            inventory = []
+            
             n_products = round(self.inventory_size / PARAMS.max_age)
             for age in range(PARAMS.max_age):
                 inventory += self.sample_supply_single_day(PARAMS, n_products, age)
 
-            self.inventory = inventory
+        self.inventory = inventory
 
 
     # Update the distribution centers's inventory at the end of a day in the simulation.

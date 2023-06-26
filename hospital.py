@@ -8,10 +8,10 @@ class Hospital():
     
     def __init__(self, SETTINGS, PARAMS, htype, e):
 
-        self.htype = htype                                                               # Hospital type ("UCLH", "NMUH", "WH")
-        self.name = f"{htype}_{e}"                                                   # Name for the hospital.
-        self.avg_daily_demand = round(sum(PARAMS.weekly_demand[htype])/7)                # Average daily number of units requested within this hospital.
-        self.inventory_size = SETTINGS.inv_size_factor_hosp * self.avg_daily_demand      # Size of the hospital's inventory.
+        self.htype = htype                                                              # Hospital type ("UCLH", "NMUH", "WH")
+        self.name = f"{htype}_{e}"                                                      # Name for the hospital.
+        self.avg_daily_demand = round(sum(PARAMS.weekly_demand[htype])/7)               # Average daily number of units requested within this hospital.
+        self.inventory_size = SETTINGS.inv_size_factor_hosp * self.avg_daily_demand     # Size of the hospital's inventory.
 
         # Read the demand that was generated using SETTINGS.mode = "demand".
         data = pd.read_csv(SETTINGS.home_dir + f"demand/{SETTINGS.test_days + SETTINGS.init_days}/{htype}_{e}.csv")
