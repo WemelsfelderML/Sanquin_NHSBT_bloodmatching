@@ -100,4 +100,4 @@ def log_results(SETTINGS, PARAMS, logs, issuing_age, gurobi_logs, dc, hospital, 
         # logs[ri,ci[f"num {P[rq.patgroup]} {int(rq.num_units - xr[r])} units short"]] += 1    # difference between the number units requested and issued
 
 
-    return logs
+    return logs, issuing_age
