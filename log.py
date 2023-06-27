@@ -4,7 +4,7 @@ import pickle
 import os
 
 # After obtaining the optimal variable values from the solved model, write corresponding results to a csv file.
-def log_results(SETTINGS, PARAMS, logs, gurobi_logs, dc, hospital, e, day, x=[]):
+def log_results(SETTINGS, PARAMS, logs, issuing_age, gurobi_logs, dc, hospital, e, day, x=[]):
 
     # Name of the hospital
     ri = SETTINGS.row_indices[(day, hospital.name)]
@@ -54,7 +54,7 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, dc, hospital, e, day, x=[])
     xi = x.sum(axis=1)  # For each inventory product i∈I, xi[i] = 1 if the product is issued, 0 otherwise.
     # xr = x.sum(axis=0)  # For each request r∈R, xr[r] = the number of products issued to this request.
     
-    age_sum = 0
+    # age_sum = 0
     issued_sum = 0
     for r in r_today:
         # Get all products from inventory that were issued to request r.
@@ -64,7 +64,8 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, dc, hospital, e, day, x=[])
         mismatch = np.zeros(len(A))
         for ip in [I[i] for i in issued]:
 
-            age_sum += ip.age
+            issuing_age[rq.patgroup, ip.age] += 1
+            # age_sum += ip.age
             issued_sum += 1
             # logs[ri,ci[f"{ip.major} to {rq.major}"]] += 1                                 # number of products per major blood group issued to requests per major blood group
             # logs[ri,ci[f"{ethnicities[ip.ethnicity]} to {ethnicities[rq.ethnicity]}"]] += 1                         # number of products per ethnicity issued to requests per ethnicity
@@ -80,7 +81,7 @@ def log_results(SETTINGS, PARAMS, logs, gurobi_logs, dc, hospital, e, day, x=[])
             logs[ri,ci[f"num mismatched patients {P[rq.patgroup]} {A[k]}"]] += mismatch[k]           # number of mismatched patients per patient group and antigen
             # logs[ri,ci[f"num mismatches {ethnicities[rq.ethnicity]} {A[k]}"]] += mismatch[k]          # number of mismatched patients per patient ethnicity and antigen
 
-    logs[ri,ci[f"avg issuing age"]] = age_sum / max(1, issued_sum)                        # average age of all issued products
+    # logs[ri,ci[f"avg issuing age"]] = age_sum / max(1, issued_sum)                        # average age of all issued products
 
     for ip in [ip for ip in dc.inventory if ip.age >= (PARAMS.max_age-1)]:
         logs[ri,ci["num outdates dc"]] += 1

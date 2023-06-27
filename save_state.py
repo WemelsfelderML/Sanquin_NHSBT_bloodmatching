@@ -3,21 +3,25 @@ import pickle
 
 from hospital import *
 
-def save_state(SETTINGS, path, logs, e, day, dc, hospitals):
+def save_state(SETTINGS, path, logs, issuing_age, e, day, dc, hospitals):
 
 	with open(path + "logs.pickle", 'wb') as f:
 		pickle.dump(logs, f, pickle.HIGHEST_PROTOCOL)
+
+	with open(path + "issuing_age.pickle", 'wb') as f:
+		pickle.dump(issuing_age, f, pickle.HIGHEST_PROTOCOL)
 
 	dc.pickle(path + "dc")
 	for h in range(len(hospitals)):
 		hospitals[h].pickle(path + f"h{h}")
 
 
-def load_state(SETTINGS, PARAMS, path, e, logs, dc, hospitals):
+def load_state(SETTINGS, PARAMS, path, e, logs, issuing_age, dc, hospitals):
 
 	if os.path.exists(path + "logs.pickle") == True:
 
 		logs = unpickle(path + "logs")
+		issuing_age = unpickle(path + "issuing_age")
 		dc = unpickle(path + "dc")
 
 		hospitals = []
@@ -34,7 +38,7 @@ def load_state(SETTINGS, PARAMS, path, e, logs, dc, hospitals):
 	else:
 		day = 0
 
-	return logs, day, dc, hospitals
+	return logs, issuing_age, day, dc, hospitals
 
 
 def unpickle(path):

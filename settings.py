@@ -12,7 +12,7 @@ class Settings():
         # "demand": generate demand data
         # "supply": generate supply data
         # "optimize": run simulations and optimize matching
-        self.mode = "optimize"
+        self.mode = "demand"
 
         # Output files will be stored in directory results/[model_name].
         self.model_name = "3years_LHD"
@@ -42,13 +42,13 @@ class Settings():
         #########################
 
         # Only the results of test days will be logged.
-        self.test_days = 87 * (7 * 6)  # Follow SCD patients over 26 transfusion episodes (~3 years)
+        self.test_days = 26 * (7 * 6)  # Follow SCD patients over 26 transfusion episodes (~3 years)
         # self.test_days = 87 * (7 * 6)   # Follow SCD patients over 87 transfusion episodes (~10 years)
         self.init_days = 2 * 35
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,11)
+        self.episodes = (0,250)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -163,7 +163,7 @@ class Settings():
         # header += ["products available today", "products in inventory today"]
 
         # Which products were issued to which patiens.
-        header += ["avg issuing age"]
+        # header += ["avg issuing age"]
         # header += [f"{i} to {j}" for i in ABOD_names for j in ABOD_names]
         # header += [f"{eth0} to {eth1}" for eth0 in ethnicities for eth1 in ethnicities]
         # header += [f"num allocated at dc {p}" for p in patgroups]

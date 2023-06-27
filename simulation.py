@@ -72,11 +72,12 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
 
     # Create a dataframe to be filled with output measures for every simulated day.
     logs = SETTINGS.initialize_output_dataframe(PARAMS, [hospital], e)
+    issuing_age = np.zeros([len(PARAMS.patgroups), PARAMS.max_age])
 
     days = range(SETTINGS.init_days + SETTINGS.test_days)
 
     wip_path = SETTINGS.generate_filename(output_type="wip", scenario="single", name=htype, e=e)
-    logs, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, dc, [hospital])
+    logs, issuing_age, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, issuing_age, dc, [hospital])
     hospital = hospitals[0]
     days = [d for d in days if d >= day]
 
@@ -84,10 +85,10 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
     x = {}
     for day in days:
         print(f"\nDay {day}")
-        logs, x = simulate_day_single(SETTINGS, PARAMS, obj_params, logs, dc, hospital, e, day, x)
+        logs, issuing_age, x = simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospital, e, day, x)
 
         # if day % 5 == 0:
-        save_state(SETTINGS, wip_path, logs, e, day, dc, [hospital])
+        save_state(SETTINGS, wip_path, logs, issuing_age, e, day, dc, [hospital])
 
     # Write the created output dataframe to a csv file in the 'results' directory.
     df = pd.DataFrame(logs, columns = sorted(SETTINGS.column_indices, key=SETTINGS.column_indices.get))
@@ -167,7 +168,7 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
 
 
 # Single-hospital setup: perform matching within one hospital.
-def simulate_day_single(SETTINGS, PARAMS, obj_params, logs, dc, hospital, e, day, x):
+def simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospital, e, day, x):
 
     # Update the set of available requests, by removing requests for previous days (regardless of 
     # whether they were satisfied or not) and sampling new requests that become known today.
@@ -194,17 +195,17 @@ def simulate_day_single(SETTINGS, PARAMS, obj_params, logs, dc, hospital, e, day
         with open(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="single", name=hospital.name, day=day)+".pickle", 'wb') as f:
             pickle.dump(np.array([]), f, pickle.HIGHEST_PROTOCOL)
 
-    logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, dc, hospital, e, day, x=x)
+    logs, issuing_age = log_results(SETTINGS, PARAMS, logs, issuing_age, gurobi_logs, dc, hospital, e, day, x=x)
 
     # Update the hospital's inventory, by removing issued or outdated products, increasing product age, and sampling new supply.
     supply_size = hospital.update_inventory(SETTINGS, PARAMS, x, day)
     hospital.inventory += dc.sample_supply_single_day(PARAMS, supply_size)
 
-    return logs, x_next
+    return logs, issuing_age, x_next
 
 
 # Multi-hospital setup: perform matching simultaniously for multiple hospitals, and strategically distribute new supply over all hospitals.
-def simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, dc, hospitals, e, day):
+def simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospitals, e, day):
 
     # For each hospital, update the set of available requests, by removing requests for previous days 
     # (regardless of whether they were satisfied or not) and sampling new requests that become known today.
@@ -234,7 +235,7 @@ def simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, dc, hospitals, e, day
                     hospitals[h].requests[r].allocated_from_dc += 1     # total number of products allocated to this request from DC
 
         # Write the results to a csv file.
-        logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, dc, hospitals[h], e, day, x=xh[h])
+        logs, issuing_age = log_results(SETTINGS, PARAMS, logs, issuing_age, gurobi_logs, dc, hospitals[h], e, day, x=xh[h])
 
     # Update the hospital's inventory, by removing issued or outdated products and sampling new supply.
     supply_sizes = np.array([hospitals[h].update_inventory(SETTINGS, PARAMS, xh[h], day) for h in range(len(hospitals))])
@@ -249,4 +250,4 @@ def simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, dc, hospitals, e, day
     # Update the distribution centers's inventory, by removing shipped or outdated products, and increasing product age.
     dc.update_inventory(SETTINGS, PARAMS, x, day)
 
-    return logs
+    return logs, issuing_age
