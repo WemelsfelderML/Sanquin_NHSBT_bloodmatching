@@ -86,14 +86,14 @@ def generate_demand(SETTINGS, PARAMS, htype):
         os.mkdir(path)
 
     # Find already existing demand files of the chosen size and duration, and make sure not to overwrite them.
-    i = 0
-    while os.path.exists(SETTINGS.home_dir + f"demand/{duration}/{htype}_{i}.csv"):
-        i += 1
+    e = 0
+    while os.path.exists(SETTINGS.home_dir + f"demand/{duration}/{htype}_{e}.csv"):
+        e += 1
 
     # For every episode in the given range, generate requests for all days of the simulation.
     for _ in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
 
-        print(f"Generating demand '{htype}_{i}'.")
+        print(f"Generating demand '{htype}_{e}'.")
 
         num_processes = multiprocessing.cpu_count()  # Get the number of CPU cores
         with multiprocessing.Pool(num_processes) as pool:
@@ -102,9 +102,9 @@ def generate_demand(SETTINGS, PARAMS, htype):
         # Convert list of numpy arrays to pandas DataFrame
         df = pd.DataFrame(all_weekly_demands, columns = ["day issuing", "day available", "num units", "patgroup", "ethnicity"] + list(PARAMS.antigens.values()))
 
-        df.to_csv(SETTINGS.home_dir + f"demand/{duration}/{htype}_{i}.csv", index=False)
+        df.to_csv(SETTINGS.generate_filename(output_type="demand", size=duration, name=htype, e=e)+".csv", index=False)
 
-        i += 1
+        e += 1
 
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 
-def alloimmunize(SETTINGS, PARAMS, hospital, e, day, x):
+def alloimmunize(SETTINGS, PARAMS, scenario, hospital, day, x):
 
     # Initialize inventory, requests and antigens.
     I = hospital.inventory
@@ -24,6 +24,6 @@ def alloimmunize(SETTINGS, PARAMS, hospital, e, day, x):
                     
     requests_SCD = np.array([[R[r].num_units] + list(R[r].vector) + list(R[r].antibodies) + list(R[r].mism_units) + [R[r].index] for r in r_SCD])
     
-    path = SETTINGS.home_dir + f"results/{SETTINGS.model_name}/patients_{SETTINGS.strategy}_{hospital.name}/{day}"
-    with open(path+".pickle", 'wb') as f:
+
+    with open(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario=scenario, name=hospital.name, day=day)+".pickle", 'wb') as f:
         pickle.dump(requests_SCD, f, pickle.HIGHEST_PROTOCOL)

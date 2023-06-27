@@ -22,12 +22,17 @@ def main():
     else:
         print("Unknown method selected, check self.method in settings.py.")
 
+    if sum(SETTINGS.n_hospitals.values()) == 1:
+        scenario = "single"
+    else:
+        scenario = "multi"
+
     # If a directory to store log files or results does not yet exist, make one.
-    paths =  ["param_opt", "param_opt/single", "param_opt/multi"]
-    paths += ["wip", f"wip/{SETTINGS.model_name}"] + [f"wip/{SETTINGS.model_name}/{e}" for e in range(episodes_min, episodes_max)]
-    paths += ["results", "results/"+SETTINGS.model_name] + [f"results/{SETTINGS.model_name}/{e}" for e in range(episodes_min, episodes_max)]
-    paths += [f"results/{SETTINGS.model_name}/patients_{SETTINGS.strategy}_{htype}_{e}" for e in range(episodes_min, episodes_max) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
-    # paths += ["NN_training_data"] + [f"NN_training_data/{htype}_{''.join(PARAMS.antigens.values())}" for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
+    paths =  ["optimize_params", f"optimize_params/{SETTINGS.model_name}_{scenario}"]
+    paths += ["wip", f"wip/{SETTINGS.model_name}_{scenario}"] + ["results", f"results/{SETTINGS.model_name}_{scenario}"]
+    paths += [f"wip/{SETTINGS.model_name}_{scenario}/{SETTINGS.strategy}_{htype}_{e}" for e in range(episodes_min, episodes_max) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
+    paths += [f"results/{SETTINGS.model_name}_{scenario}/patients_{SETTINGS.strategy}_{htype}_{e}" for e in range(episodes_min, episodes_max) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
+    
     for path in paths:
         SETTINGS.check_dir_existence(SETTINGS.home_dir + path)
 

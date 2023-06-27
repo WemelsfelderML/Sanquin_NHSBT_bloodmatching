@@ -14,7 +14,7 @@ class Hospital():
         self.inventory_size = SETTINGS.inv_size_factor_hosp * self.avg_daily_demand     # Size of the hospital's inventory.
 
         # Read the demand that was generated using SETTINGS.mode = "demand".
-        data = pd.read_csv(SETTINGS.home_dir + f"demand/{SETTINGS.test_days + SETTINGS.init_days}/{htype}_{e}.csv")
+        data = pd.read_csv(SETTINGS.generate_filename(output_type="demand", size=SETTINGS.test_days + SETTINGS.init_days, name=htype, e=e)+".csv")
         data["index"] = range(len(data))
 
         # Only sample SCD patients for the first 6 weeks after the initialization period (they will return afterwards).

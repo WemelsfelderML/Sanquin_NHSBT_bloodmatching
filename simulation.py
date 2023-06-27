@@ -36,14 +36,16 @@ def simulation(SETTINGS, PARAMS):
         # Get the hospital's type
         htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
 
-        processes = []
         for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-            p = multiprocessing.Process(target=simulate_episode_single, args=(SETTINGS, PARAMS, htype, e))
-            p.start()
-            processes.append(p)
+            simulate_episode_single(SETTINGS, PARAMS, htype, e)
+        # processes = []
+        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        #     p = multiprocessing.Process(target=simulate_episode_single, args=(SETTINGS, PARAMS, htype, e))
+        #     p.start()
+        #     processes.append(p)
 
-        for p in processes:
-            p.join()
+        # for p in processes:
+        #     p.join()
 
 
 def simulate_episode_single(SETTINGS, PARAMS, htype, e):
@@ -53,7 +55,7 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
     obj_params = PARAMS.BO_params
     if len(obj_params) == 0:
         obj_params = PARAMS.LHD[e]
-    with open(SETTINGS.home_dir + f"param_opt/single/params_{e}.pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(output_type="params", scenario="single", name="params", e=e)+".pickle", 'wb') as f:
         pickle.dump(obj_params, f, pickle.HIGHEST_PROTOCOL)
         
     # Initialize the hospital. A distribution center is also initialized to provide the hospital with random supply.
@@ -73,17 +75,19 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
 
     days = range(SETTINGS.init_days + SETTINGS.test_days)
 
-    logs, day, dc, hospitals = load_state(SETTINGS, PARAMS, e, logs, dc, [hospital])
+    wip_path = SETTINGS.generate_filename(output_type="wip", scenario="single", name=htype, e=e)
+    logs, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, dc, [hospital])
     hospital = hospitals[0]
     days = [d for d in days if d >= day]
 
     # Run the simulation for the given number of days, and write outputs for all 'test days' to the dataframe.
+    x = {}
     for day in days:
         print(f"\nDay {day}")
         logs, x = simulate_day_single(SETTINGS, PARAMS, obj_params, logs, dc, hospital, e, day, x)
 
         # if day % 5 == 0:
-        save_state(SETTINGS, logs, e, day, dc, [hospital])
+        save_state(SETTINGS, wip_path, logs, e, day, dc, [hospital])
 
     # Write the created output dataframe to a csv file in the 'results' directory.
     df = pd.DataFrame(logs, columns = sorted(SETTINGS.column_indices, key=SETTINGS.column_indices.get))
@@ -98,7 +102,7 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
     df["avg daily demand"] = hospital.avg_daily_demand
     df["inventory size"] = hospital.inventory_size
 
-    df.to_csv(SETTINGS.generate_filename("results") + f"{SETTINGS.strategy}_{htype}_{e}.csv", sep=',', index=True)
+    df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="single", name=hospital.htype, e=e)+".csv", sep=',', index=True)
 
 
 def simulate_episode_multi(SETTINGS, PARAMS, e):
@@ -108,7 +112,7 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
     obj_params = PARAMS.BO_params
     if len(obj_params) == 0:
         obj_params = PARAMS.LHD[e]
-    with open(SETTINGS.home_dir + f"param_opt/multi/params_{e}.pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(output_type="params", scenario="multi", name="params", e=e)+".pickle", 'wb') as f:
         pickle.dump(obj_params, f, pickle.HIGHEST_PROTOCOL)
 
     # Initialize all hospitals and the distribution center.
@@ -133,7 +137,8 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
     
     days = range(SETTINGS.init_days + SETTINGS.test_days)
 
-    logs, day, dc, hospitals = load_state(SETTINGS, PARAMS, e, logs, dc, hospitals)
+    wip_path = SETTINGS.generate_filename(output_type="wip", scenario="multi", name='-'.join([h.name[:3] for h in hospitals]), e=e)
+    logs, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, dc, hospitals)
     days = [d for d in days if d >= day]
     
     # Run the simulation for the given number of days, and write outputs for all 'test days' to the dataframe.
@@ -141,7 +146,7 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
         print(f"\nDay {day}")
         logs = simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, dc, hospitals, e, day)
 
-        save_state(SETTINGS, logs, e, day, dc, hospitals)
+        save_state(SETTINGS, wip_path, logs, e, day, dc, hospitals)
 
     # Write the created output dataframe to a csv file in the 'results' directory.
     df = pd.DataFrame(logs, columns = sorted(SETTINGS.column_indices, key=SETTINGS.column_indices.get))
@@ -158,7 +163,7 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
         df.loc[indices,"avg daily demand"] = hospital.avg_daily_demand
         df.loc[indices,"inventory size"] = hospital.inventory_size
 
-    df.to_csv(SETTINGS.generate_filename("results") + f"{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[ds]) + ds[:3] for ds in SETTINGS.n_hospitals.keys()])}_{e}.csv", sep=',', index=True)
+    df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="multi", name='-'.join([h.name[:3] for h in hospitals]), e=e)+".csv", sep=',', index=True)
 
 
 # Single-hospital setup: perform matching within one hospital.
@@ -177,16 +182,17 @@ def simulate_day_single(SETTINGS, PARAMS, obj_params, logs, dc, hospital, e, day
     if num_requests > 0:
         # Solve the MINRAR model, matching the hospital's inventory products to the available requests.
         gurobi_logs, x = minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e, x)
-        alloimmunize(SETTINGS, PARAMS, hospital, e, day, x)
+        alloimmunize(SETTINGS, PARAMS, "single", hospital, day, x)
 
         for i, ip in enumerate(I):
             for r, rq in enumerate(R):
                 ir = (ip.index, rq.index)
                 x_next[ir] = x[i,r]
-
     else:
         gurobi_logs = [0, 2, 0, 0]
         x = np.zeros([len(hospital.inventory),1])
+        with open(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="single", name=hospital.name, day=day)+".pickle", 'wb') as f:
+            pickle.dump(np.array([]), f, pickle.HIGHEST_PROTOCOL)
 
     logs = log_results(SETTINGS, PARAMS, logs, gurobi_logs, dc, hospital, e, day, x=x)
 
@@ -214,7 +220,7 @@ def simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, dc, hospitals, e, day
         # Solve the MINRAR model, matching the inventories of all hospitals and the distribution center to all available requests.
         gurobi_logs, xh, xdc = minrar_multiple_hospitals(SETTINGS, PARAMS, obj_params, dc, hospitals, day, e)
         for h in range(len(hospitals)):
-            alloimmunize(SETTINGS, PARAMS, hospitals[h], e, day, xh[h])
+            alloimmunize(SETTINGS, PARAMS, "multi", hospitals[h], day, xh[h])
 
     # Get all distribution center products that were allocated to requests with tomorrow as their issuing date.
     allocations_from_dc = np.zeros([len(dc.inventory),len(hospitals)])

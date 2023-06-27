@@ -3,36 +3,26 @@ import pickle
 
 from hospital import *
 
-def save_state(SETTINGS, logs, e, day, dc, hospitals):
+def save_state(SETTINGS, path, logs, e, day, dc, hospitals):
 
-	path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[ds]) + ds for ds in SETTINGS.n_hospitals.keys()])}"	
-
-	# df.to_csv(path + "_df.csv", sep=',', index=True)
-	with open(path + "_logs.pickle", 'wb') as f:
+	with open(path + "logs.pickle", 'wb') as f:
 		pickle.dump(logs, f, pickle.HIGHEST_PROTOCOL)
 
-	# df_matches.to_csv(path + "_matches.csv", sep=',', index=True)
-	dc.pickle(path + "_dc")
+	dc.pickle(path + "dc")
 	for h in range(len(hospitals)):
-		hospitals[h].pickle(path + f"_h{h}")
+		hospitals[h].pickle(path + f"h{h}")
 
 
-def load_state(SETTINGS, PARAMS, e, logs, dc, hospitals):
+def load_state(SETTINGS, PARAMS, path, e, logs, dc, hospitals):
 
-	path = SETTINGS.home_dir + f"wip/{SETTINGS.model_name}/{e}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[ds]) + ds for ds in SETTINGS.n_hospitals.keys()])}"	
+	if os.path.exists(path + "logs.pickle") == True:
 
-	if os.path.exists(path + "_logs.pickle") == True:
-
-		# df = pd.read_csv(path + "_df.csv")
-		# day = max(df[df["logged"]==True]["day"]) + 1
-		# df = df.set_index(["day", "location"])
-		logs = unpickle(path + "_logs")
-
-		dc = unpickle(path + "_dc")
+		logs = unpickle(path + "logs")
+		dc = unpickle(path + "dc")
 
 		hospitals = []
 		for h in range(sum(SETTINGS.n_hospitals.values())):
-			hospitals.append(unpickle(path + f"_h{h}"))
+			hospitals.append(unpickle(path + f"h{h}"))
 		
 		# htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
 		# hospital = Hospital(SETTINGS, PARAMS, htype, e)

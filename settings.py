@@ -31,7 +31,7 @@ class Settings():
 
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
-        self.method = "BO"
+        self.method = "LP"
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -42,13 +42,13 @@ class Settings():
         #########################
 
         # Only the results of test days will be logged.
-        self.test_days = 26 * (7 * 6)   # Follow SCD patients over 26 transfusion episodes (~3 years)
+        self.test_days = 87 * (7 * 6)  # Follow SCD patients over 26 transfusion episodes (~3 years)
         # self.test_days = 87 * (7 * 6)   # Follow SCD patients over 87 transfusion episodes (~10 years)
         self.init_days = 2 * 35
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,20)
+        self.episodes = (0,11)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -77,7 +77,7 @@ class Settings():
         # BAYESIAN OPTIMIZATION #
         #########################
 
-        self.num_init_points = 36
+        self.num_init_points = 11
         self.num_iterations = 50
         self.replications = 4
         
@@ -92,9 +92,37 @@ class Settings():
 
 
     # Generate a file name for exporting log or result files.
-    def generate_filename(self, output_type):
+    def generate_filename(self, output_type="output_type", subtype="subtype", scenario="single", size="size", name="name", e="e", day="day"):
 
-        return self.home_dir + f"{output_type}/{self.model_name}/{self.method.lower()}_"
+        path = self.home_dir
+
+        # Generated demand data.
+        if output_type == "demand":
+            path += f"demand/{size}/{name}_{e}"
+
+        # Generated supply data.
+        if output_type == "supply":
+            path += f"supply/{size}/{name}_{e}"
+
+        # Simulation results.
+        if output_type == "results":
+
+            path += f"results/{self.model_name}_{scenario}/"
+
+            if subtype == "patients":
+                # here 'name' also includes the episode number
+                path += f"patients_{self.strategy}_{name}/{day}" 
+            else:
+                path += f"{self.strategy}_{name}_{e}"
+
+        if output_type == "wip":
+            path += f"wip/{self.model_name}_{scenario}/{self.strategy}_{name}_{e}/"
+
+        if output_type == "params":
+            path += f"optimize_params/{self.model_name}_{scenario}/{name}"
+
+        return path
+         
 
 
     # Create the dataframe with all required columns, to store outputs during the simulations.

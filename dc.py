@@ -12,7 +12,7 @@ class Distribution_center():
         self.name = f"dc_{e}"
 
         # Read the supply that was generated using SETTINGS.mode = "supply"
-        self.supply_data = unpickle(SETTINGS.home_dir + f"supply/{PARAMS.supply_size}/{'-'.join([str(SETTINGS.n_hospitals[ds])+ds for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0])}_{e}")
+        self.supply_data = unpickle(SETTINGS.generate_filename(output_type="supply", size=PARAMS.supply_size, name='-'.join([str(SETTINGS.n_hospitals[ds])+ds for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0]), e=e))
 
         # Keep track of the supply index to know which item of the supply data to read next.
         self.supply_index = supply_index

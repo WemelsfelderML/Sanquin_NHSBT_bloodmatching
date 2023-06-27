@@ -103,12 +103,12 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
                 x[i,r].ub = 0
 
 
-    # ir_prev = x_prev.keys()
-    # for i, ip in enumerate(I):
-    #     for r, rq in enumerate(R):
-    #         ir = (ip.index, rq.index)
-    #         if ir in ir_prev:
-    #             x[i,r].Start = x_prev[ir]
+    ir_prev = x_prev.keys()
+    for i, ip in enumerate(I):
+        for r, rq in enumerate(R):
+            ir = (ip.index, rq.index)
+            if ir in ir_prev:
+                x[i,r].Start = x_prev[ir]
 
 
     #################

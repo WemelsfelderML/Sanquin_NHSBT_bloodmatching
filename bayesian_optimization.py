@@ -50,7 +50,7 @@ def find_init_points(SETTINGS, PARAMS, htype):
             
             e = (r * num_init_points) + p
             for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
-                data = unpickle(SETTINGS.home_dir + f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{htype}/{day}").astype(int)
+                data = unpickle(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="single", name=htype+f"_{e}", day=day)).astype(int)
                 for rq in data:
                     rq_antibodies = rq[18:35]
                     rq_index = f"{e}_{rq[52]}"
@@ -96,8 +96,8 @@ def bayes_opt_tuning(SETTINGS, PARAMS):
     points_df = pd.DataFrame(points, columns=var_obj_names)
 
     now = datetime.datetime.now()
-    results_df.to_csv(HOME_DIR + "param_opt/", now.strftime("%H-%M") + "_tuning_results.csv", index=False, sep=",")
-    points_df.to_csv(HOME_DIR + "param_opt/", now.strftime("%H-%M") + "_tuning_points.csv", index=False, sep=",")
+    results_df.to_csv(SETTINGS.generate_filename(output_type="params", scenario="single", name=f"tuning_results_{now.strftime('%m%d%H%M')}")+".csv", index=False, sep=",")
+    points_df.to_csv(SETTINGS.generate_filename(output_type="params", scenario="single", name=f"tuning_points_{now.strftime('%m%d%H%M')}")+".csv", index=False, sep=",")
 
 
 def tuning(SETTINGS, PARAMS, htype, weights):
@@ -107,7 +107,7 @@ def tuning(SETTINGS, PARAMS, htype, weights):
 
     # Find already existing results and continue from the lowest episode number without results.
     e = 0
-    while os.path.exists(SETTINGS.generate_filename("results") + f"{SETTINGS.strategy}_{htype}_{e}.csv"):
+    while os.path.exists(SETTINGS.generate_filename(output_type="results", scenario="single", name=htype, e=e)+".csv"):
         e += 1
     episodes = (e, e + SETTINGS.replications)
 
@@ -120,7 +120,7 @@ def tuning(SETTINGS, PARAMS, htype, weights):
     antibodies_per_patient = defaultdict(set)
     for e in range(episodes[0], episodes[1]):
         for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
-            data = unpickle(SETTINGS.home_dir + f"results/{SETTINGS.model_name}/{e}/patients_{SETTINGS.strategy}_{htype}/{day}").astype(int)
+            data = unpickle(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="single", name=htype+f"_{e}", day=day)).astype(int)
             for rq in data:
                 rq_antibodies = rq[18:35]
                 rq_index = f"{e}_{rq[52]}"
