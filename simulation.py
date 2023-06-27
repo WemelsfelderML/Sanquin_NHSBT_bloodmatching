@@ -179,7 +179,7 @@ def simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hos
     # Update the set of available requests, by removing requests for previous days (regardless of 
     # whether they were satisfied or not) and sampling new requests that become known today.
     hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
-    num_requests = hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
+    num_requests = hospital.sample_requests_single_day(SETTINGS, PARAMS, "single", e, day=day)
 
     # Sets of all inventory products and patient requests.
     I = hospital.inventory
@@ -218,7 +218,7 @@ def simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hosp
     num_requests = 0
     for hospital in hospitals:
         hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
-        num_requests += hospital.sample_requests_single_day(SETTINGS, PARAMS, e, day=day)
+        num_requests += hospital.sample_requests_single_day(SETTINGS, PARAMS, "multi", e, day=day)
 
         for rq in hospital.requests:
             rq.allocated_from_dc = 0
