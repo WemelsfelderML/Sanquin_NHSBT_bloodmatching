@@ -112,6 +112,8 @@ class Settings():
             if subtype == "patients":
                 # here 'name' also includes the episode number
                 path += f"patients_{self.strategy}_{name}/{day}" 
+            elif subtype == "issuing_age":
+                path += f"age_{self.strategy}_{name}_{e}"
             else:
                 path += f"{self.strategy}_{name}_{e}"
 

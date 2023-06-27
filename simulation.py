@@ -105,6 +105,9 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
 
     df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="single", name=hospital.htype, e=e)+".csv", sep=',', index=True)
 
+    with open(SETTINGS.generate_filename(output_type="results", subtype="issuing_age", scenario="single", name=hospital.htype, e=e)+".pickle", 'wb') as f:
+        pickle.dump(issuing_age, f, pickle.HIGHEST_PROTOCOL)
+
 
 def simulate_episode_multi(SETTINGS, PARAMS, e):
 
@@ -134,20 +137,21 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
 
     # Create a dataframe to be filled with output measures for every simulated day.
     logs = SETTINGS.initialize_output_dataframe(PARAMS, hospitals, e)
+    issuing_age = np.zeros([len(PARAMS.patgroups), PARAMS.max_age])
     # df_matches = pd.DataFrame(columns = ["day", "unit", "patient"])
     
     days = range(SETTINGS.init_days + SETTINGS.test_days)
 
     wip_path = SETTINGS.generate_filename(output_type="wip", scenario="multi", name='-'.join([h.name[:3] for h in hospitals]), e=e)
-    logs, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, dc, hospitals)
+    logs, issuing_age, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, issuing_age, dc, hospitals)
     days = [d for d in days if d >= day]
     
     # Run the simulation for the given number of days, and write outputs for all 'test days' to the dataframe.
     for day in days:
         print(f"\nDay {day}")
-        logs = simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, dc, hospitals, e, day)
+        logs, issuing_age = simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospitals, e, day)
 
-        save_state(SETTINGS, wip_path, logs, e, day, dc, hospitals)
+        save_state(SETTINGS, wip_path, logs, issuing_age, e, day, dc, hospitals)
 
     # Write the created output dataframe to a csv file in the 'results' directory.
     df = pd.DataFrame(logs, columns = sorted(SETTINGS.column_indices, key=SETTINGS.column_indices.get))
@@ -166,6 +170,8 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
 
     df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="multi", name='-'.join([h.name[:3] for h in hospitals]), e=e)+".csv", sep=',', index=True)
 
+    with open(SETTINGS.generate_filename(output_type="results", subtype="issuing_age", scenario="multi", name=hospital.htype, e=e)+".pickle", 'wb') as f:
+        pickle.dump(issuing_age, f, pickle.HIGHEST_PROTOCOL)
 
 # Single-hospital setup: perform matching within one hospital.
 def simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospital, e, day, x):
