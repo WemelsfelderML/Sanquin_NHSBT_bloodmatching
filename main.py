@@ -30,8 +30,12 @@ def main():
     # If a directory to store log files or results does not yet exist, make one.
     paths =  ["optimize_params", f"optimize_params/{SETTINGS.model_name}_{scenario}"]
     paths += ["wip", f"wip/{SETTINGS.model_name}_{scenario}"] + ["results", f"results/{SETTINGS.model_name}_{scenario}"]
-    paths += [f"wip/{SETTINGS.model_name}_{scenario}/{SETTINGS.strategy}_{htype}_{e}" for e in range(episodes_min, episodes_max) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
-    paths += [f"results/{SETTINGS.model_name}_{scenario}/patients_{SETTINGS.strategy}_{htype}_{e}" for e in range(episodes_min, episodes_max) for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype] > 0]
+    paths += [f"wip/{SETTINGS.model_name}_{scenario}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])}_{e}" for e in range(episodes_min, episodes_max)]
+    for r in range(episodes_min, episodes_max):
+        for htype in SETTINGS.n_hospitals.keys():
+            n = SETTINGS.n_hospitals[htype]
+            for i in range(n):
+                paths += [f"results/{SETTINGS.model_name}_{scenario}/patients_{SETTINGS.strategy}_{htype}_{(r * n) + i}"  ]
     
     for path in paths:
         SETTINGS.check_dir_existence(SETTINGS.home_dir + path)

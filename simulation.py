@@ -75,7 +75,7 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
 
     days = range(SETTINGS.init_days + SETTINGS.test_days)
 
-    wip_path = SETTINGS.generate_filename(output_type="wip", scenario="single", name=htype, e=e)
+    wip_path = SETTINGS.generate_filename(output_type="wip", scenario="single", name="1"+htype, e=e)
     logs, issuing_age, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, issuing_age, dc, [hospital])
     hospital = hospitals[0]
     days = [d for d in days if d >= day]
@@ -96,15 +96,14 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
     df["model name"] = SETTINGS.model_name
     df["test days"] += SETTINGS.test_days
     df["init days"] += SETTINGS.init_days
-    df["supply scenario"] = '-'.join([str(SETTINGS.n_hospitals[ds])+ds[:3] for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0]) + f"_{e}"
     
     df["location"] = hospital.name
     df["avg daily demand"] = hospital.avg_daily_demand
     df["inventory size"] = hospital.inventory_size
 
-    df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="single", name=hospital.htype, e=e)+".csv", sep=',', index=True)
+    df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="single", name="1"+hospital.htype, e=e)+".csv", sep=',', index=True)
 
-    with open(SETTINGS.generate_filename(output_type="results", subtype="issuing_age", scenario="single", name=hospital.htype, e=e)+".pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(output_type="results", subtype="issuing_age", scenario="single", name="1"+hospital.htype, e=e)+".pickle", 'wb') as f:
         pickle.dump(issuing_age, f, pickle.HIGHEST_PROTOCOL)
 
 
@@ -124,6 +123,8 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
         hospitals += [Hospital(SETTINGS, PARAMS, htype, (e*SETTINGS.n_hospitals[htype])+i) for i in range(SETTINGS.n_hospitals[htype])]
     dc = Distribution_center(SETTINGS, PARAMS, hospitals, e)
 
+    scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
+
     # Initialize all hospital inventories with random supply, where the product's age is uniformly distributed between 0 and the maximum shelf life.
     for hospital in hospitals:
         # Fill the initial inventory with product only of age 0.
@@ -141,7 +142,7 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
     
     days = range(SETTINGS.init_days + SETTINGS.test_days)
 
-    wip_path = SETTINGS.generate_filename(output_type="wip", scenario="multi", name='-'.join([h.name[:3] for h in hospitals]), e=e)
+    wip_path = SETTINGS.generate_filename(output_type="wip", scenario="multi", name=scenario_name, e=e)
     logs, issuing_age, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, issuing_age, dc, hospitals)
     days = [d for d in days if d >= day]
     
@@ -159,7 +160,6 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
     df["model name"] = SETTINGS.model_name
     df["test days"] += SETTINGS.test_days
     df["init days"] += SETTINGS.init_days
-    df["supply scenario"] = '-'.join([str(SETTINGS.n_hospitals[ds])+ds[:3] for ds in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[ds] > 0]) + f"_{e}"
     
     for hospital in hospitals:
         indices = [SETTINGS.row_indices[(day,hospital.name)] for day in days]
@@ -167,9 +167,9 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
         df.loc[indices,"avg daily demand"] = hospital.avg_daily_demand
         df.loc[indices,"inventory size"] = hospital.inventory_size
 
-    df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="multi", name='-'.join([h.name[:3] for h in hospitals]), e=e)+".csv", sep=',', index=True)
+    df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="multi", name=scenario_name, e=e)+".csv", sep=',', index=True)
 
-    with open(SETTINGS.generate_filename(output_type="results", subtype="issuing_age", scenario="multi", name=hospital.htype, e=e)+".pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(output_type="results", subtype="issuing_age", scenario="multi", name=scenario_name, e=e)+".pickle", 'wb') as f:
         pickle.dump(issuing_age, f, pickle.HIGHEST_PROTOCOL)
 
 # Single-hospital setup: perform matching within one hospital.

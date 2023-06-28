@@ -17,10 +17,10 @@ from simulation import *
 
 class Evaluator:
 
-    def __init__(self, SETTINGS, PARAMS, htype):
+    def __init__(self, SETTINGS, PARAMS, scenario):
         self.SETTINGS = SETTINGS
         self.PARAMS = PARAMS
-        self.htype = htype
+        self.scenario = scenario
 
     def evaluate(self, X: np.ndarray) -> np.ndarray:
         """Evaluate the simulator for a given set of parameters.
@@ -30,12 +30,12 @@ class Evaluator:
         """
         fitness = np.zeros((X.shape[0], 1))
         for i, weights in enumerate(X):
-            alloimmunisations = tuning(self.SETTINGS, self.PARAMS, self.htype, weights)
+            alloimmunisations = tuning(self.SETTINGS, self.PARAMS, self.scenario, weights)
             fitness[i] = sum(alloimmunisations)
         return fitness
 
 
-def find_init_points(SETTINGS, PARAMS, htype):
+def find_init_points(SETTINGS, PARAMS, scenario):
 
     num_init_points = SETTINGS.num_init_points
 
@@ -47,14 +47,19 @@ def find_init_points(SETTINGS, PARAMS, htype):
 
         antibodies_per_patient = defaultdict(set)
         for r in range(SETTINGS.replications):
-            
-            e = (r * num_init_points) + p
-            for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
-                data = unpickle(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="single", name=htype+f"_{e}", day=day)).astype(int)
-                for rq in data:
-                    rq_antibodies = rq[18:35]
-                    rq_index = f"{e}_{rq[52]}"
-                    antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
+
+            for htype in SETTINGS.n_hospitals.keys():
+                n = SETTINGS.n_hospitals[htype]
+                for i in range(n):
+
+                    e = (((r * num_init_points) + p) * n) + i
+
+                    for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
+                        data = unpickle(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
+                        for rq in data:
+                            rq_antibodies = rq[18:35]
+                            rq_index = f"{e}_{rq[52]}"
+                            antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
         all_antibodies = list(chain.from_iterable(antibodies_per_patient.values()))
         Y_init.append(len(all_antibodies))
@@ -64,12 +69,14 @@ def find_init_points(SETTINGS, PARAMS, htype):
 
 def bayes_opt_tuning(SETTINGS, PARAMS):
 
-    # Get the hospital's type ('regional' or 'university')
-    htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
+    if sum(SETTINGS.n_hospitals.values()) == 1:
+        scenario = "single"
+    else:
+        scenario = "multi"
+    
+    X_init, Y_init = find_init_points(SETTINGS, PARAMS, scenario)
 
-    X_init, Y_init = find_init_points(SETTINGS, PARAMS, htype)
-
-    evaluator = Evaluator(SETTINGS, PARAMS, htype)
+    evaluator = Evaluator(SETTINGS, PARAMS, scenario)
     var_obj_names = ["mismatches", "youngblood", "FIFO", "usability", "substitution", "today", "antibodies"]
     var_names = var_obj_names[:-1]
     space = ParameterSpace([ContinuousParameter(w,0,1) for w in var_names])
@@ -78,7 +85,7 @@ def bayes_opt_tuning(SETTINGS, PARAMS):
     
     gpy_model = GPy.models.GPRegression(
         X_init, Y_init, GPy.kern.Matern52(space.dimensionality, variance=1.0, ARD=True),
-        mean_function=GPy.mappings.Constant(space.dimensionality, 1, 10))
+        mean_function=GPy.mappings.Constant(space.dimensionality, 1, 10))                       # TODO
     gpy_model.optimize()
     model = GPyModelWrapper(gpy_model)
     
@@ -96,18 +103,18 @@ def bayes_opt_tuning(SETTINGS, PARAMS):
     points_df = pd.DataFrame(points, columns=var_obj_names)
 
     now = datetime.datetime.now()
-    results_df.to_csv(SETTINGS.generate_filename(output_type="params", scenario="single", name=f"tuning_results_{now.strftime('%m%d%H%M')}")+".csv", index=False, sep=",")
-    points_df.to_csv(SETTINGS.generate_filename(output_type="params", scenario="single", name=f"tuning_points_{now.strftime('%m%d%H%M')}")+".csv", index=False, sep=",")
+    results_df.to_csv(SETTINGS.generate_filename(output_type="params", scenario=scenario, name=f"tuning_results_{now.strftime('%m%d%H%M')}")+".csv", index=False, sep=",")
+    points_df.to_csv(SETTINGS.generate_filename(output_type="params", scenario=scenario, name=f"tuning_points_{now.strftime('%m%d%H%M')}")+".csv", index=False, sep=",")
 
 
-def tuning(SETTINGS, PARAMS, htype, weights):
+def tuning(SETTINGS, PARAMS, scenario, weights):
 
     # Add objective value parameters to be tested to the parameters class.
     PARAMS.BO_params = np.concatenate([[10], weights])     # 10 = weight for shortages
 
     # Find already existing results and continue from the lowest episode number without results.
     e = 0
-    while os.path.exists(SETTINGS.generate_filename(output_type="results", scenario="single", name=htype, e=e)+".csv"):
+    while os.path.exists(SETTINGS.generate_filename(output_type="results", scenario=scenario, name='-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0]), e=e)+".csv"):
         e += 1
     episodes = (e, e + SETTINGS.replications)
 
@@ -118,13 +125,19 @@ def tuning(SETTINGS, PARAMS, htype, weights):
     # Retrieve all logged antibodies for the simulated episodes.
     antigens = PARAMS.antigens.keys()
     antibodies_per_patient = defaultdict(set)
-    for e in range(episodes[0], episodes[1]):
-        for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
-            data = unpickle(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="single", name=htype+f"_{e}", day=day)).astype(int)
-            for rq in data:
-                rq_antibodies = rq[18:35]
-                rq_index = f"{e}_{rq[52]}"
-                antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
+    for r in range(episodes[0], episodes[1]):
+
+        for htype in SETTINGS.n_hospitals.keys():
+            n = SETTINGS.n_hospitals[htype]
+            for i in range(n):
+                e = (r * n) + i
+
+                for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
+                    data = unpickle(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
+                    for rq in data:
+                        rq_antibodies = rq[18:35]
+                        rq_index = f"{e}_{rq[52]}"
+                        antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
     # Return a list with all formed antibodies during the tested episodes.
     return list(chain.from_iterable(antibodies_per_patient.values()))

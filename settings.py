@@ -12,7 +12,7 @@ class Settings():
         # "demand": generate demand data
         # "supply": generate supply data
         # "optimize": run simulations and optimize matching
-        self.mode = "demand"
+        self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
         self.model_name = "3years_LHD"
@@ -48,7 +48,7 @@ class Settings():
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
-        self.episodes = (0,250)
+        self.episodes = (0,11)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -146,7 +146,7 @@ class Settings():
         ##########
 
         # General information.
-        header = ["logged", "day", "location", "model name", "supply scenario", "avg daily demand", "inventory size", "test days", "init days"]
+        header = ["logged", "day", "location", "model name", "avg daily demand", "inventory size", "test days", "init days"]
 
         # Gurobi optimizer info.
         header += ["gurobi status", "nvars", "calc time", "ncons"]
