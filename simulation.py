@@ -18,16 +18,16 @@ def simulation(SETTINGS, PARAMS):
     # Multi-hospital setup
     if sum(SETTINGS.n_hospitals.values()) > 1:
 
-        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-        #     simulate_episode_multi(SETTINGS, PARAMS, e)
-        processes = []
         for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-            p = multiprocessing.Process(target=simulate_episode_multi, args=(SETTINGS, PARAMS, e))
-            p.start()
-            processes.append(p)
+            simulate_episode_multi(SETTINGS, PARAMS, e)
+        # processes = []
+        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        #     p = multiprocessing.Process(target=simulate_episode_multi, args=(SETTINGS, PARAMS, e))
+        #     p.start()
+        #     processes.append(p)
 
-        for p in processes:
-            p.join()
+        # for p in processes:
+        #     p.join()
 
     # Single-hospital setup
     else:
@@ -35,16 +35,16 @@ def simulation(SETTINGS, PARAMS):
         # Get the hospital's type
         htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
 
-        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-        #     simulate_episode_single(SETTINGS, PARAMS, htype, e)
-        processes = []
         for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-            p = multiprocessing.Process(target=simulate_episode_single, args=(SETTINGS, PARAMS, htype, e))
-            p.start()
-            processes.append(p)
+            simulate_episode_single(SETTINGS, PARAMS, htype, e)
+        # processes = []
+        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        #     p = multiprocessing.Process(target=simulate_episode_single, args=(SETTINGS, PARAMS, htype, e))
+        #     p.start()
+        #     processes.append(p)
 
-        for p in processes:
-            p.join()
+        # for p in processes:
+        #     p.join()
 
 
 def simulate_episode_single(SETTINGS, PARAMS, htype, e):
@@ -214,18 +214,25 @@ def simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hosp
 
     # For each hospital, update the set of available requests, by removing requests for previous days 
     # (regardless of whether they were satisfied or not) and sampling new requests that become known today.
-    num_requests = 0
-    for hospital in hospitals:
-        hospital.requests = [r for r in hospital.requests if r.day_issuing >= day]
-        num_requests += hospital.sample_requests_single_day(SETTINGS, PARAMS, "multi", e, day=day)
-
-        for rq in hospital.requests:
+    h_no_rq = set()
+    for h in range(len(hospitals)):
+        hospitals[h].requests = [r for r in hospitals[h].requests if r.day_issuing >= day]
+        if hospitals[h].sample_requests_single_day(SETTINGS, PARAMS, "multi", e, day=day) == 0:
+            h_no_rq.add(h)
+        for rq in hospitals[h].requests:
             rq.allocated_from_dc = 0
 
-    if num_requests > 0:
-        # Solve the MINRAR model, matching the inventories of all hospitals and the distribution center to all available requests.
-        gurobi_logs, xh, xdc = minrar_multiple_hospitals(SETTINGS, PARAMS, obj_params, dc, hospitals, day, e)
-        for h in range(len(hospitals)):
+    # Solve the MINRAR model, matching the inventories of all hospitals and the distribution center to all available requests.
+    gurobi_logs, xh, xdc = minrar_multiple_hospitals(SETTINGS, PARAMS, obj_params, dc, [hospitals[h] for h in range(len(hospitals)) if h not in h_no_rq], day, e)
+    
+    for h in range(len(hospitals)):
+        if h in h_no_rq:
+            xh = xh[:h] + [np.zeros([len(hospitals[h].inventory),1])] + xh[h:]
+            xdc = xdc[:h] + [np.zeros([len(dc.inventory),1])] + xdc[h:]
+
+            with open(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="multi", name=hospitals[h].name, day=day)+".pickle", 'wb') as f:
+                pickle.dump(np.array([]), f, pickle.HIGHEST_PROTOCOL)
+        else:
             alloimmunize(SETTINGS, PARAMS, "multi", hospitals[h], day, xh[h])
 
     # Get all distribution center products that were allocated to requests with tomorrow as their issuing date.
