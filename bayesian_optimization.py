@@ -30,8 +30,7 @@ class Evaluator:
         """
         fitness = np.zeros((X.shape[0], 1))
         for i, weights in enumerate(X):
-            alloimmunisations = tuning(self.SETTINGS, self.PARAMS, self.scenario, weights)
-            fitness[i] = sum(alloimmunisations)
+            fitness[i] = tuning(self.SETTINGS, self.PARAMS, self.scenario, weights)
         return fitness
 
 
@@ -43,7 +42,7 @@ def find_init_points(SETTINGS, PARAMS, scenario):
 
     Y_init = []
     for p in range(num_init_points):
-        Y_init.append(len(get_antibodies(SETTINGS, PARAMS, scenario, num_init_points=num_init_points, p=p)))
+        Y_init.append(get_antibodies(SETTINGS, PARAMS, scenario, num_init_points=num_init_points, p=p))
     
     return X_init, np.array(Y_init).reshape(-1, 1)
 
@@ -125,7 +124,7 @@ def get_antibodies(SETTINGS, PARAMS, scenario, episode_start=0, num_init_points=
                         rq_index = f"{e}_{rq[52]}"
                         antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
-    return list(chain.from_iterable(antibodies_per_patient.values()))
+    return len(list(chain.from_iterable(antibodies_per_patient.values())))
         
 
 def unpickle(path):
