@@ -40,30 +40,11 @@ def find_init_points(SETTINGS, PARAMS, scenario):
     num_init_points = SETTINGS.num_init_points
 
     X_init = PARAMS.LHD[:num_init_points, 1:]
-    
-    antigens = PARAMS.antigens.keys()
+
     Y_init = []
     for p in range(num_init_points):
-
-        antibodies_per_patient = defaultdict(set)
-        for r in range(SETTINGS.replications):
-
-            for htype in SETTINGS.n_hospitals.keys():
-                n = SETTINGS.n_hospitals[htype]
-                for i in range(n):
-
-                    e = (((r * num_init_points) + p) * n) + i
-
-                    for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
-                        data = unpickle(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
-                        for rq in data:
-                            rq_antibodies = rq[18:35]
-                            rq_index = f"{e}_{rq[52]}"
-                            antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
-
-        all_antibodies = list(chain.from_iterable(antibodies_per_patient.values()))
-        Y_init.append(len(all_antibodies))
-
+        Y_init.append(len(get_antibodies(SETTINGS, PARAMS, scenario, num_init_points=num_init_points, p=p)))
+    
     return X_init, np.array(Y_init).reshape(-1, 1)
 
 
@@ -122,15 +103,20 @@ def tuning(SETTINGS, PARAMS, scenario, weights):
     SETTINGS.episodes = episodes
     simulation(SETTINGS, PARAMS)
 
-    # Retrieve all logged antibodies for the simulated episodes.
+    return get_antibodies(SETTINGS, PARAMS, scenario, e)
+
+
+def get_antibodies(SETTINGS, PARAMS, scenario, episode_start=0, num_init_points=1, p=0):
+    
     antigens = PARAMS.antigens.keys()
     antibodies_per_patient = defaultdict(set)
-    for r in range(episodes[0], episodes[1]):
+    for r in range(episode_start, episode_start + SETTINGS.replications):
 
         for htype in SETTINGS.n_hospitals.keys():
             n = SETTINGS.n_hospitals[htype]
             for i in range(n):
-                e = (r * n) + i
+
+                e = (((r * num_init_points) + p) * n) + i
 
                 for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
                     data = unpickle(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
@@ -139,9 +125,8 @@ def tuning(SETTINGS, PARAMS, scenario, weights):
                         rq_index = f"{e}_{rq[52]}"
                         antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
-    # Return a list with all formed antibodies during the tested episodes.
     return list(chain.from_iterable(antibodies_per_patient.values()))
-
+        
 
 def unpickle(path):
     with open(path+".pickle", 'rb') as f:

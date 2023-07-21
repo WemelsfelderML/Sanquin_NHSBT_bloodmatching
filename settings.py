@@ -42,7 +42,8 @@ class Settings():
         #########################
 
         # Only the results of test days will be logged.
-        self.test_days = 26 * (7 * 6)  # Follow SCD patients over 26 transfusion episodes (~3 years)
+        self.test_days = 100
+        # self.test_days = 26 * (7 * 6)  # Follow SCD patients over 26 transfusion episodes (~3 years)
         # self.test_days = 87 * (7 * 6)   # Follow SCD patients over 87 transfusion episodes (~10 years)
         self.init_days = 2 * 35
 
@@ -79,7 +80,7 @@ class Settings():
 
         self.num_init_points = 11
         self.num_iterations = 50
-        self.replications = 4
+        self.replications = 1
         
 
         ####################
