@@ -67,8 +67,8 @@ def log_results(SETTINGS, PARAMS, logs, issuing_age, gurobi_logs, dc, hospital, 
             issuing_age[rq.patgroup, ip.age] += 1
             # age_sum += ip.age
             issued_sum += 1
-            # logs[ri,ci[f"{ip.major} to {rq.major}"]] += 1                                 # number of products per major blood group issued to requests per major blood group
-            # logs[ri,ci[f"{ethnicities[ip.ethnicity]} to {ethnicities[rq.ethnicity]}"]] += 1                         # number of products per ethnicity issued to requests per ethnicity
+            # logs[ri,ci[f"{ip.major} to {rq.major}"]] += 1                                         # number of products per major blood group issued to requests per major blood group
+            # logs[ri,ci[f"{ethnicities[ip.ethnicity]} to {ethnicities[rq.ethnicity]}"]] += 1       # number of products per ethnicity issued to requests per ethnicity
             
             # Get all antigens k on which product ip and request rq are mismatched.
             for k in [k for k in range(len(A)) if ip.vector[k] > rq.vector[k]]:

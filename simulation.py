@@ -35,16 +35,16 @@ def simulation(SETTINGS, PARAMS):
         # Get the hospital's type
         htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
 
-        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-        #     simulate_episode_single(SETTINGS, PARAMS, htype, e)
-        processes = []
         for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-            p = multiprocessing.Process(target=simulate_episode_single, args=(SETTINGS, PARAMS, htype, e))
-            p.start()
-            processes.append(p)
+            simulate_episode_single(SETTINGS, PARAMS, htype, e)
+        # processes = []
+        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        #     p = multiprocessing.Process(target=simulate_episode_single, args=(SETTINGS, PARAMS, htype, e))
+        #     p.start()
+        #     processes.append(p)
 
-        for p in processes:
-            p.join()
+        # for p in processes:
+        #     p.join()
 
 
 def simulate_episode_single(SETTINGS, PARAMS, htype, e):
@@ -54,7 +54,7 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
     obj_params = PARAMS.BO_params
     if len(obj_params) == 0:
         obj_params = PARAMS.LHD[e]
-    with open(SETTINGS.generate_filename(output_type="params", scenario="single", name="params", e=e)+".pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="params", scenario="single", name="params", e=e)+".pickle", 'wb') as f:
         pickle.dump(obj_params, f, pickle.HIGHEST_PROTOCOL)
         
     # Initialize the hospital. A distribution center is also initialized to provide the hospital with random supply.
@@ -75,7 +75,7 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
 
     days = range(SETTINGS.init_days + SETTINGS.test_days)
 
-    wip_path = SETTINGS.generate_filename(output_type="wip", scenario="single", name="1"+htype, e=e)
+    wip_path = SETTINGS.generate_filename(method=SETTINGS.method, output_type="wip", scenario="single", name="1"+htype, e=e)
     logs, issuing_age, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, issuing_age, dc, [hospital])
     hospital = hospitals[0]
     days = [d for d in days if d >= day]
@@ -101,9 +101,9 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
     df["avg daily demand"] = hospital.avg_daily_demand
     df["inventory size"] = hospital.inventory_size
 
-    df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="single", name="1"+hospital.htype, e=e)+".csv", sep=',', index=True)
+    df.to_csv(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", scenario="single", name="1"+hospital.htype, e=e)+".csv", sep=',', index=True)
 
-    with open(SETTINGS.generate_filename(output_type="results", subtype="issuing_age", scenario="single", name="1"+hospital.htype, e=e)+".pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="issuing_age", scenario="single", name="1"+hospital.htype, e=e)+".pickle", 'wb') as f:
         pickle.dump(issuing_age, f, pickle.HIGHEST_PROTOCOL)
 
 
@@ -114,7 +114,7 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
     obj_params = PARAMS.BO_params
     if len(obj_params) == 0:
         obj_params = PARAMS.LHD[e]
-    with open(SETTINGS.generate_filename(output_type="params", scenario="multi", name="params", e=e)+".pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="params", scenario="multi", name="params", e=e)+".pickle", 'wb') as f:
         pickle.dump(obj_params, f, pickle.HIGHEST_PROTOCOL)
 
     # Initialize all hospitals and the distribution center.
@@ -142,7 +142,7 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
     
     days = range(SETTINGS.init_days + SETTINGS.test_days)
 
-    wip_path = SETTINGS.generate_filename(output_type="wip", scenario="multi", name=scenario_name, e=e)
+    wip_path = SETTINGS.generate_filename(method=SETTINGS.method, output_type="wip", scenario="multi", name=scenario_name, e=e)
     logs, issuing_age, day, dc, hospitals = load_state(SETTINGS, PARAMS, wip_path, e, logs, issuing_age, dc, hospitals)
     days = [d for d in days if d >= day]
     
@@ -167,9 +167,9 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
         df.loc[indices,"avg daily demand"] = hospital.avg_daily_demand
         df.loc[indices,"inventory size"] = hospital.inventory_size
 
-    df.to_csv(SETTINGS.generate_filename(output_type="results", scenario="multi", name=scenario_name, e=e)+".csv", sep=',', index=True)
+    df.to_csv(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", scenario="multi", name=scenario_name, e=e)+".csv", sep=',', index=True)
 
-    with open(SETTINGS.generate_filename(output_type="results", subtype="issuing_age", scenario="multi", name=scenario_name, e=e)+".pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="issuing_age", scenario="multi", name=scenario_name, e=e)+".pickle", 'wb') as f:
         pickle.dump(issuing_age, f, pickle.HIGHEST_PROTOCOL)
 
 # Single-hospital setup: perform matching within one hospital.
@@ -197,7 +197,7 @@ def simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hos
     else:
         gurobi_logs = [0, 2, 0, 0]
         x = np.zeros([len(hospital.inventory),1])
-        with open(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="single", name=hospital.name, day=day)+".pickle", 'wb') as f:
+        with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario="single", name=hospital.name, day=day)+".pickle", 'wb') as f:
             pickle.dump(np.array([]), f, pickle.HIGHEST_PROTOCOL)
 
     logs, issuing_age = log_results(SETTINGS, PARAMS, logs, issuing_age, gurobi_logs, dc, hospital, e, day, x=x)
@@ -230,7 +230,7 @@ def simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hosp
             xh = xh[:h] + [np.zeros([len(hospitals[h].inventory),1])] + xh[h:]
             xdc = xdc[:h] + [np.zeros([len(dc.inventory),1])] + xdc[h:]
 
-            with open(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario="multi", name=hospitals[h].name, day=day)+".pickle", 'wb') as f:
+            with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario="multi", name=hospitals[h].name, day=day)+".pickle", 'wb') as f:
                 pickle.dump(np.array([]), f, pickle.HIGHEST_PROTOCOL)
         else:
             alloimmunize(SETTINGS, PARAMS, "multi", hospitals[h], day, xh[h])

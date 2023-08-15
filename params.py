@@ -66,7 +66,7 @@ class Params():
             [100,      10,         1,          5,    6,         9,            5     ],
         ]).astype(float)
     
-        LHD /= LHD.shape[0]
+        LHD /= LHD.shape[0] - 1
         if LHD.shape[0] < SETTINGS.episodes[1]:
             LHD = np.tile(LHD, (int(np.ceil(SETTINGS.episodes[1] / LHD.shape[0])), 1))
 

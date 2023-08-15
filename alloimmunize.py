@@ -25,5 +25,5 @@ def alloimmunize(SETTINGS, PARAMS, scenario, hospital, day, x):
     requests_SCD = np.array([[R[r].num_units] + list(R[r].vector) + list(R[r].antibodies) + list(R[r].mism_units) + [R[r].index] for r in r_SCD])
     
 
-    with open(SETTINGS.generate_filename(output_type="results", subtype="patients", scenario=scenario, name=hospital.name, day=day)+".pickle", 'wb') as f:
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario=scenario, name=hospital.name, day=day)+".pickle", 'wb') as f:
         pickle.dump(requests_SCD, f, pickle.HIGHEST_PROTOCOL)

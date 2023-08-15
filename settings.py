@@ -6,8 +6,8 @@ class Settings():
 
     def __init__(self):
 
-        self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
-        # self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
+        # self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
+        self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
 
         # "demand": generate demand data
         # "supply": generate supply data
@@ -15,7 +15,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "3years_LHD"
+        self.model_name = ""
 
         
         ##########
@@ -42,13 +42,14 @@ class Settings():
         #########################
 
         # Only the results of test days will be logged.
-        # self.test_days = 100
+        # self.test_days = 2 * (7 * 6)
         self.test_days = 26 * (7 * 6)  # Follow SCD patients over 26 transfusion episodes (~3 years)
         # self.test_days = 87 * (7 * 6)   # Follow SCD patients over 87 transfusion episodes (~10 years)
         self.init_days = 2 * 35
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
+        # self.episodes = (0,3)
         self.episodes = (0,11)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
@@ -78,10 +79,21 @@ class Settings():
         # BAYESIAN OPTIMIZATION #
         #########################
 
+        # self.num_init_points = 3
         self.num_init_points = 11
         self.num_iterations = 50
         self.replications = 4
         
+        # Put 1 if the objective should be optimized in BO, 0 if not.
+        self.n_obj = {
+            "total_antibodies"   : 1,
+            "total_shortages"    : 1,
+            "total_outdates"     : 1,
+            "alloimm_patients"   : 0,
+            "max_antibodies_pp"  : 0,
+            "total_alloimm_risk" : 0,
+            "issuing_age_SCD"    : 0,
+        }
 
         ####################
         # GUROBI OPTIMIZER #
@@ -93,22 +105,27 @@ class Settings():
 
 
     # Generate a file name for exporting log or result files.
-    def generate_filename(self, output_type="output_type", subtype="subtype", scenario="single", size="size", name="name", e="e", day="day"):
+    def generate_filename(self, method="method", output_type="output_type", subtype="subtype", scenario="single", size="size", name="name", e="e", day="day"):
 
         path = self.home_dir
 
         # Generated demand data.
         if output_type == "demand":
             path += f"demand/{size}/{name}_{e}"
+            return path
 
         # Generated supply data.
         if output_type == "supply":
             path += f"supply/{size}/{name}_{e}"
+            return path
+
+        folder_name = f"{self.model_name+'_'+scenario if self.model_name != '' else scenario}_{self.test_days}"
+        objectives = "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in self.n_obj.keys() if self.n_obj[obj_name] > 0])+"/" if method == "BO" else ""
 
         # Simulation results.
         if output_type == "results":
 
-            path += f"results/{self.model_name}_{scenario}/"
+            path += f"results/{folder_name}/{objectives}"
 
             if subtype == "patients":
                 # here 'name' also includes the episode number
@@ -119,10 +136,10 @@ class Settings():
                 path += f"{self.strategy}_{name}_{e}"
 
         if output_type == "wip":
-            path += f"wip/{self.model_name}_{scenario}/{self.strategy}_{name}_{e}/"
+            path += f"wip/{folder_name}/{objectives}{self.strategy}_{name}_{e}/"
 
         if output_type == "params":
-            path += f"optimize_params/{self.model_name}_{scenario}/{name}_{e}"
+            path += f"optimize_params/{folder_name}/{objectives}{name}_{e}"
 
         return path
          
