@@ -315,7 +315,7 @@ def get_total_alloimmunization_risk(SETTINGS, PARAMS, method, scenario, episode_
                     data = pd.read_csv(SETTINGS.generate_filename(method=method, output_type="results", scenario=scenario, name=scenario_name, e=e)+".csv")
 
                     for k in antigens.keys():
-                        total_alloimm_risk += PARAMS.alloimmunization_risks[2,k] * df[[f"num mismatched patients {pg} {antigens[k]}" for pg in P]].sum().sum()
+                        total_alloimm_risk += PARAMS.alloimmunization_risks[2,k] * data[[f"num mismatched patients {pg} {antigens[k]}" for pg in P]].sum().sum()
                         
     return total_alloimm_risk
 
