@@ -162,9 +162,8 @@ def tuning(SETTINGS, PARAMS, scenario, objs, weights):
     print(PARAMS.BO_params)
 
     # Find already existing results and continue from the lowest episode number without results.
-    e = 0
-    name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
-    while os.path.exists(SETTINGS.generate_filename(method="LP", output_type="results", scenario=scenario, name=name, e=e)+".csv") or os.path.exists(SETTINGS.generate_filename(method="BO", output_type="results", scenario=scenario, name=name, e=e)+".csv"):
+    e = SETTINGS.num_init_points * SETTINGS.replications
+    while os.path.exists(SETTINGS.generate_filename(method="BO", output_type="results", scenario=scenario, name='-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0]), e=e)+".csv"):
         e += 1
     episodes = (e, e + SETTINGS.replications)
 
@@ -301,13 +300,12 @@ def get_outdates(SETTINGS, PARAMS, method, scenario, episode_start=0, num_init_p
 
 def get_total_alloimmunization_risk(SETTINGS, PARAMS, method, scenario, episode_start=0, num_init_points=1, p=0):
 
-    P = {p : pg for p, pg in PARAMS.patgroups.items() if PARAMS.weekly_demand[hospital.htype][p] > 0}
     antigens = PARAMS.antigens
-
     total_alloimm_risk = 0
     for r in range(episode_start, episode_start + SETTINGS.replications):
         for htype in SETTINGS.n_hospitals.keys():
 
+            P = [pg for p, pg in PARAMS.patgroups.items() if PARAMS.weekly_demand[hospital.htype][p] > 0]
             n = SETTINGS.n_hospitals[htype]
             for i in range(n):
                 e = (((r * num_init_points) + p) * n) + i
@@ -317,7 +315,7 @@ def get_total_alloimmunization_risk(SETTINGS, PARAMS, method, scenario, episode_
                     data = pd.read_csv(SETTINGS.generate_filename(method=method, output_type="results", scenario=scenario, name=scenario_name, e=e)+".csv")
 
                     for k in antigens.keys():
-                        total_alloimm_risk += PARAMS.alloimmunization_risks[2,k] * df[[f"num mismatched patients {p} {antigens[k]}" for p in P.keys()]].sum().sum()
+                        total_alloimm_risk += PARAMS.alloimmunization_risks[2,k] * df[[f"num mismatched patients {pg} {antigens[k]}" for pg in P]].sum().sum()
                         
     return total_alloimm_risk
 
