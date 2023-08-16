@@ -34,7 +34,7 @@ def simulation(SETTINGS, PARAMS):
 
         # Get the hospital's type
         htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
-
+        
         # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
         #     simulate_episode_single(SETTINGS, PARAMS, htype, e)
         processes = []

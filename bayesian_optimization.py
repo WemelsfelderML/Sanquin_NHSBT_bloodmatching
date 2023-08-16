@@ -305,7 +305,7 @@ def get_total_alloimmunization_risk(SETTINGS, PARAMS, method, scenario, episode_
     for r in range(episode_start, episode_start + SETTINGS.replications):
         for htype in SETTINGS.n_hospitals.keys():
 
-            P = [pg for p, pg in PARAMS.patgroups.items() if PARAMS.weekly_demand[hospital.htype][p] > 0]
+            P = [pg for p, pg in PARAMS.patgroups.items() if PARAMS.weekly_demand[htype][p] > 0]
             n = SETTINGS.n_hospitals[htype]
             for i in range(n):
                 e = (((r * num_init_points) + p) * n) + i
