@@ -333,7 +333,7 @@ def get_issued_products_nonoptimal_age_SCD(SETTINGS, PARAMS, method, scenario, e
                 for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
 
                     scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
-                    data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="issuing_age", scenario=scenario, name=scenario_name, e=e)+".pickle")
+                    data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="issuing_age", scenario=scenario, name=scenario_name, e=e))
 
                     total_products += data[1,:].sum()
                     nonoptimal_age += data[1,:7].sum() + data[1,11:].sum()
