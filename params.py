@@ -45,26 +45,12 @@ class Params():
         ###########################
         # Note: all objectives are normalized so no need to consider that in determining these weights.
 
+        # LHD configurations -- shortages, mismatches, youngblood, FIFO, usability, substitution, today 
         # LHD = np.array([
         #     # shortages, mismatches, youngblood, FIFO, usability, substitution, today 
         #     [10,         1,          0.1,        0.1,  0.1,       0.1,          1]
         # ])
-
-        # LHD configurations
-        LHD = np.array([
-        #   shortages, mismatches, youngblood, FIFO, usability, substitution, today 
-            [100,      0,          5,          10,   5,         5,            2     ],
-            [100,      1,          3,          4,    1,         8,            9     ],
-            [100,      2,          0,          2,    8,         3,            4     ],
-            [100,      3,          8,          1,    7,         10,           3     ],
-            [100,      4,          6,          7,    10,        6,            10    ],
-            [100,      5,          9,          0,    4,         1,            8     ],
-            [100,      6,          4,          3,    0,         4,            0     ],
-            [100,      7,          2,          9,    3,         0,            7     ],
-            [100,      8,          10,         8,    2,         7,            6     ],
-            [100,      9,          7,          6,    9,         2,            1     ],
-            [100,      10,         1,          5,    6,         9,            5     ],
-        ]).astype(float)
+        LHD = np.hstack([np.tile(100, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}")])
     
         LHD /= LHD.shape[0] - 1
         if LHD.shape[0] < SETTINGS.episodes[1]:

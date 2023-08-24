@@ -31,7 +31,8 @@ class Settings():
 
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
-        self.method = "BO"
+        self.method = "LP"
+        self.LHD_configs = 100
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -43,14 +44,14 @@ class Settings():
 
         # Only the results of test days will be logged.
         # self.test_days = 2 * (7 * 6)
-        self.test_days = 26 * (7 * 6)  # Follow SCD patients over 26 transfusion episodes (~3 years)
+        self.test_days = 26 * (7 * 6)     # Follow SCD patients over 26 transfusion episodes (~3 years)
         # self.test_days = 87 * (7 * 6)   # Follow SCD patients over 87 transfusion episodes (~10 years)
         self.init_days = 2 * 35
 
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (0,11)
+        self.episodes = (0,100)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -80,9 +81,9 @@ class Settings():
         #########################
 
         # self.num_init_points = 3
-        self.num_init_points = 11
-        self.num_iterations = 50
-        self.replications = 4
+        self.num_init_points = 100
+        self.num_iterations = 200
+        self.replications = 1
         
         # Put 1 if the objective should be optimized in BO, 0 if not.
         self.n_obj = {
