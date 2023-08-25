@@ -407,3 +407,7 @@ class Params():
             14 : "ASYNCHRONOUS CALL WAS MADE, ASSOCIATED OPTIMIZATION NOT YET COMPLETE",
             15 : "LIMIT SET BY USER WAS EXCEEDED\nThis is either a bound on the best objective or the best bound."
         }
+
+def unpickle(path):
+    with open(path+".pickle", 'rb') as f:
+        return pickle.load(f)
