@@ -27,21 +27,22 @@ def main():
     else:
         scenario = "multi"
 
-    folder_name = f"{SETTINGS.model_name+'_'+scenario if SETTINGS.model_name != '' else scenario}_{SETTINGS.test_days}"
-    objectives = "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in SETTINGS.n_obj.keys() if SETTINGS.n_obj[obj_name] > 0])
+    dir0 = f"{SETTINGS.model_name+'_'+scenario if SETTINGS.model_name != '' else scenario}_{SETTINGS.test_days}"
+    dir1 = f"{SETTINGS.LHD_configs}x{(SETTINGS.episodes[1]-SETTINGS.episodes[0])/SETTINGS.LHD_configs}LHD"
+    dir2 = "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in SETTINGS.n_obj.keys() if SETTINGS.n_obj[obj_name] > 0])+"/" if method == "BO" else ""
 
     # If a directory to store log files or results does not yet exist, make one.
-    paths = ["wip", f"wip/{folder_name}", f"wip/{folder_name}/{objectives}"]
-    paths += ["results", f"results/{folder_name}", f"results/{folder_name}/{objectives}"]
-    paths +=  ["optimize_params", f"optimize_params/{folder_name}", f"optimize_params/{folder_name}/{objectives}"]
-    paths += [f"wip/{folder_name}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])}_{e}" for e in range(episodes_min, episodes_max)]
-    paths += [f"wip/{folder_name}/{objectives}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])}_{e}" for e in range(episodes_min, episodes_max)]
+    paths = ["wip", f"wip/{dir0}", f"wip/{dir0}/{dir1}/{dir2}"]
+    paths += [f"results", f"results/{dir0}", f"results/{dir0}/{dir1}/{dir2}"]
+    paths +=  ["optimize_params", f"optimize_params/{dir0}", f"optimize_params/{dir0}/{dir1}/{dir2}"]
+    paths += [f"wip/{dir0}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])}_{e}" for e in range(episodes_min, episodes_max)]
+    paths += [f"wip/{dir0}/{dir1}/{dir2}/{SETTINGS.strategy}_{'-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])}_{e}" for e in range(episodes_min, episodes_max)]
     for r in range(episodes_min, episodes_max):
         for htype in SETTINGS.n_hospitals.keys():
             n = SETTINGS.n_hospitals[htype]
             for i in range(n):
-                paths += [f"results/{folder_name}/patients_{SETTINGS.strategy}_{htype}_{(r * n) + i}"]
-                paths += [f"results/{folder_name}/{objectives}/patients_{SETTINGS.strategy}_{htype}_{(r * n) + i}"]
+                paths += [f"results/{dir0}/patients_{SETTINGS.strategy}_{htype}_{(r * n) + i}"]
+                paths += [f"results/{dir0}/{dir1}/{dir2}/patients_{SETTINGS.strategy}_{htype}_{(r * n) + i}"]
     
     for path in paths:
         SETTINGS.check_dir_existence(SETTINGS.home_dir + path)
