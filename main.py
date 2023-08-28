@@ -32,7 +32,7 @@ def main():
     dir1 = SETTINGS.dir1
 
     dir2 = SETTINGS.model_name+"_" if SETTINGS.model_name != "" and SETTINGS.method == "BO" else ""
-    dir2 += "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in SETTINGS.n_obj.keys() if SETTINGS.n_obj[obj_name] > 0])+f"_{SETTINGS.model_name}" if SETTINGS.method == "BO" else ""
+    dir2 += "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in SETTINGS.n_obj.keys() if SETTINGS.n_obj[obj_name] > 0]) if SETTINGS.method == "BO" else ""
     dir2 += "/" if dir2 != "" else ""
 
     # If a directory to store log files or results does not yet exist, make one.
