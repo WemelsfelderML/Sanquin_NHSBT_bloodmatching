@@ -32,7 +32,7 @@ class Settings():
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
         self.method = "BO"
-        self.LHD_configs = 100
+        self.LHD_configs = 11
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -51,7 +51,7 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (0,100)
+        self.episodes = (0,44)
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -81,7 +81,7 @@ class Settings():
         #########################
 
         # self.num_init_points = 3
-        self.num_init_points = 100
+        self.num_init_points = 44
         self.num_iterations = 200
         self.replications = 1
         
