@@ -120,9 +120,12 @@ class Settings():
             path += f"supply/{size}/{name}_{e}"
             return path
 
-        dir0 = f"{self.model_name+'_'+scenario if self.model_name != '' else scenario}_{self.test_days}"
-        dir1 = f"{self.LHD_configs}x{(self.episodes[1]-self.episodes[0])/self.LHD_configs}LHD"
-        dir2 = "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in self.n_obj.keys() if self.n_obj[obj_name] > 0])+"/" if method == "BO" else ""
+        dir0 = f"{scenario}_{self.test_days}"
+        dir1 = f"{self.LHD_configs}x{round((self.episodes[1]-self.episodes[0])/self.LHD_configs)}LHD"
+        
+        dir2 = self.model_name+"_" if self.model_name != "" else ""
+        dir2 += "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in self.n_obj.keys() if self.n_obj[obj_name] > 0])+f"_{self.model_name}" if method == "BO" else ""
+        dir2 += "/" if dir2 != "" else ""
 
         # Simulation results.
         if output_type == "results":

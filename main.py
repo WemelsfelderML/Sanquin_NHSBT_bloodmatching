@@ -27,9 +27,13 @@ def main():
     else:
         scenario = "multi"
 
-    dir0 = f"{SETTINGS.model_name+'_'+scenario if SETTINGS.model_name != '' else scenario}_{SETTINGS.test_days}"
-    dir1 = f"{SETTINGS.LHD_configs}x{(SETTINGS.episodes[1]-SETTINGS.episodes[0])/SETTINGS.LHD_configs}LHD"
+    dir0 = f"{scenario}_{SETTINGS.test_days}"
+    dir1 = f"{SETTINGS.LHD_configs}x{round((SETTINGS.episodes[1]-SETTINGS.episodes[0])/SETTINGS.LHD_configs)}LHD"
     dir2 = "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in SETTINGS.n_obj.keys() if SETTINGS.n_obj[obj_name] > 0])
+
+    dir2 = SETTINGS.model_name+"_" if SETTINGS.model_name != "" else ""
+    dir2 += "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in SETTINGS.n_obj.keys() if SETTINGS.n_obj[obj_name] > 0])+f"_{SETTINGS.model_name}" if SETTINGS.method == "BO" else ""
+    dir2 += "/" if dir2 != "" else ""
 
     # If a directory to store log files or results does not yet exist, make one.
     paths = ["wip", f"wip/{dir0}", f"wip/{dir0}/{dir1}", f"wip/{dir0}/{dir1}/{dir2}"]
