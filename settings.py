@@ -53,6 +53,8 @@ class Settings():
         # self.episodes = (0,3)
         self.episodes = (0,44)
 
+        self.dir1 = f"{self.LHD_configs}x{round((self.episodes[1]-self.episodes[0])/self.LHD_configs)}LHD"
+
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
         # "NMUH" : North Middlesex University Hospital
@@ -121,7 +123,6 @@ class Settings():
             return path
 
         dir0 = f"{scenario}_{self.test_days}"
-        dir1 = f"{self.LHD_configs}x{round((self.episodes[1]-self.episodes[0])/self.LHD_configs)}LHD"
         
         dir2 = self.model_name+"_" if self.model_name != "" and method == "BO" else ""
         dir2 += "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in self.n_obj.keys() if self.n_obj[obj_name] > 0]) if method == "BO" else ""
@@ -130,7 +131,7 @@ class Settings():
         # Simulation results.
         if output_type == "results":
 
-            path += f"results/{dir0}/{dir1}/{dir2}"
+            path += f"results/{dir0}/{self.dir1}/{dir2}"
 
             if subtype == "patients":
                 # here 'name' also includes the episode number
@@ -141,10 +142,10 @@ class Settings():
                 path += f"{self.strategy}_{name}_{e}"
 
         if output_type == "wip":
-            path += f"wip/{dir0}/{dir1}/{dir2}{self.strategy}_{name}_{e}/"
+            path += f"wip/{dir0}/{self.dir1}/{dir2}{self.strategy}_{name}_{e}/"
 
         if output_type == "params":
-            path += f"optimize_params/{dir0}/{dir1}/{dir2}{name}_{e}"
+            path += f"optimize_params/{dir0}/{self.dir1}/{dir2}{name}_{e}"
 
         return path
          
