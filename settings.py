@@ -124,7 +124,8 @@ class Settings():
 
         dir0 = f"{scenario}_{self.test_days}"
         
-        dir2 = self.model_name+"_" if self.model_name != "" and method == "BO" else ""
+        # dir2 = self.model_name+"_" if self.model_name != "" and method == "BO" else ""
+        dir2 = self.model_name+"_" if self.model_name != "" else ""
         dir2 += "_".join(["".join([s[0] for s in obj_name.split("_")]) for obj_name in self.n_obj.keys() if self.n_obj[obj_name] > 0]) if method == "BO" else ""
         dir2 += "/" if dir2 != "" else ""
 
