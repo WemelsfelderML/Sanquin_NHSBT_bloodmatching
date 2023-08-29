@@ -46,17 +46,19 @@ class Params():
         ###########################
         # Note: all objectives are normalized so no need to consider that in determining these weights.
 
-        # LHD configurations -- shortages, mismatches, youngblood, FIFO, usability, substitution, today 
-        # LHD = np.array([
-        #     # shortages, mismatches, youngblood, FIFO, usability, substitution, today 
-        #     [10,         1,          0.1,        0.1,  0.1,       0.1,          1]
-        # ])
-        LHD = np.hstack([np.tile(100, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}")])
-    
-        LHD /= LHD.shape[0] - 1
+        LHD = np.array([
+            # shortages, mismatches, youngblood, FIFO, usability, substitution, today 
+            [10,         0.5,        0.5,        0.5,  0.5,       0.5,          0.5]
+        ])
+        LHD = np.tile(LHD, (21,1))
+        LHD[:,6] = [i/20 for i in range(21)]
+
+        # # LHD configurations -- shortages, mismatches, youngblood, FIFO, usability, substitution, today 
+        # LHD = np.hstack([np.tile(100, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}")])
+        # LHD /= LHD.shape[0] - 1
+        
         if LHD.shape[0] < SETTINGS.episodes[1]:
             LHD = np.tile(LHD, (int(np.ceil(SETTINGS.episodes[1] / LHD.shape[0])), 1))
-
         self.LHD = LHD
 
         self.BO_params = []
