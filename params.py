@@ -51,7 +51,7 @@ class Params():
             [10,         0.5,        0.5,        0.5,  0.5,       0.5,          0.5]
         ])
         LHD = np.tile(LHD, (21,1))
-        LHD[:,6] = [i/20 for i in range(21)]
+        LHD[:,5] = [i/20 for i in range(21)]
 
         # # LHD configurations -- shortages, mismatches, youngblood, FIFO, usability, substitution, today 
         # LHD = np.hstack([np.tile(100, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}")])
