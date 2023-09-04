@@ -3,6 +3,7 @@ import pandas as pd
 import pickle
 import multiprocessing
 import itertools
+from multiprocessing import Pool
 
 from blood import *
 from hospital import *
@@ -12,6 +13,7 @@ from minrar_multi import *
 from save_state import *
 from alloimmunize import *
 
+
 # Run the simulation.
 def simulation(SETTINGS, PARAMS):
 
@@ -20,14 +22,18 @@ def simulation(SETTINGS, PARAMS):
 
         # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
         #     simulate_episode_multi(SETTINGS, PARAMS, e)
-        processes = []
-        for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-            p = multiprocessing.Process(target=simulate_episode_multi, args=(SETTINGS, PARAMS, e))
-            p.start()
-            processes.append(p)
 
-        for p in processes:
-            p.join()
+        # processes = []
+        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        #     p = multiprocessing.Process(target=simulate_episode_multi, args=(SETTINGS, PARAMS, e))
+        #     p.start()
+        #     processes.append(p)
+        # for p in processes:
+        #     p.join()
+
+        # Create a pool of processes and map the function and arguments to it
+        with Pool(processes=SETTINGS.total_cores_max) as pool:
+            pool.map(simulate_episode_multi, [(SETTINGS, PARAMS, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
 
     # Single-hospital setup
     else:
@@ -37,14 +43,19 @@ def simulation(SETTINGS, PARAMS):
         
         # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
         #     simulate_episode_single(SETTINGS, PARAMS, htype, e)
-        processes = []
-        for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-            p = multiprocessing.Process(target=simulate_episode_single, args=(SETTINGS, PARAMS, htype, e))
-            p.start()
-            processes.append(p)
 
-        for p in processes:
-            p.join()
+        # processes = []
+        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        #     p = multiprocessing.Process(target=simulate_episode_single, args=(SETTINGS, PARAMS, htype, e))
+        #     p.start()
+        #     processes.append(p)
+        # for p in processes:
+        #     p.join()
+
+        # Create a pool of processes and map the function and arguments to it
+        with Pool(processes=SETTINGS.total_cores_max) as pool:
+            pool.map(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+
 
 
 def simulate_episode_single(SETTINGS, PARAMS, htype, e):

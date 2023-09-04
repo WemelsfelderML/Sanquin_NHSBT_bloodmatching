@@ -51,7 +51,8 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (0,84)
+        self.episodes = (0, 84)
+        self.total_cores_max = 4    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         self.dir1 = f"{self.LHD_configs}x{round((self.episodes[1]-self.episodes[0])/self.LHD_configs)}LHD"
 
@@ -105,6 +106,7 @@ class Settings():
         self.show_gurobi_output = False   # True or False
         self.gurobi_threads = 1           # Number of threads available, or None in case of no limit
         self.gurobi_timeout = 15*60       # Number of minutes allowed for optimization, None in case of no limit
+
 
 
     # Generate a file name for exporting log or result files.
