@@ -15,7 +15,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "complexity_test"
+        self.model_name = "substitution"
 
         
         ##########
@@ -32,7 +32,7 @@ class Settings():
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
         self.method = "LP"
-        self.LHD_configs = 1
+        self.LHD_configs = 21
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -51,7 +51,7 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (0,3)
+        self.episodes = (0,84)
 
         self.dir1 = f"{self.LHD_configs}x{round((self.episodes[1]-self.episodes[0])/self.LHD_configs)}LHD"
 
