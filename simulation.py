@@ -33,7 +33,7 @@ def simulation(SETTINGS, PARAMS):
 
         # Create a pool of processes and map the function and arguments to it
         with Pool(processes=SETTINGS.total_cores_max) as pool:
-            pool.map(simulate_episode_multi, [(SETTINGS, PARAMS, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+            pool.starmap(simulate_episode_multi, [(SETTINGS, PARAMS, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
 
     # Single-hospital setup
     else:
@@ -54,7 +54,7 @@ def simulation(SETTINGS, PARAMS):
 
         # Create a pool of processes and map the function and arguments to it
         with Pool(processes=SETTINGS.total_cores_max) as pool:
-            pool.map(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+            pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
 
 
 
