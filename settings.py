@@ -15,7 +15,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "today"
+        self.model_name = "complexity_test"
 
         
         ##########
@@ -32,7 +32,7 @@ class Settings():
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
         self.method = "LP"
-        self.LHD_configs = 21
+        self.LHD_configs = 1
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -51,7 +51,7 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (0,84)
+        self.episodes = (0,3)
 
         self.dir1 = f"{self.LHD_configs}x{round((self.episodes[1]-self.episodes[0])/self.LHD_configs)}LHD"
 
@@ -102,8 +102,8 @@ class Settings():
         # GUROBI OPTIMIZER #
         ####################
 
-        self.show_gurobi_output = False     # True or False
-        self.gurobi_threads = None          # Number of threads available, or None in case of no limit
+        self.show_gurobi_output = False   # True or False
+        self.gurobi_threads = 1           # Number of threads available, or None in case of no limit
         self.gurobi_timeout = 15*60       # Number of minutes allowed for optimization, None in case of no limit
 
 

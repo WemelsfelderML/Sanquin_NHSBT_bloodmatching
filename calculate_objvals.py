@@ -22,7 +22,7 @@ def get_patients_with_antibodies(HOME_DIR, init_days, test_days, folder="folder"
     antibodies_per_patient = defaultdict(set)
     for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
 
-        data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
+        data = unpickle(HOME_DIR + f"{folder}/patients_patgroups_London_{e}/{day}").astype(int)
         for rq in data:
             rq_antibodies = rq[18:35]
             rq_index = f"{e}_{rq[52]}"
@@ -36,7 +36,7 @@ def get_max_antibodies_per_patients(HOME_DIR, init_days, test_days, folder="fold
     antibodies_per_patient = defaultdict(set)
     for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
 
-        data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
+        data = unpickle(HOME_DIR + f"{folder}/patients_patgroups_London_{e}/{day}").astype(int)
         for rq in data:
             rq_antibodies = rq[18:35]
             rq_index = f"{e}_{rq[52]}"
@@ -93,7 +93,7 @@ def get_issued_products_nonoptimal_age_SCD(HOME_DIR, init_days, test_days, folde
     for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
 
         scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
-        data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="issuing_age", scenario=scenario, name=scenario_name, e=e))
+        data = unpickle(HOME_DIR + f"{folder}/patients_patgroups_London_{e}/{day}").astype(int)
 
         total_products += data[1,:].sum()
         nonoptimal_age += data[1,:7].sum() + data[1,11:].sum()

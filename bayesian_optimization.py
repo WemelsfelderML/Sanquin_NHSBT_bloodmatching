@@ -159,7 +159,7 @@ def tuning(SETTINGS, PARAMS, scenario, objs, weights):
 
     # Add objective value parameters to be tested to the parameters class.
     PARAMS.BO_params = np.concatenate([[10], weights])     # 10 = weight for shortages
-    print(PARAMS.BO_params)
+    # print(PARAMS.BO_params)
 
     # Find already existing results and continue from the lowest episode number without results.
     e = SETTINGS.num_init_points * SETTINGS.replications

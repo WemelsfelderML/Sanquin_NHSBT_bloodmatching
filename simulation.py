@@ -49,7 +49,7 @@ def simulation(SETTINGS, PARAMS):
 
 def simulate_episode_single(SETTINGS, PARAMS, htype, e):
 
-    print(f"\nEpisode: {e}")
+    # print(f"\nEpisode: {e}")
 
     obj_params = PARAMS.BO_params
     if len(obj_params) == 0:
@@ -83,7 +83,7 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
     # Run the simulation for the given number of days, and write outputs for all 'test days' to the dataframe.
     x = {}
     for day in days:
-        print(f"\nDay {day}")
+        # print(f"\nDay {day}")
         logs, issuing_age, x = simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospital, e, day, x)
 
         # if day % 5 == 0:
@@ -109,7 +109,7 @@ def simulate_episode_single(SETTINGS, PARAMS, htype, e):
 
 def simulate_episode_multi(SETTINGS, PARAMS, e):
 
-    print(f"\nEpisode: {e}")
+    # print(f"\nEpisode: {e}")
 
     obj_params = PARAMS.BO_params
     if len(obj_params) == 0:
@@ -148,7 +148,7 @@ def simulate_episode_multi(SETTINGS, PARAMS, e):
     
     # Run the simulation for the given number of days, and write outputs for all 'test days' to the dataframe.
     for day in days:
-        print(f"\nDay {day}")
+        # print(f"\nDay {day}")
         logs, issuing_age = simulate_day_multi(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospitals, e, day)
 
         save_state(SETTINGS, wip_path, logs, issuing_age, e, day, dc, hospitals)

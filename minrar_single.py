@@ -144,13 +144,13 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
     model.setObjective(expr = grb.quicksum(grb.quicksum(x_penalties * x)))
 
     stop = time.perf_counter()
-    print(f"model initialization: {(stop - start):0.4f} seconds")
+    # print(f"model initialization: {(stop - start):0.4f} seconds")
 
 
     start = time.perf_counter()
     model.optimize()
     stop = time.perf_counter()
-    print(f"Optimize: {(stop - start):0.4f} seconds")
+    # print(f"Optimize: {(stop - start):0.4f} seconds")
 
 
     x_solved = x.X
