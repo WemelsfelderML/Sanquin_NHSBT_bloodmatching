@@ -15,7 +15,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "mismatches"
+        self.model_name = ""
 
         
         ##########
@@ -32,7 +32,7 @@ class Settings():
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
         self.method = "LP"
-        self.LHD_configs = 21
+        self.LHD_configs = 500
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -51,10 +51,8 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (0, 84)
-        self.total_cores_max = 4    # Set the maximum number of cores to be used in total when executing episodes in parallel.
-
-        self.dir1 = f"{self.LHD_configs}x{round((self.episodes[1]-self.episodes[0])/self.LHD_configs)}LHD"
+        self.episodes = (100, 500)
+        self.total_cores_max = 16    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -85,8 +83,10 @@ class Settings():
 
         # self.num_init_points = 3
         self.num_init_points = 44
-        self.num_iterations = 200
+        self.num_iterations = 500
         self.replications = 1
+
+        self.dir1 = f"{self.LHD_configs}x{self.replications}LHD"
         
         # Put 1 if the objective should be optimized in BO, 0 if not.
         self.n_obj = {
