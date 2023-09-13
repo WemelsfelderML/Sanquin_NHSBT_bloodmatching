@@ -15,7 +15,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = ""
+        self.model_name = "baseline"
 
         
         ##########
@@ -32,7 +32,7 @@ class Settings():
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
         self.method = "LP"
-        self.LHD_configs = 500
+        self.LHD_configs = 1
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -51,8 +51,8 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (100, 500)
-        self.total_cores_max = 16    # Set the maximum number of cores to be used in total when executing episodes in parallel.
+        self.episodes = (0, 100)
+        self.total_cores_max = 8    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
