@@ -20,12 +20,12 @@ def simulation(SETTINGS, PARAMS):
     # Multi-hospital setup
     if sum(SETTINGS.n_hospitals.values()) > 1:
 
-        for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-            simulate_episode_multi(SETTINGS, PARAMS, e)
+        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        #     simulate_episode_multi(SETTINGS, PARAMS, e)
 
-        # # Create a pool of processes and map the function and arguments to it
-        # with Pool(processes=SETTINGS.total_cores_max) as pool:
-        #     pool.starmap(simulate_episode_multi, [(SETTINGS, PARAMS, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+        # Create a pool of processes and map the function and arguments to it
+        with Pool(processes=SETTINGS.total_cores_max) as pool:
+            pool.starmap(simulate_episode_multi, [(SETTINGS, PARAMS, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
 
     # Single-hospital setup
     else:
@@ -33,12 +33,12 @@ def simulation(SETTINGS, PARAMS):
         # Get the hospital's type
         htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
         
-        for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
-            simulate_episode_single(SETTINGS, PARAMS, htype, e)
+        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        #     simulate_episode_single(SETTINGS, PARAMS, htype, e)
 
-        # # Create a pool of processes and map the function and arguments to it
-        # with Pool(processes=SETTINGS.total_cores_max) as pool:
-        #     pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+        # Create a pool of processes and map the function and arguments to it
+        with Pool(processes=SETTINGS.total_cores_max) as pool:
+            pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
 
 
 
