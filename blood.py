@@ -66,10 +66,10 @@ class Blood:
             # Get intersection of all antigens given to consider, and all antigens in the model.
             usability_ABO = self.get_usability_system([0,1], antigens, PARAMS.ABO_phenotypes, PARAMS.ABO_prevalences, part_african)
             usability_Rhesus = self.get_usability_system([2,3,4,5,6], antigens, PARAMS.Rhesus_phenotypes, PARAMS.Rhesus_prevalences, part_african)
-            usability_Kell = self.get_usability_system([7,8], antigens, PARAMS.Kell_phenotypes, PARAMS.Kell_prevalences, part_african)
-            usability_Duffy = self.get_usability_system([9,10], antigens, PARAMS.Duffy_phenotypes, PARAMS.Duffy_prevalences, part_african)
-            usability_Kidd = self.get_usability_system([11,12], antigens, PARAMS.Kidd_phenotypes, PARAMS.Kidd_prevalences, part_african)
-            usability_MNS = self.get_usability_system([13,14,15,16], antigens, PARAMS.MNS_phenotypes, PARAMS.MNS_prevalences, part_african)
+            usability_Kell = self.get_usability_system([7], antigens, PARAMS.Kell_phenotypes, PARAMS.Kell_prevalences, part_african)
+            usability_Duffy = self.get_usability_system([8,9], antigens, PARAMS.Duffy_phenotypes, PARAMS.Duffy_prevalences, part_african)
+            usability_Kidd = self.get_usability_system([10,11], antigens, PARAMS.Kidd_phenotypes, PARAMS.Kidd_prevalences, part_african)
+            usability_MNS = self.get_usability_system([12,13,14], antigens, PARAMS.MNS_phenotypes, PARAMS.MNS_prevalences, part_african)
 
         # Return the product of all the individual system usabilities to compute the final usabilty.
         return usability_ABO * usability_Rhesus * usability_Kell * usability_MNS * usability_Duffy * usability_Kidd

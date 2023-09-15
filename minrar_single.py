@@ -33,7 +33,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
         Rp[r][R[r].patgroup] = 1
 
     Rm = (np.ones(Rv.shape) - Rv)       # Count mismatches if inventory product is positive for some antigen, and request is negative.
-    Rm[:,10] *= Rv[:,9]                 # Only count Fyb mismatches if patient is positive for Fya.
+    Rm[:,9] *= Rv[:,8]                 # Only count Fyb mismatches if patient is positive for Fya.
 
     IR_SCD = np.zeros([len(I),len(R)])              # I × R matrix with columns filled with 1s for SCD patients and columns with 0s for all other patients.
     for r in [r for r in range(len(R)) if R[r].patgroup == 0]:

@@ -3,7 +3,7 @@ from itertools import chain
 import pickle
 
 
-def get_total_antibodies(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17, e=0):
+def get_total_antibodies(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
     
     antibodies_per_patient = defaultdict(set)
     for day in range(init_days, init_days + test_days):
@@ -17,7 +17,7 @@ def get_total_antibodies(HOME_DIR, init_days, test_days, folder="folder", n_anti
     return len(list(chain.from_iterable(antibodies_per_patient.values())))
 
 
-def get_patients_with_antibodies(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17, e=0):
+def get_patients_with_antibodies(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
 
     antibodies_per_patient = defaultdict(set)
     for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
@@ -31,7 +31,7 @@ def get_patients_with_antibodies(HOME_DIR, init_days, test_days, folder="folder"
     return len(antibodies_per_patient.keys())
 
 
-def get_max_antibodies_per_patients(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17, e=0):
+def get_max_antibodies_per_patients(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
 
     antibodies_per_patient = defaultdict(set)
     for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
@@ -45,7 +45,7 @@ def get_max_antibodies_per_patients(HOME_DIR, init_days, test_days, folder="fold
     return max([len(antibodies) for antibodies in antibodies_per_patient.values()])
 
 
-def get_shortages(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17, e=0):
+def get_shortages(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
 
     shortages = 0
     for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
@@ -58,7 +58,7 @@ def get_shortages(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17
     return shortages
 
 
-def get_outdates(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17, e=0):
+def get_outdates(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
 
     outdates = 0
     for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
@@ -71,7 +71,7 @@ def get_outdates(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17,
     return outdates
 
 
-def get_total_alloimmunization_risk(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17, e=0):
+def get_total_alloimmunization_risk(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
 
     antigens = PARAMS.antigens
     total_alloimm_risk = 0
@@ -86,7 +86,7 @@ def get_total_alloimmunization_risk(HOME_DIR, init_days, test_days, folder="fold
     return total_alloimm_risk
 
 
-def get_issued_products_nonoptimal_age_SCD(HOME_DIR, init_days, test_days, folder="folder", n_antigens=17, e=0):
+def get_issued_products_nonoptimal_age_SCD(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
 
     total_products = 0
     nonoptimal_age = 0

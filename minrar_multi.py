@@ -19,8 +19,8 @@ def minrar_multiple_hospitals(SETTINGS, PARAMS, obj_params, dc, hospitals, day, 
 
     # The set of antigens is reshaped to several formats, for different uses within this class.
     A = range(len(PARAMS.antigens))
-    # "Fya" = 9
-    # "Fyb" = 10
+    # "Fya" = 8
+    # "Fyb" = 9
 
     # Mapping of the patient groups to their index in the list of patient groups.
     P = range(len(PARAMS.patgroups))
@@ -47,7 +47,7 @@ def minrar_multiple_hospitals(SETTINGS, PARAMS, obj_params, dc, hospitals, day, 
 
     Rm = [(np.ones(Rv[h].shape) - Rv[h]) for h in H]    # Count mismatches if inventory product is positive for some antigen, and request is negative.
     for h in H:
-        Rm[h][:,10] *= Rv[h][:,9]                       # Only count Fyb mismatches if patient is positive for Fya.
+        Rm[h][:,9] *= Rv[h][:,8]                       # Only count Fyb mismatches if patient is positive for Fya.
 
     IRh_SCD = [np.zeros([len(Ih[h]),len(R[h])]) for h in H]
     IRdc_SCD = [np.zeros([len(Idc),len(R[h])]) for h in H]
@@ -237,7 +237,7 @@ def allocate_remaining_supply_from_dc(SETTINGS, PARAMS, day, inventory, hospital
     I = inventory
     
     # Get the usability of all inventory products with respect to the distribution of major blood types in the patient population.
-    bi = np.tile(np.array([ip.get_usability(PARAMS, hospitals, antigens=list(range(3,17))) for ip in I]), (len(H), 1)).T
+    bi = np.tile(np.array([ip.get_usability(PARAMS, hospitals, antigens=list(range(3,15))) for ip in I]), (len(H), 1)).T
 
     ###############
     ## VARIABLES ##

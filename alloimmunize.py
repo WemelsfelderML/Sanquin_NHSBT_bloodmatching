@@ -12,7 +12,7 @@ def alloimmunize(SETTINGS, PARAMS, scenario, hospital, day, x):
     Iv = np.array([ip.vector for ip in I])     # I × A matrix with a 1 if the inventory product is positive for some antigen, 0 if negative.
     Rv = np.array([rq.vector for rq in R])     # R × A matrix with a 1 if the request is positive for some antigen, 0 if negative.
     Rm = (np.ones(Rv.shape) - Rv)           # R × A matrix with a 1 if the request is negative for some antigen, 0 if positive.
-    Rm[:,10] *= Rv[:,9]                        # Only count Fyb mismatches if patient is positive for Fya.
+    Rm[:,9] *= Rv[:,8]                        # Only count Fyb mismatches if patient is positive for Fya.
 
     for r in r_SCD:                                     # Loop over all requests for SCD patients.
         for i in range(len(I)):                         # Loop over all inventory products.

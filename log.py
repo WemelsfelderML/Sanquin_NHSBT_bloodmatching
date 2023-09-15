@@ -45,10 +45,10 @@ def log_results(SETTINGS, PARAMS, logs, issuing_age, gurobi_logs, dc, hospital, 
         # logs[ri,ci[f"num requests {major}"]] = sum([1 for rq in rq_today if rq.major == major])                           # number of patients per major blood group
         logs[ri,ci[f"num {major} in inventory"]] = sum([1 for ip in I if ip.major == major])                     # number of products in inventory per major blood group
 
-    logs[ri,ci["num Fya-Fyb- in inventory"]] = sum([1 for ip in I if (ip.vector[9] == 0) and (ip.vector[10] == 0)])
-    logs[ri,ci["num Fya+Fyb- in inventory"]] = sum([1 for ip in I if (ip.vector[9] == 1) and (ip.vector[10] == 0)])
-    logs[ri,ci["num Fya-Fyb+ in inventory"]] = sum([1 for ip in I if (ip.vector[9] == 0) and (ip.vector[10] == 1)])
-    logs[ri,ci["num Fya+Fyb+ in inventory"]] = sum([1 for ip in I if (ip.vector[9] == 1) and (ip.vector[10] == 1)])
+    logs[ri,ci["num Fya-Fyb- in inventory"]] = sum([1 for ip in I if (ip.vector[8] == 0) and (ip.vector[9] == 0)])
+    logs[ri,ci["num Fya+Fyb- in inventory"]] = sum([1 for ip in I if (ip.vector[8] == 1) and (ip.vector[9] == 0)])
+    logs[ri,ci["num Fya-Fyb+ in inventory"]] = sum([1 for ip in I if (ip.vector[8] == 0) and (ip.vector[9] == 1)])
+    logs[ri,ci["num Fya+Fyb+ in inventory"]] = sum([1 for ip in I if (ip.vector[8] == 1) and (ip.vector[9] == 1)])
     logs[ri,ci["num R0 in inventory"]] = sum([ip.R0 for ip in I])                                                # number of R0 products in inventory
 
     xi = x.sum(axis=1)  # For each inventory product i∈I, xi[i] = 1 if the product is issued, 0 otherwise.
@@ -73,7 +73,7 @@ def log_results(SETTINGS, PARAMS, logs, issuing_age, gurobi_logs, dc, hospital, 
             # Get all antigens k on which product ip and request rq are mismatched.
             for k in [k for k in range(len(A)) if ip.vector[k] > rq.vector[k]]:
                 # Fy(a-b-) should only be matched on Fy(a), not on Fy(b). -> Fy(b-) only mismatch when Fy(a+)
-                if (k != 10) or (rq.vector[9] == 1):
+                if (k != 9) or (rq.vector[8] == 1):
                     mismatch[k] = 1
                     logs[ri,ci[f"num mismatched units {P[rq.patgroup]} {A[k]}"]] += 1        # number of mismatched units per patient group and antigen
                      
