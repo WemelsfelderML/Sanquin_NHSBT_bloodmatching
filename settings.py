@@ -51,7 +51,7 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (0, 500)
+        self.episodes = (0, 100)
         self.total_cores_max = 8    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
