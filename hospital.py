@@ -58,11 +58,11 @@ class Hospital():
         data = self.demand_data[day]
 
         zeros_A = np.zeros(len(PARAMS.antigens))
-        requests = [Blood(PARAMS, index=rq[22], ethnicity=rq[0], patgroup=rq[1], antigens=rq[2:19], num_units=rq[19], day_issuing=rq[20], day_available=rq[21], antibodies=zeros_A.copy(), mism_units=zeros_A.copy()) for rq in data]
+        requests = [Blood(PARAMS, index=rq[20], ethnicity=rq[0], patgroup=rq[1], antigens=rq[2:17], num_units=rq[17], day_issuing=rq[18], day_available=rq[19], antibodies=zeros_A.copy(), mism_units=zeros_A.copy()) for rq in data]
 
         if day >= (SETTINGS.init_days + (5*7)):
             data_SCD = unpickle(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario=scenario, name=self.name, day=day-(5*7)))
-            requests += [Blood(PARAMS, index=rq[52], ethnicity=1, patgroup=1, antigens=rq[1:18], num_units=rq[0], day_issuing=day+7, day_available=day, antibodies=rq[18:35], mism_units=rq[35:52]) for rq in data_SCD]
+            requests += [Blood(PARAMS, index=rq[50], ethnicity=1, patgroup=1, antigens=rq[1:16], num_units=rq[0], day_issuing=day+7, day_available=day, antibodies=rq[16:33], mism_units=rq[33:50]) for rq in data_SCD]
 
         self.requests += requests
 
