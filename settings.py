@@ -31,7 +31,7 @@ class Settings():
 
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
-        self.method = "LP"
+        self.method = "BO"
         self.LHD_configs = 1
 
         # "on": online optimization.
@@ -82,8 +82,8 @@ class Settings():
         #########################
 
         # self.num_init_points = 3
-        self.num_init_points = 44
-        self.num_iterations = 500
+        self.num_init_points = 100
+        self.num_iterations = 100 
         self.replications = 1
 
         self.dir1 = f"{self.LHD_configs}x{self.replications}LHD"

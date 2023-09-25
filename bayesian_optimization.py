@@ -88,7 +88,12 @@ def bayesian_optimization_singleobj(SETTINGS, PARAMS):
 
     obj = max(SETTINGS.n_obj, key = lambda i: SETTINGS.n_obj[i])
     
-    X_init, Y_init = find_init_points(SETTINGS, PARAMS, scenario, [obj])
+    if SETTINGS.num_init_points > 0:
+        X_init, Y_init = find_init_points(SETTINGS, PARAMS, scenario, [obj])
+    else:
+        X_init = [[],[]]
+        Y_init = [[],[]]
+        
 
     evaluator = Evaluator(SETTINGS, PARAMS, scenario, [obj])
     var_names = ["mismatches", "youngblood", "FIFO", "usability", "substitution", "today"]
@@ -211,8 +216,8 @@ def get_total_antibodies(SETTINGS, PARAMS, method, scenario, episode_start=0, nu
 
                     data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
                     for rq in data:
-                        rq_antibodies = rq[18:35]
-                        rq_index = f"{e}_{rq[52]}"
+                        rq_antibodies = rq[16:31]
+                        rq_index = f"{e}_{rq[46]}"
                         antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
     return len(list(chain.from_iterable(antibodies_per_patient.values())))
@@ -232,8 +237,8 @@ def get_patients_with_antibodies(SETTINGS, PARAMS, method, scenario, episode_sta
 
                     data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
                     for rq in data:
-                        rq_antibodies = rq[18:35]
-                        rq_index = f"{e}_{rq[52]}"
+                        rq_antibodies = rq[16:31]
+                        rq_index = f"{e}_{rq[46]}"
                         antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
     return len(antibodies_per_patient.keys())
@@ -253,8 +258,8 @@ def get_max_antibodies_per_patients(SETTINGS, PARAMS, method, scenario, episode_
 
                     data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
                     for rq in data:
-                        rq_antibodies = rq[18:35]
-                        rq_index = f"{e}_{rq[52]}"
+                        rq_antibodies = rq[16:31]
+                        rq_index = f"{e}_{rq[46]}"
                         antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
     return max([len(antibodies) for antibodies in antibodies_per_patient.values()])
