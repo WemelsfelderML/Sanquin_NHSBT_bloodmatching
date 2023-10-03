@@ -49,7 +49,7 @@ class Params():
 
         LHD = np.array([
             # shortages, mismatches, youngblood, FIFO, usability, substitution, today 
-            [10,         0.5,        0.5,        0.5,  0.5,       0.5,          0.5]
+            [10,         0,        0,        0,  0,       0,          0]
         ])
         # LHD = np.tile(LHD, (SETTINGS.LHD_configs,1))
         # LHD[:,1] = [i/max(1,SETTINGS.LHD_configs-1) for i in range(SETTINGS.LHD_configs)]
