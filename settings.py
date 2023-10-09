@@ -15,7 +15,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "baseline2"
+        self.model_name = "baseline"
 
         
         ##########

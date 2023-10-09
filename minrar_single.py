@@ -134,8 +134,8 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
     # These are all I×R matrices.
     short = np.full([len(I),len(R)], obj_params[0] * -1)
     mism = obj_params[1] * (Iv @ ((Rp @ w) * Rm).T)
-    youngblood = obj_params[2] * IR_SCD * np.tile(np.array([(math.exp(ip.age - 8.5) - ip.age) / 238.085 for ip in I]), (len(R), 1)).T    # /238.085 is for normalization
     FIFO = obj_params[3] * IR_nonSCD * np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T
+    youngblood = obj_params[2] * IR_SCD * np.tile(np.array([(math.exp(ip.age - 8.5) - ip.age) / 238.085 for ip in I]), (len(R), 1)).T    # /238.085 is for normalization
     usab = obj_params[4] * (bi - br)
     subst = obj_params[5] * (Is @ ((Rp @ w_subst) * Rv).T) 
 
