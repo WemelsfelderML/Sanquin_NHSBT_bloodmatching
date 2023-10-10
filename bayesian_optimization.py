@@ -98,7 +98,7 @@ def bayesian_optimization_singleobj(SETTINGS, PARAMS):
     evaluator = Evaluator(SETTINGS, PARAMS, scenario, [obj])
     var_names = ["mismatches", "youngblood", "FIFO", "usability", "substitution", "today"]
     var_obj_names = var_names + [obj]
-    space = ParameterSpace([ContinuousParameter(w,0,1) for w in var_names])
+    space = ParameterSpace([ContinuousParameter(w,PARAMS.BO_param_ranges[0],PARAMS.BO_param_ranges[1]) for w in var_names])
     
     func = UserFunctionWrapper(evaluator.evaluate_singleobj)
     
@@ -141,7 +141,7 @@ def bayesian_optimization_multiobj(SETTINGS, PARAMS):
     evaluator = Evaluator(SETTINGS, PARAMS, scenario, objs)
     var_names = ["mismatches", "youngblood", "FIFO", "usability", "substitution", "today"]
     var_obj_names = var_names + objs
-    space = ParameterSpace([ContinuousParameter(w,0,1) for w in var_names])
+    space = ParameterSpace([ContinuousParameter(w,PARAMS.BO_param_ranges[0],PARAMS.BO_param_ranges[1]) for w in var_names])
     
     func = UserFunctionWrapper(evaluator.evaluate_multiobj)
     Y_init_gp = Y_init[:, :1]
