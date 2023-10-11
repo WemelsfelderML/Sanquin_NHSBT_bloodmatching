@@ -47,36 +47,36 @@ class Params():
         ###########################
         # Note: all objectives are normalized so no need to consider that in determining these weights.
 
-        LHD = np.array([
-            # shortages, mismatches, youngblood, FIFO, usability, substitution, today 
-            [10,         1,          1,          1,    1,         1,            1]
-        ])
+        # LHD = np.array([
+        #     # shortages, mismatches, youngblood, FIFO, usability, substitution, today 
+        #     [10,         1,          1,          1,    1,         1,            1]
+        # ])
         # LHD = np.tile(LHD, (SETTINGS.LHD_configs,1))
         # LHD[:,1] = [i/max(1,SETTINGS.LHD_configs-1) for i in range(SETTINGS.LHD_configs)]
 
         # LHD configurations -- shortages, mismatches, youngblood, FIFO, usability, substitution, today 
-        # LHD = np.hstack([np.tile(10, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}")])
+        LHD = np.hstack([np.tile(10, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}")])
         
         if LHD.shape[0] < SETTINGS.episodes[1]:
             LHD = np.tile(LHD, (int(np.ceil(SETTINGS.episodes[1] / LHD.shape[0])), 1))
         self.LHD = LHD
 
-        self.BO_param_ranges = {
-            "mismatches" : (0.25, 0.75),
-            "youngblood" : (0.8, 1),
-            "FIFO" : (0.25, 1),
-            "usability" : (0, 0.2),
-            "substitution" : (0, 0.6),
-            "today" : (0.6, 1),
-        }
         # self.BO_param_ranges = {
-        #     "mismatches" : (0, 1),
-        #     "youngblood" : (0, 1),
-        #     "FIFO" : (0, 1),
-        #     "usability" : (0, 1),
-        #     "substitution" : (0, 1),
-        #     "today" : (0, 1),
+        #     "mismatches" : (0.25, 0.75),
+        #     "youngblood" : (0.8, 1),
+        #     "FIFO" : (0.25, 1),
+        #     "usability" : (0, 0.2),
+        #     "substitution" : (0, 0.6),
+        #     "today" : (0.6, 1),
         # }
+        self.BO_param_ranges = {
+            "mismatches" : (0, 1),
+            "youngblood" : (0, 1),
+            "FIFO" : (0, 1),
+            "usability" : (0, 1),
+            "substitution" : (0, 1),
+            "today" : (0, 1),
+        }
 
         self.BO_params = []
     
