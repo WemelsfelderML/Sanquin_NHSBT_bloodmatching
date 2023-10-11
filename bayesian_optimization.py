@@ -98,7 +98,7 @@ def bayesian_optimization_singleobj(SETTINGS, PARAMS):
     evaluator = Evaluator(SETTINGS, PARAMS, scenario, [obj])
     var_names = ["mismatches", "youngblood", "FIFO", "usability", "substitution", "today"]
     var_obj_names = var_names + [obj]
-    space = ParameterSpace([ContinuousParameter(w,PARAMS.BO_param_ranges[0],PARAMS.BO_param_ranges[1]) for w in var_names])
+    space = ParameterSpace([ContinuousParameter(w,PARAMS.BO_param_ranges[w][0],PARAMS.BO_param_ranges[w][1]) for w in var_names])
     
     func = UserFunctionWrapper(evaluator.evaluate_singleobj)
     
@@ -141,12 +141,13 @@ def bayesian_optimization_multiobj(SETTINGS, PARAMS):
     evaluator = Evaluator(SETTINGS, PARAMS, scenario, objs)
     var_names = ["mismatches", "youngblood", "FIFO", "usability", "substitution", "today"]
     var_obj_names = var_names + objs
-    space = ParameterSpace([ContinuousParameter(w,PARAMS.BO_param_ranges[0],PARAMS.BO_param_ranges[1]) for w in var_names])
+    space = ParameterSpace([ContinuousParameter(w,PARAMS.BO_param_ranges[w][0],PARAMS.BO_param_ranges[w][1]) for w in var_names])
     
     func = UserFunctionWrapper(evaluator.evaluate_multiobj)
     Y_init_gp = Y_init[:, :1]
 
-    gpy_model = GPy.models.GPRegression(X_init, Y_init_gp, GPy.kern.Matern52(space.dimensionality, variance=1.0, ARD=False))
+    gpy_model = GPy.models.GPRegression(
+        X_init, Y_init_gp, GPy.kern.Matern52(space.dimensionality, variance=1.0, ARD=False))
     model = GPyModelWrapper(gpy_model)
     
     bo_loop = MultiObjectiveBayesianOptimizationLoop(model=model, space=space, X_init=X_init, Y_init=Y_init, targets_extractor=TargetExtractorFunction(num_objectives=len([obj for obj in SETTINGS.n_obj.keys() if SETTINGS.n_obj[obj] > 0])))
@@ -223,27 +224,6 @@ def get_total_antibodies(SETTINGS, PARAMS, method, scenario, episode_start=0, nu
     return len(list(chain.from_iterable(antibodies_per_patient.values())))
 
 
-def get_patients_with_antibodies(SETTINGS, PARAMS, method, scenario, episode_start=0, num_init_points=1, p=0):
-
-    antigens = PARAMS.antigens.keys()
-    antibodies_per_patient = defaultdict(set)
-    for r in range(episode_start, episode_start + SETTINGS.replications):
-        for htype in SETTINGS.n_hospitals.keys():
-
-            n = SETTINGS.n_hospitals[htype]
-            for i in range(n):
-                e = (((r * num_init_points) + p) * n) + i
-                for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
-
-                    data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
-                    for rq in data:
-                        rq_antibodies = rq[16:31]
-                        rq_index = f"{e}_{rq[46]}"
-                        antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
-
-    return len(antibodies_per_patient.keys())
-
-
 def get_max_antibodies_per_patients(SETTINGS, PARAMS, method, scenario, episode_start=0, num_init_points=1, p=0):
 
     antigens = PARAMS.antigens.keys()
@@ -265,6 +245,27 @@ def get_max_antibodies_per_patients(SETTINGS, PARAMS, method, scenario, episode_
     return max([len(antibodies) for antibodies in antibodies_per_patient.values()])
 
 
+def get_patients_with_antibodies(SETTINGS, PARAMS, method, scenario, episode_start=0, num_init_points=1, p=0):
+
+    antigens = PARAMS.antigens.keys()
+    antibodies_per_patient = defaultdict(set)
+    for r in range(episode_start, episode_start + SETTINGS.replications):
+        for htype in SETTINGS.n_hospitals.keys():
+
+            n = SETTINGS.n_hospitals[htype]
+            for i in range(n):
+                e = (((r * num_init_points) + p) * n) + i
+                for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
+
+                    data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
+                    for rq in data:
+                        rq_antibodies = rq[16:31]
+                        rq_index = f"{e}_{rq[46]}"
+                        antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
+
+    return len([a for a in antibodies_per_patient.values() if len(a) > 0])
+
+
 def get_shortages(SETTINGS, PARAMS, method, scenario, episode_start=0, num_init_points=1, p=0):
 
     shortages = 0
@@ -274,12 +275,11 @@ def get_shortages(SETTINGS, PARAMS, method, scenario, episode_start=0, num_init_
             n = SETTINGS.n_hospitals[htype]
             for i in range(n):
                 e = (((r * num_init_points) + p) * n) + i
-                for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
+                
+                scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
+                data = pd.read_csv(SETTINGS.generate_filename(method=method, output_type="results", scenario=scenario, name=scenario_name, e=e)+".csv")
 
-                    scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
-                    data = pd.read_csv(SETTINGS.generate_filename(method=method, output_type="results", scenario=scenario, name=scenario_name, e=e)+".csv")
-
-                    shortages += data["num shortages"].sum()
+                shortages += data["num shortages"].sum()
 
     return shortages
 
@@ -293,12 +293,11 @@ def get_outdates(SETTINGS, PARAMS, method, scenario, episode_start=0, num_init_p
             n = SETTINGS.n_hospitals[htype]
             for i in range(n):
                 e = (((r * num_init_points) + p) * n) + i
-                for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
+                
+                scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
+                data = pd.read_csv(SETTINGS.generate_filename(method=method, output_type="results", scenario=scenario, name=scenario_name, e=e)+".csv")
 
-                    scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
-                    data = pd.read_csv(SETTINGS.generate_filename(method=method, output_type="results", scenario=scenario, name=scenario_name, e=e)+".csv")
-
-                    outdates += data["num outdates"].sum()
+                outdates += data["num outdates"].sum()
 
     return outdates
 
@@ -314,13 +313,12 @@ def get_total_alloimmunization_risk(SETTINGS, PARAMS, method, scenario, episode_
             n = SETTINGS.n_hospitals[htype]
             for i in range(n):
                 e = (((r * num_init_points) + p) * n) + i
-                for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
 
-                    scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
-                    data = pd.read_csv(SETTINGS.generate_filename(method=method, output_type="results", scenario=scenario, name=scenario_name, e=e)+".csv")
+                scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
+                data = pd.read_csv(SETTINGS.generate_filename(method=method, output_type="results", scenario=scenario, name=scenario_name, e=e)+".csv")
 
-                    for k in antigens.keys():
-                        total_alloimm_risk += PARAMS.alloimmunization_risks[2,k] * data[[f"num mismatched patients {pg} {antigens[k]}" for pg in P]].sum().sum()
+                for k in antigens.keys():
+                    total_alloimm_risk += PARAMS.alloimmunization_risks[2,k] * data[[f"num mismatched patients {pg} {antigens[k]}" for pg in P]].sum().sum()
                         
     return total_alloimm_risk
 
@@ -335,13 +333,12 @@ def get_issued_products_nonoptimal_age_SCD(SETTINGS, PARAMS, method, scenario, e
             n = SETTINGS.n_hospitals[htype]
             for i in range(n):
                 e = (((r * num_init_points) + p) * n) + i
-                for day in range(SETTINGS.init_days, SETTINGS.init_days + SETTINGS.test_days):
 
-                    scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
-                    data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="issuing_age", scenario=scenario, name=scenario_name, e=e))
+                scenario_name = '-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0])
+                data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="issuing_age", scenario=scenario, name=scenario_name, e=e))
 
-                    total_products += data[1,:].sum()
-                    nonoptimal_age += data[1,:7].sum() + data[1,11:].sum()
+                total_products += data[1,:].sum()
+                nonoptimal_age += data[1,:7].sum() + data[1,11:].sum()
 
     return nonoptimal_age / total_products
         

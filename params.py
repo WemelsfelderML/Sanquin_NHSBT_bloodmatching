@@ -61,22 +61,22 @@ class Params():
             LHD = np.tile(LHD, (int(np.ceil(SETTINGS.episodes[1] / LHD.shape[0])), 1))
         self.LHD = LHD
 
-        # self.BO_param_ranges = {
-        #     "mismatches" : (0.25, 0.75),
-        #     "youngblood" : (0.8, 1),
-        #     "FIFO" : (0.25, 1),
-        #     "usability" : (0, 0.2),
-        #     "substitution" : (0, 0.6),
-        #     "today" : (0.6, 1),
-        # }
         self.BO_param_ranges = {
-            "mismatches" : (0, 1),
-            "youngblood" : (0, 1),
-            "FIFO" : (0, 1),
-            "usability" : (0, 1),
-            "substitution" : (0, 1),
-            "today" : (0, 1),
+            "mismatches" : (0.25, 0.75),
+            "youngblood" : (0.8, 1),
+            "FIFO" : (0.25, 1),
+            "usability" : (0, 0.2),
+            "substitution" : (0, 0.6),
+            "today" : (0.6, 1),
         }
+        # self.BO_param_ranges = {
+        #     "mismatches" : (0, 1),
+        #     "youngblood" : (0, 1),
+        #     "FIFO" : (0, 1),
+        #     "usability" : (0, 1),
+        #     "substitution" : (0, 1),
+        #     "today" : (0, 1),
+        # }
 
         self.BO_params = []
     
