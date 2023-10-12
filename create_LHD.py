@@ -12,7 +12,8 @@ def create_LHD(dim, n_points):
     model = grb.Model(name="model")
     model.Params.LogToConsole = 1
     model.Params.NonConvex = 2
-    model.setParam('Threads', 8)
+    model.setParam('Threads', 24)
+    model.setParam('TimeLimit', 12*60*60) # 12 hours
 
 
     # Variables
@@ -55,8 +56,8 @@ if __name__ == "__main__":
 
     # HOME_DIR = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
     HOME_DIR = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
-    dim = 5
-    n_points = 10
+    dim = 6
+    n_points = 500
 
     LHD = create_LHD(dim, n_points)
     

@@ -105,7 +105,7 @@ class Settings():
 
         self.show_gurobi_output = False   # True or False
         self.gurobi_threads = 1           # Number of threads available, or None in case of no limit
-        self.gurobi_timeout = 15*60       # Number of minutes allowed for optimization, None in case of no limit
+        self.gurobi_timeout = 15*60       # Number of seconds allowed for optimization, None in case of no limit
 
 
 
