@@ -55,7 +55,7 @@ class Params():
         # LHD[:,1] = [i/max(1,SETTINGS.LHD_configs-1) for i in range(SETTINGS.LHD_configs)]
 
         # LHD configurations -- shortages, mismatches, youngblood, FIFO, usability, substitution, today 
-        LHD = np.hstack([np.tile(10, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}")])
+        LHD = np.hstack([np.tile(10, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}{'_'+SETTINGS.model_name if SETTINGS.model_name != '' else ''}")])
         
         if LHD.shape[0] < SETTINGS.episodes[1]:
             LHD = np.tile(LHD, (int(np.ceil(SETTINGS.episodes[1] / LHD.shape[0])), 1))

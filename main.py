@@ -8,6 +8,7 @@ from simulation import *
 
 from bayesian_optimization import *
 
+
 def main():
     
     SETTINGS = Settings()
