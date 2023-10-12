@@ -45,7 +45,7 @@ def create_LHD(dim, n_points):
     ## OBJECTIVES ##
     ################
     
-    model.setObjective(expr = z)
+    model.setObjective(expr = dist)
 
     stop = time.perf_counter()
     print(f"model initialization: {(stop - start):0.4f} seconds")
@@ -62,9 +62,10 @@ def create_LHD(dim, n_points):
 
 if __name__ == "__main__":
 
-    HOME_DIR = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
-    dim = 6
-    n_points = 500
+    # HOME_DIR = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
+    HOME_DIR = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
+    dim = 5
+    n_points = 10
 
     LHD = create_LHD(dim, n_points)
     
