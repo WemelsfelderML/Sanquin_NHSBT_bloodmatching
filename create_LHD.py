@@ -15,7 +15,7 @@ def create_LHD(dim, n_points):
 
     model = grb.Model(name="model")
     model.Params.LogToConsole = 1
-    # model.setParam('Threads', ...)
+    model.setParam('Threads', 8)
     # model.setParam('TimeLimit', ...)
     model.Params.PoolSearchMode = 1
 
