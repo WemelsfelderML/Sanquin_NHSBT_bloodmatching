@@ -8,55 +8,46 @@ from scipy.spatial import distance
 def create_LHD(dim, n_points):
 
     start = time.perf_counter()
-    
-    ############
-    ## GUROBI ##
-    ############
 
     model = grb.Model(name="model")
     model.Params.LogToConsole = 1
+    model.Params.NonConvex = 2
     model.setParam('Threads', 8)
-    # model.setParam('TimeLimit', ...)
-    model.Params.PoolSearchMode = 1
 
-    ###############
-    ## VARIABLES ##
-    ###############
 
-    # x: For each request r∈R and inventory product i∈I, x[i,r] = 1 if r is satisfied by i, 0 otherwise.
-    x = model.addMVar((n_points, dim), name="x", vtype=grb.GRB.INTEGER, lb=1, ub=n_points)
+    # Variables
+    x = model.addMVar((n_points, dim), name="x", vtype=grb.GRB.INTEGER, lb=0, ub=n_points-1)
+    y = model.addMVar((n_points, n_points, dim), name="y", vtype=grb.GRB.BINARY)  # Binary variables
     dist = model.addVar(name="dist", vtype=grb.GRB.CONTINUOUS, lb=0)
 
-    model.update()
-    model.ModelSense = grb.GRB.MAXIMIZE
+    # Linking constraints between x and y
+    for i in range(n_points):
+        for d in range(dim):
+            model.addConstr(x[i,d] == grb.quicksum(j*y[i,j,d] for j in range(n_points)))
 
-    #################
-    ## CONSTRAINTS ##
-    #################
+    # Ensure each value can be assigned once
+    for j in range(n_points):
+        for d in range(dim):
+            model.addConstr(grb.quicksum(y[i,j,d] for i in range(n_points)) <= 1)
 
-    for d in range(dim):
-        model.addConstr(len(np.unique(x[:,d])) >= n_points)
 
+    # Distance constraints
     for i in range(n_points-1):
         for j in range(i+1, n_points):
             model.addConstr(((x[i,:] - x[j,:])*(x[i,:] - x[j,:])).sum() >= dist)
 
-    ################
-    ## OBJECTIVES ##
-    ################
-    
-    model.setObjective(expr = dist)
-
+    # Objective
+    model.setObjective(expr=dist, sense=grb.GRB.MAXIMIZE)
+    model.update()
     stop = time.perf_counter()
     print(f"model initialization: {(stop - start):0.4f} seconds")
 
     start = time.perf_counter()
-    model.optimize()
+    model.optimize() 
     stop = time.perf_counter()
     print(f"Optimize: {(stop - start):0.4f} seconds")
 
     x_solved = x.X
-
     return x_solved
 
 
