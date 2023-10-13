@@ -28,8 +28,9 @@ def swap_rows_columns(LHD, i1, i2, j1, j2):
 def improve_lhd(LHD, max_iterations=1000):
     """Optimize the LHD using the swap heuristic."""
     n, d = LHD.shape
-    for _ in range(max_iterations):
+    for iteration in range(max_iterations):
         min_distance = pdist(LHD).min()
+        print(iteration, min_distance)
         any_improvement = False
         for i1 in range(n - 1):
             for i2 in range(i1 + 1, n):
