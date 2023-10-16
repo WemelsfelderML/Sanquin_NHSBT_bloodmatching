@@ -90,13 +90,13 @@ class Settings():
         
         # Put 1 if the objective should be optimized in BO, 0 if not.
         self.n_obj = {
-            "total_antibodies"   : 0,
+            "total_antibodies"   : 1,
             "total_shortages"    : 0,
             "total_outdates"     : 0,
-            "alloimm_patients"   : 1,
-            "max_antibodies_pp"  : 1,
+            "alloimm_patients"   : 0,
+            "max_antibodies_pp"  : 0,
             "total_alloimm_risk" : 0,
-            "issuing_age_SCD"    : 0,
+            "issuing_age_SCD"    : 1,
         }
 
         ####################
