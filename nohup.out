@@ -1,0 +1,414 @@
+ 
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter NonConvex to value 2
+Set parameter Threads to value 24
+Set parameter TimeLimit to value 43200
+Warning for adding constraints: zero or small (< 1e-13) coefficients, ignored
+model initialization: 2343.2520 seconds
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (linux64)
+
+CPU model: Intel(R) Xeon(R) CPU E7-8867 v3 @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 32 physical cores, 32 logical processors, using up to 24 threads
+
+Optimize a model with 6000 rows, 1503001 columns and 3000000 nonzeros
+Model fingerprint: 0xb1e9d684
+Model has 124750 quadratic constraints
+Variable types: 1 continuous, 1503000 integer (1500000 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+02]
+  QMatrix range    [1e+00, 2e+00]
+  QLMatrix range   [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 5e+02]
+  RHS range        [1e+00, 1e+00]
+Found heuristic solution: objective -0.0000000
+Presolve removed 6 rows and 3000 columns (presolve time = 5s) ...
+Presolve removed 6 rows and 3000 columns (presolve time = 12s) ...
+Presolve removed 6 rows and 3000 columns
+Presolve time: 11.91s
+Presolved: 1630744 rows, 2251501 columns, 8367250 nonzeros
+Presolved model has 751500 bilinear constraint(s)
+Variable types: 1 continuous, 2251500 integer (1497000 binary)
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0    1.4940060e+06   0.000000e+00   0.000000e+00     40s
+
+Use crossover to convert LP symmetric solution to basic solution...
+
+Root crossover log...
+
+  748500 variables added to crossover basis                       48s
+
+  124640 DPushes remaining with DInf 0.0000000e+00                48s
+  121241 DPushes remaining with DInf 0.0000000e+00                50s
+  114420 DPushes remaining with DInf 0.0000000e+00                55s
+  107363 DPushes remaining with DInf 0.0000000e+00                60s
+  100663 DPushes remaining with DInf 0.0000000e+00                65s
+   93857 DPushes remaining with DInf 0.0000000e+00                70s
+   88596 DPushes remaining with DInf 0.0000000e+00                75s
+   82351 DPushes remaining with DInf 0.0000000e+00                80s
+   74330 DPushes remaining with DInf 0.0000000e+00                85s
+   67343 DPushes remaining with DInf 0.0000000e+00                90s
+   60106 DPushes remaining with DInf 0.0000000e+00                96s
+   45442 DPushes remaining with DInf 0.0000000e+00               100s
+   27790 DPushes remaining with DInf 0.0000000e+00               105s
+       0 DPushes remaining with DInf 0.0000000e+00               110s
+
+ 1493581 PPushes remaining with PInf 0.0000000e+00               110s
+ 1445639 PPushes remaining with PInf 0.0000000e+00               111s
+ 1348007 PPushes remaining with PInf 0.0000000e+00               116s
+ 1240744 PPushes remaining with PInf 0.0000000e+00               127s
+ 1169843 PPushes remaining with PInf 0.0000000e+00               133s
+ 1092196 PPushes remaining with PInf 0.0000000e+00               139s
+ 1014285 PPushes remaining with PInf 0.0000000e+00               145s
+  937020 PPushes remaining with PInf 0.0000000e+00               150s
+  857694 PPushes remaining with PInf 0.0000000e+00               155s
+  778097 PPushes remaining with PInf 0.0000000e+00               160s
+  657746 PPushes remaining with PInf 0.0000000e+00               170s
+  585113 PPushes remaining with PInf 0.0000000e+00               176s
+  503018 PPushes remaining with PInf 0.0000000e+00               182s
+  418326 PPushes remaining with PInf 0.0000000e+00               188s
+  328531 PPushes remaining with PInf 0.0000000e+00               194s
+  243691 PPushes remaining with PInf 0.0000000e+00               199s
+  155069 PPushes remaining with PInf 0.0000000e+00               204s
+   61552 PPushes remaining with PInf 0.0000000e+00               210s
+    2490 PPushes remaining with PInf 0.0000000e+00               212s
+    2017 PPushes remaining with PInf 0.0000000e+00               215s
+    1071 PPushes remaining with PInf 0.0000000e+00               222s
+     598 PPushes remaining with PInf 0.0000000e+00               225s
+       0 PPushes remaining with PInf 0.0000000e+00               230s
+
+  Push phase complete: Pinf 0.0000000e+00, Dinf 1.1205045e+04    230s
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+ 1553592    1.4940060e+06   0.000000e+00   1.120505e+04    231s
+ 1553594    1.4940060e+06   0.000000e+00   0.000000e+00    231s
+ 1553594    1.4940060e+06   0.000000e+00   0.000000e+00    233s
+
+Root relaxation: objective 1.494006e+06, 1553594 iterations, 200.88 seconds (556.78 work units)
+Total elapsed time = 2008.91s
+Total elapsed time = 2727.90s
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1494006.00    0 762209   -0.00000 1494006.00      -     - 6423s
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+H    0     0                       0.0000000 1494006.00      -     - 23156s
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+     0     0          -    0         0.00000 1494006.00      -     - 43200s
+
+Cutting planes:
+  Gomory: 9
+  Clique: 2
+  MIR: 15103
+  RLT: 2423
+  BQP: 1309
+
+Explored 1 nodes (1944440 simplex iterations) in 43200.11 seconds (23082.07 work units)
+Thread count was 24 (of 32 available processors)
+
+Solution count 2: 8.78936e-09 -0 
+
+Time limit reached
+Best objective 8.789356797934e-09, best bound 1.494006000000e+06, gap -
+Optimize: 43200.2627 seconds
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Traceback (most recent call last):
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/create_LHD.py", line 59, in <module>
+    LHD_optimized = improve_lhd(LHD)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/create_LHD.py", line 39, in improve_lhd
+    new_min_distance = pdist(LHD_new).min()
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/create_LHD.py", line 17, in pdist
+    distances = np.linalg.norm(points[:, None, :] - points[None, :, :], axis=2)
+  File "<__array_function__ internals>", line 180, in norm
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/numpy/linalg/linalg.py", line 2557, in norm
+    return sqrt(add.reduce(s, axis=axis, keepdims=keepdims))
+KeyboardInterrupt
+Set parameter Username
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:168: RuntimeWarning:overflow encountered in divide
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:581: RuntimeWarning:overflow encountered in multiply
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:581: RuntimeWarning:overflow encountered in square
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:581: RuntimeWarning:invalid value encountered in multiply
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:584: RuntimeWarning:overflow encountered in multiply
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:584: RuntimeWarning:invalid value encountered in subtract
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:584: RuntimeWarning:overflow encountered in square
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:584: RuntimeWarning:invalid value encountered in multiply
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-06-06
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 51, in starmapstar
+    return list(itertools.starmap(args[0], args[1]))
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 82, in simulate_episode_single
+    logs, issuing_age, x = simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospital, e, day, x)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 186, in simulate_day_single
+    alloimmunize(SETTINGS, PARAMS, "single", hospital, day, x)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/alloimmunize.py", line 28, in alloimmunize
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario=scenario, name=hospital.name, day=day)+".pickle", 'wb') as f:
+OSError: [Errno 28] No space left on device: '/home/mw922/Sanquin_NHSBT_bloodmatching/results/single_1092/500x1LHD/ta_iaS/patients_patgroups_London_509/560.pickle'
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 97, in <module>
+    main()
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 82, in main
+    bayesian_optimization_multiobj(SETTINGS, PARAMS)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 156, in bayesian_optimization_multiobj
+    bo_loop.run_loop(func, stopping_condition)
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/emukit/core/loop/outer_loop.py", line 103, in run_loop
+    results = user_function.evaluate(new_x)
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/emukit/core/loop/user_function.py", line 64, in evaluate
+    outputs = self.f(inputs)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 46, in evaluate_multiobj
+    fitness[i,:] = tuning(self.SETTINGS, self.PARAMS, self.scenario, self.objs, weights)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 178, in tuning
+    simulation(SETTINGS, PARAMS)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 41, in simulation
+    pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 372, in starmap
+    return self._map_async(func, iterable, starmapstar, chunksize).get()
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 771, in get
+    raise self._value
+OSError: [Errno 28] No space left on device: '/home/mw922/Sanquin_NHSBT_bloodmatching/results/single_1092/500x1LHD/ta_iaS/patients_patgroups_London_509/560.pickle'
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 51, in starmapstar
+    return list(itertools.starmap(args[0], args[1]))
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 82, in simulate_episode_single
+    logs, issuing_age, x = simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospital, e, day, x)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 186, in simulate_day_single
+    alloimmunize(SETTINGS, PARAMS, "single", hospital, day, x)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/alloimmunize.py", line 28, in alloimmunize
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario=scenario, name=hospital.name, day=day)+".pickle", 'wb') as f:
+OSError: [Errno 28] No space left on device: '/home/mw922/Sanquin_NHSBT_bloodmatching/results/single_1092/500x1LHD/ta_ts/patients_patgroups_London_539/1110.pickle'
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 96, in <module>
+    start = time.perf_counter()
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 81, in main
+    if sum(SETTINGS.n_obj.values()) > 1:
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 156, in bayesian_optimization_multiobj
+    bo_loop.run_loop(func, stopping_condition)
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/emukit/core/loop/outer_loop.py", line 103, in run_loop
+    results = user_function.evaluate(new_x)
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/emukit/core/loop/user_function.py", line 64, in evaluate
+    outputs = self.f(inputs)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 46, in evaluate_multiobj
+    fitness[i,:] = tuning(self.SETTINGS, self.PARAMS, self.scenario, self.objs, weights)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 178, in tuning
+    simulation(SETTINGS, PARAMS)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 41, in simulation
+    pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 372, in starmap
+    return self._map_async(func, iterable, starmapstar, chunksize).get()
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 771, in get
+    raise self._value
+OSError: [Errno 28] No space left on device: '/home/mw922/Sanquin_NHSBT_bloodmatching/results/single_1092/500x1LHD/ta_ts/patients_patgroups_London_539/1110.pickle'
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 51, in starmapstar
+    return list(itertools.starmap(args[0], args[1]))
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 82, in simulate_episode_single
+    logs, issuing_age, x = simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospital, e, day, x)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 186, in simulate_day_single
+    alloimmunize(SETTINGS, PARAMS, "single", hospital, day, x)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/alloimmunize.py", line 28, in alloimmunize
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario=scenario, name=hospital.name, day=day)+".pickle", 'wb') as f:
+OSError: [Errno 28] No space left on device: '/home/mw922/Sanquin_NHSBT_bloodmatching/results/single_1092/500x1LHD/new_/patients_patgroups_London_314/980.pickle'
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 97, in <module>
+    main()
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 79, in main
+    simulation(SETTINGS, PARAMS)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 41, in simulation
+    pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 372, in starmap
+    return self._map_async(func, iterable, starmapstar, chunksize).get()
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 771, in get
+    raise self._value
+OSError: [Errno 28] No space left on device: '/home/mw922/Sanquin_NHSBT_bloodmatching/results/single_1092/500x1LHD/new_/patients_patgroups_London_314/980.pickle'
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 51, in starmapstar
+    return list(itertools.starmap(args[0], args[1]))
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 82, in simulate_episode_single
+    logs, issuing_age, x = simulate_day_single(SETTINGS, PARAMS, obj_params, logs, issuing_age, dc, hospital, e, day, x)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 186, in simulate_day_single
+    alloimmunize(SETTINGS, PARAMS, "single", hospital, day, x)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/alloimmunize.py", line 28, in alloimmunize
+    with open(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario=scenario, name=hospital.name, day=day)+".pickle", 'wb') as f:
+OSError: [Errno 28] No space left on device: '/home/mw922/Sanquin_NHSBT_bloodmatching/results/single_1092/500x1LHD/ap_map/patients_patgroups_London_509/470.pickle'
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 97, in <module>
+    main()
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 82, in main
+    bayesian_optimization_multiobj(SETTINGS, PARAMS)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 156, in bayesian_optimization_multiobj
+    bo_loop.run_loop(func, stopping_condition)
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/emukit/core/loop/outer_loop.py", line 103, in run_loop
+    results = user_function.evaluate(new_x)
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/emukit/core/loop/user_function.py", line 64, in evaluate
+    outputs = self.f(inputs)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 46, in evaluate_multiobj
+    fitness[i,:] = tuning(self.SETTINGS, self.PARAMS, self.scenario, self.objs, weights)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 178, in tuning
+    simulation(SETTINGS, PARAMS)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 41, in simulation
+    pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 372, in starmap
+    return self._map_async(func, iterable, starmapstar, chunksize).get()
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 771, in get
+    raise self._value
+OSError: [Errno 28] No space left on device: '/home/mw922/Sanquin_NHSBT_bloodmatching/results/single_1092/500x1LHD/ap_map/patients_patgroups_London_509/470.pickle'
