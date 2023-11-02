@@ -62,6 +62,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
             w = PARAMS.major_weights
         w = np.tile(w, (len(P), 1))
 
+    # The substitution penalty is only for groups Wu45 and Other, on antigens A, B and D.
     w_subst = w.copy()
     w_subst[:5,:] = 0
     w_subst[:,:3] = 0
@@ -126,6 +127,13 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
     # model.addConstrs(quicksum(x[i,r] for r in R.keys()) <= 1 for i in I.keys())
     model.addConstr(x.sum(axis=1) <= 1)
 
+    # Parameterization using constraints for each objective.
+    # model.addConstr(grb.quicksum(grb.quicksum(np.full([len(I),len(R)], 1) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) >= obj_params[0])    # shortages
+    # model.addConstr(grb.quicksum(grb.quicksum((Iv @ ((Rp @ w) * Rm).T) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[1])    # mismatches
+    # model.addConstr(grb.quicksum(grb.quicksum(IR_SCD * np.tile(np.array([(math.exp(ip.age - 8.5) - ip.age) / 238.085 for ip in I]), (len(R), 1)).T * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[2])   # youngblood
+    # model.addConstr(grb.quicksum(grb.quicksum(IR_nonSCD * np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[3])  # FIFO
+    # model.addConstr(grb.quicksum(grb.quicksum((bi - br) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[4])  # usability
+    # model.addConstr(grb.quicksum(grb.quicksum((Is @ ((Rp @ w_subst) * Rv).T) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[5])  # substitution
 
     ################
     ## OBJECTIVES ##
@@ -134,12 +142,13 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
     # These are all I×R matrices.
     short = np.full([len(I),len(R)], obj_params[0] * -1)
     mism = obj_params[1] * (Iv @ ((Rp @ w) * Rm).T)
-    FIFO = obj_params[3] * IR_nonSCD * np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T
     youngblood = obj_params[2] * IR_SCD * np.tile(np.array([(math.exp(ip.age - 8.5) - ip.age) / 238.085 for ip in I]), (len(R), 1)).T    # /238.085 is for normalization
+    FIFO = obj_params[3] * IR_nonSCD * np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T
     usab = obj_params[4] * (bi - br)
-    subst = obj_params[5] * (Is @ ((Rp @ w_subst) * Rv).T) 
+    subst = obj_params[5] * (Is @ ((Rp @ w_subst) * Rv).T)
 
     x_penalties = (short + mism + youngblood + FIFO + usab + subst) * np.tile((obj_params[6] * t) + 1, (len(I), 1))
+    # x_penalties = short * np.tile((obj_params[6] * t) + 1, (len(I), 1))
     
     model.setObjective(expr = grb.quicksum(grb.quicksum(x_penalties * x)))
 

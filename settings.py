@@ -4,7 +4,7 @@ import os
 
 class Settings():
 
-    def __init__(self):
+    def __init__(self, model_name, LHD_configs, emin, emax, total_cores_max):
 
         # self.home_dir = "C:/Users/Merel/Documents/Sanquin/Projects/RBC matching/Sanquin_NHSBT_bloodmatching/"
         self.home_dir = "/home/mw922/Sanquin_NHSBT_bloodmatching/"
@@ -15,7 +15,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = ""
+        self.model_name = model_name
 
         
         ##########
@@ -31,8 +31,8 @@ class Settings():
 
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
-        self.method = "BO"
-        self.LHD_configs = 500
+        self.method = "LP"
+        self.LHD_configs = LHD_configs
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -51,8 +51,8 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (0,3)
-        self.episodes = (0, 100)
-        self.total_cores_max = 2    # Set the maximum number of cores to be used in total when executing episodes in parallel.
+        self.episodes = (emin, emax)
+        self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -96,7 +96,7 @@ class Settings():
             "alloimm_patients"   : 0,
             "max_antibodies_pp"  : 0,
             "total_alloimm_risk" : 0,
-            "issuing_age_SCD"    : 1,
+            "issuing_age_SCD"    : 0,
         }
 
         ####################

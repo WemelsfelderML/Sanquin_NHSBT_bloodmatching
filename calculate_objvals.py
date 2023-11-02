@@ -15,7 +15,7 @@ def get_total_antibodies(HOME_DIR, init_days, test_days, folder="folder", n_anti
         data = unpickle(HOME_DIR + f"{folder}/patients_patgroups_London_{e}/{day}").astype(int)
         for rq in data:
             rq_antibodies = rq[16:31]
-            rq_index = f"{e}_{rq[46]}"
+            rq_index = f"{e}_{rq[49]}"
             antibodies_per_patient[rq_index].update(k for k in range(n_antigens) if rq_antibodies[k] > 0)
 
     return [list(chain.from_iterable(antibodies_per_patient.values())).count(k) for k in range(n_antigens)]
@@ -29,7 +29,7 @@ def get_max_antibodies_per_patients(HOME_DIR, init_days, test_days, folder="fold
         data = unpickle(HOME_DIR + f"{folder}/patients_patgroups_London_{e}/{day}").astype(int)
         for rq in data:
             rq_antibodies = rq[16:31]
-            rq_index = f"{e}_{rq[46]}"
+            rq_index = f"{e}_{rq[49]}"
             antibodies_per_patient[rq_index].update(k for k in range(n_antigens) if rq_antibodies[k] > 0)
 
     return max([len(antibodies) for antibodies in antibodies_per_patient.values()])
@@ -43,10 +43,24 @@ def get_patients_with_antibodies(HOME_DIR, init_days, test_days, folder="folder"
         data = unpickle(HOME_DIR + f"{folder}/patients_patgroups_London_{e}/{day}").astype(int)
         for rq in data:
             rq_antibodies = rq[16:31]
-            rq_index = f"{e}_{rq[46]}"
+            rq_index = f"{e}_{rq[49]}"
             antibodies_per_patient[rq_index].update(k for k in range(n_antigens) if rq_antibodies[k] > 0)
 
     return len([a for a in antibodies_per_patient.values() if len(a) > 0])
+
+
+def get_substitutions_SCD_major(HOME_DIR, init_days, test_days, folder="folder", n_antigens=3, e=0):
+    
+    total_substitutions = defaultdict(set)
+    for day in range(init_days, init_days + test_days):
+
+        data = unpickle(HOME_DIR + f"{folder}/patients_patgroups_London_{e}/{day}").astype(int)
+        for rq in data:
+            rq_substitutions = rq[46:49]
+            rq_index = f"{e}_{rq[49]}"
+            total_substitutions[rq_index].update(k for k in range(n_antigens) if rq_substitutions[k] > 0)
+
+    return [list(chain.from_iterable(total_substitutions.values())).count(k) for k in range(n_antigens)]
 
 
 def get_shortages(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
@@ -83,7 +97,7 @@ def get_total_alloimmunization_risk(HOME_DIR, init_days, test_days, folder="fold
     data = pd.read_csv(HOME_DIR + f"{folder}/patgroups_1London_{e}.csv")
     for k in PARAMS.antigens.keys():
         total_alloimm_risk += PARAMS.alloimmunization_risks[2,k] * data[[f"num mismatched patients {pg} {PARAMS.antigens[k]}" for pg in patgroups]].sum().sum()
-                        
+
     return total_alloimm_risk
 
 

@@ -218,7 +218,7 @@ def get_total_antibodies(SETTINGS, PARAMS, method, scenario, episode_start=0, nu
                     data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
                     for rq in data:
                         rq_antibodies = rq[16:31]
-                        rq_index = f"{e}_{rq[46]}"
+                        rq_index = f"{e}_{rq[49]}"
                         antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
     return len(list(chain.from_iterable(antibodies_per_patient.values())))
@@ -239,7 +239,7 @@ def get_max_antibodies_per_patients(SETTINGS, PARAMS, method, scenario, episode_
                     data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
                     for rq in data:
                         rq_antibodies = rq[16:31]
-                        rq_index = f"{e}_{rq[46]}"
+                        rq_index = f"{e}_{rq[49]}"
                         antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
     return max([len(antibodies) for antibodies in antibodies_per_patient.values()])
@@ -260,7 +260,7 @@ def get_patients_with_antibodies(SETTINGS, PARAMS, method, scenario, episode_sta
                     data = unpickle(SETTINGS.generate_filename(method=method, output_type="results", subtype="patients", scenario=scenario, name=htype+f"_{e}", day=day)).astype(int)
                     for rq in data:
                         rq_antibodies = rq[16:31]
-                        rq_index = f"{e}_{rq[46]}"
+                        rq_index = f"{e}_{rq[49]}"
                         antibodies_per_patient[rq_index].update(k for k in antigens if rq_antibodies[k] > 0)
 
     return len([a for a in antibodies_per_patient.values() if len(a) > 0])

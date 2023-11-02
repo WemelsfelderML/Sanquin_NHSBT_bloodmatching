@@ -62,7 +62,7 @@ class Hospital():
 
         if day >= (SETTINGS.init_days + (5*7)):
             data_SCD = unpickle(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", subtype="patients", scenario=scenario, name=self.name, day=day-(5*7)))
-            requests += [Blood(PARAMS, index=rq[46], ethnicity=1, patgroup=1, antigens=rq[1:16], num_units=rq[0], day_issuing=day+7, day_available=day, antibodies=rq[16:31], mism_units=rq[31:46]) for rq in data_SCD]
+            requests += [Blood(PARAMS, index=rq[49], ethnicity=1, patgroup=1, antigens=rq[1:16], num_units=rq[0], day_issuing=day+7, day_available=day, antibodies=rq[16:31], mism_units=rq[31:46]) for rq in data_SCD]
 
         self.requests += requests
 

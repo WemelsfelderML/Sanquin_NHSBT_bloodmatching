@@ -8,10 +8,10 @@ from simulation import *
 
 from bayesian_optimization import *
 
-
-def main():
+# python main.py --model_name "ranged" --LHD_configs 100 --emin 0 --emax 100 --total_cores_max 8
+def main(model_name, LHD_configs, emin, emax, total_cores_max):
     
-    SETTINGS = Settings()
+    SETTINGS = Settings(model_name, LHD_configs, emin, emax, total_cores_max)
     PARAMS = Params(SETTINGS)
 
     if SETTINGS.method == "LP":
@@ -93,7 +93,16 @@ def main():
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name", type=str, help="name of the model")
+    parser.add_argument("--LHD_configs", type=int, help="size of the Latin Hypercube Design")
+    parser.add_argument("--emin", type=int, help="index of the first episode")
+    parser.add_argument("--emax", type=int, help="index of the second episode")
+    parser.add_argument("--total_cores_max", type=int, help="max number of cores to be used in parallel")
+    args = parser.parse_args()
+
     start = time.perf_counter()
-    main()
+    main(args.model_name, args.LHD_configs, args.emin, args.emax, args.total_cores_max)
     stop = time.perf_counter()
+
     print(f"Code execution time: {(stop - start):0.4f} seconds")
