@@ -4,6 +4,9 @@
 #SBATCH -A GLEADALL-SL3-CPU
 #SBATCH -p cclake
 
+#SBATCH --output=res_%j.out
+#SBATCH --error=res_%j.err
+
 #! How many nodes should be allocated? If not specified SLURM assumes 1 node.
 #SBATCH --nodes=1
 
@@ -20,9 +23,8 @@
 
 #! Run your script with different arguments
 #! srun python main.py --model_name "ranged" --LHD_configs 100 --emin 0 --emax 100 --total_cores_max 8 &
-srun python main.py --model_name "newnew" --LHD_configs 500 --emin 0 --emax 500 --total_cores_max 8 &
-#! srun git add -f results &
-#! srun git add -f optimize_params &
+# srun python main.py --model_name "newnew" --LHD_configs 500 --emin 0 --emax 500 --total_cores_max 8 &
+srun python main.py &
 
 # for i in {0..499}; do
 #   emin=$i
