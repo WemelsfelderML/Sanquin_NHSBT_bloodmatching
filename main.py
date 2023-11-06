@@ -12,7 +12,8 @@ from bayesian_optimization import *
 # def main(model_name, LHD_configs, emin, emax, total_cores_max):
 def main():
     
-    SETTINGS = Settings(model_name, LHD_configs, emin, emax, total_cores_max)
+    # SETTINGS = Settings(model_name, LHD_configs, emin, emax, total_cores_max)
+    SETTINGS = Settings()
     PARAMS = Params(SETTINGS)
 
     if SETTINGS.method == "LP":
