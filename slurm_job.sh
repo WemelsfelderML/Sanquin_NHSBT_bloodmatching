@@ -21,7 +21,7 @@
 ##SBATCH --mem=3000
 
 #! How much wallclock time will be required?
-#SBATCH --time=1:00:00
+#SBATCH --time=72:00:00
 
 #! Run your script with different arguments
 #! srun python main.py --model_name "ranged" --LHD_configs 100 --emin 0 --emax 100 --total_cores_max 8 &
