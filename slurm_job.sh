@@ -12,7 +12,7 @@
 
 #! How many tasks will there be in total? By default SLURM will assume 1 task per node and 1 CPU per task.
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=2
 
 #! How much memory in MB is required per node? Not setting this as here will lead to a default amount per task.
 #! Setting a larger amount per task increases the number of CPUs.

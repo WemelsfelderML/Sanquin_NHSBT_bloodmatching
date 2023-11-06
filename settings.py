@@ -54,7 +54,7 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (emin, emax)
-        self.episodes = (0, 500)
+        self.episodes = (0, 100)
         # self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
         self.total_cores_max = 8    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
