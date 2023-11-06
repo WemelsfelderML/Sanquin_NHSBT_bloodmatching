@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=BloodMatch_mw922
 #SBATCH -A GLEADALL-SL3-CPU
-#SBATCH -p cclake
+#SBATCH -p icelake
 
 #SBATCH --output=res_%j.out
 #SBATCH --error=res_%j.err
