@@ -88,14 +88,14 @@ class Settings():
         # self.num_init_points = 3
         self.num_init_points = 500
         self.num_iterations = 100
-        self.replications = 8
+        self.replications = 1
 
         self.dir1 = f"{self.LHD_configs}x{self.replications}LHD"
         
         # Put 1 if the objective should be optimized in BO, 0 if not.
         self.n_obj = {
             "total_antibodies"   : 1,
-            "total_shortages"    : 1,
+            "total_shortages"    : 0,
             "total_outdates"     : 0,
             "alloimm_patients"   : 0,
             "max_antibodies_pp"  : 0,
