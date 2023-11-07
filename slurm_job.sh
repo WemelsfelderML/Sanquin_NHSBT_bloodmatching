@@ -3,8 +3,8 @@
 #SBATCH -A GLEADALL-SL3-CPU
 #SBATCH -p icelake
 
-#SBATCH --job-name=BloodMatch_mw922
-#SBATCH --nodelist=cpu-q-384
+#SBATCH --job-name=mw922
+#SBATCH --nodelist=cpu-q-456
 
 #SBATCH --output=res_%j.out
 #SBATCH --error=res_%j.err

@@ -56,7 +56,7 @@ class Settings():
         # self.episodes = (emin, emax)
         self.episodes = (0, 500)
         # self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
-        self.total_cores_max = 38    # Set the maximum number of cores to be used in total when executing episodes in parallel.
+        self.total_cores_max = 16    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -87,15 +87,15 @@ class Settings():
 
         # self.num_init_points = 3
         self.num_init_points = 500
-        self.num_iterations = 100 
-        self.replications = 1
+        self.num_iterations = 100
+        self.replications = 8
 
         self.dir1 = f"{self.LHD_configs}x{self.replications}LHD"
         
         # Put 1 if the objective should be optimized in BO, 0 if not.
         self.n_obj = {
             "total_antibodies"   : 1,
-            "total_shortages"    : 0,
+            "total_shortages"    : 1,
             "total_outdates"     : 0,
             "alloimm_patients"   : 0,
             "max_antibodies_pp"  : 0,
