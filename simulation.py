@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import pickle
@@ -20,25 +21,29 @@ def simulation(SETTINGS, PARAMS):
     # Multi-hospital setup
     if sum(SETTINGS.n_hospitals.values()) > 1:
 
-        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        episodes_for_execution = [e for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]) if os.path.exists(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", scenario="multi", name='-'.join([str(SETTINGS.n_hospitals[htype]) + htype for htype in SETTINGS.n_hospitals.keys() if SETTINGS.n_hospitals[htype]>0]), e=e)) == False]
+
+        # for e in episodes_for_execution:
         #     simulate_episode_multi(SETTINGS, PARAMS, e)
 
         # Create a pool of processes and map the function and arguments to it
         with Pool(processes=SETTINGS.total_cores_max) as pool:
-            pool.starmap(simulate_episode_multi, [(SETTINGS, PARAMS, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+            pool.starmap(simulate_episode_multi, [(SETTINGS, PARAMS, e) for e in episodes_for_execution])
 
     # Single-hospital setup
     else:
 
         # Get the hospital's type
         htype = max(SETTINGS.n_hospitals, key = lambda i: SETTINGS.n_hospitals[i])
+
+        episodes_for_execution = [e for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]) if os.path.exists(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", scenario="single", name="1"+htype, e=e)+".csv") == False]
         
-        # for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]):
+        # for e in episodes_for_execution:
         #     simulate_episode_single(SETTINGS, PARAMS, htype, e)
 
         # Create a pool of processes and map the function and arguments to it
         with Pool(processes=SETTINGS.total_cores_max) as pool:
-            pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in range(SETTINGS.episodes[0], SETTINGS.episodes[1])])
+            pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in episodes_for_execution])
 
 
 
