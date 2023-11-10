@@ -56,7 +56,7 @@ class Settings():
         # self.episodes = (emin, emax)
         self.episodes = (0, 500)
         # self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
-        self.total_cores_max = 16    # Set the maximum number of cores to be used in total when executing episodes in parallel.
+        self.total_cores_max = 76    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
         # "UCLH" : University College London Hospitals
@@ -101,6 +101,7 @@ class Settings():
             "max_antibodies_pp"  : 0,
             "total_alloimm_risk" : 0,
             "issuing_age_SCD"    : 0,
+            "subst_SCD_major"    : 0,
         }
 
         ####################
