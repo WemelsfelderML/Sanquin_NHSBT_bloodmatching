@@ -91,14 +91,14 @@ def get_total_alloimmunization_risk(HOME_DIR, init_days, test_days, folder="fold
 
     patgroups = [PARAMS.patgroups[p] for p in PARAMS.patgroups.keys() if PARAMS.weekly_demand["London"][p] > 0]
 
-    total_alloimm_risk = 0
+    alloimm_risk = [0] * n_antigens
     # for day in range(init_days, init_days + test_days):
 
     data = pd.read_csv(HOME_DIR + f"{folder}/patgroups_1London_{e}.csv")
     for k in PARAMS.antigens.keys():
-        total_alloimm_risk += PARAMS.alloimmunization_risks[2,k] * data[[f"num mismatched patients {pg} {PARAMS.antigens[k]}" for pg in patgroups]].sum().sum()
+        alloimm_risk[k] += PARAMS.alloimmunization_risks[2,k] * data[[f"num mismatched patients {pg} {PARAMS.antigens[k]}" for pg in patgroups]].sum().sum()
 
-    return total_alloimm_risk
+    return alloimm_risk
 
 
 def get_issued_products_nonoptimal_age_SCD(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):

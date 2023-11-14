@@ -16,8 +16,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        # self.model_name = model_name
-        self.model_name = "newnew"
+        self.model_name = ""
 
         
         ##########
@@ -33,7 +32,7 @@ class Settings():
 
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
-        self.method = "LP"
+        self.method = "BO"
         # self.LHD_configs = LHD_configs
         self.LHD_configs = 500
 
@@ -54,9 +53,9 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (emin, emax)
-        self.episodes = (300,400)
+        self.episodes = (0,500)
         # self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
-        
+
         self.total_cores_max = 76    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
 
@@ -97,7 +96,7 @@ class Settings():
         # Put 1 if the objective should be optimized in BO, 0 if not.
         self.n_obj = {
             "total_antibodies"   : 1,
-            "total_shortages"    : 0,
+            "total_shortages"    : 1,
             "total_outdates"     : 0,
             "alloimm_patients"   : 0,
             "max_antibodies_pp"  : 0,
