@@ -16,7 +16,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = ""
+        self.model_name = "cons"
 
         
         ##########
@@ -32,7 +32,7 @@ class Settings():
 
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
-        self.method = "BO"
+        self.method = "LP"
         # self.LHD_configs = LHD_configs
         self.LHD_configs = 500
 
@@ -96,7 +96,7 @@ class Settings():
         # Put 1 if the objective should be optimized in BO, 0 if not.
         self.n_obj = {
             "total_antibodies"   : 1,
-            "total_shortages"    : 1,
+            "total_shortages"    : 0,
             "total_outdates"     : 0,
             "alloimm_patients"   : 0,
             "max_antibodies_pp"  : 0,
