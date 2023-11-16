@@ -101,16 +101,16 @@ def get_total_alloimmunization_risk(HOME_DIR, init_days, test_days, folder="fold
     return alloimm_risk
 
 
-def get_issued_products_nonoptimal_age_SCD(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
+# def get_issued_products_nonoptimal_age_SCD(HOME_DIR, init_days, test_days, folder="folder", n_antigens=15, e=0):
 
-    total_products = 0
-    nonoptimal_age = 0
+#     total_products = 0
+#     nonoptimal_age = 0
 
-    data = unpickle(HOME_DIR + f"{folder}/age_patgroups_1London_{e}").astype(int)
-    total_products += data[1,:].sum()
-    nonoptimal_age += data[1,:7].sum() + data[1,11:].sum()
+#     data = unpickle(HOME_DIR + f"{folder}/age_patgroups_1London_{e}").astype(int)
+#     total_products += data[1,:].sum()
+#     nonoptimal_age += data[1,:7].sum() + data[1,11:].sum()
 
-    return nonoptimal_age / total_products
+#     return nonoptimal_age / total_products
 
 
 def unpickle(path):
