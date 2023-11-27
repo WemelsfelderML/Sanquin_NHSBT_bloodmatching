@@ -33,7 +33,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
         Rp[r][R[r].patgroup] = 1
 
     Rm = (np.ones(Rv.shape) - Rv)       # Count mismatches if inventory product is positive for some antigen, and request is negative.
-    Rm[:,9] *= Rv[:,8]                 # Only count Fyb mismatches if patient is positive for Fya.
+    Rm[:,9] *= Rv[:,8]                  # Only count Fyb mismatches if patient is positive for Fya.
 
     # IR_SCD = np.zeros([len(I),len(R)])              # I × R matrix with columns filled with 1s for SCD patients and columns with 0s for all other patients.
     # for r in [r for r in range(len(R)) if R[r].patgroup == 0]:
@@ -129,10 +129,10 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
 
     # Parameterization using constraints for each objective.
     # model.addConstr(grb.quicksum(grb.quicksum(np.full([len(I),len(R)], 1) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) >= obj_params[0])    # shortages
-    model.addConstr(grb.quicksum(grb.quicksum((Iv @ ((Rp @ w) * Rm).T) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[1])    # mismatches
-    model.addConstr(grb.quicksum(grb.quicksum(np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[3])  # FIFO
-    model.addConstr(grb.quicksum(grb.quicksum((bi - br) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[4])  # usability
-    model.addConstr(grb.quicksum(grb.quicksum((Is @ ((Rp @ w_subst) * Rv).T) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[5])  # substitution
+    # model.addConstr(grb.quicksum(grb.quicksum((Iv @ ((Rp @ w) * Rm).T) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[1])    # mismatches
+    # model.addConstr(grb.quicksum(grb.quicksum(np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[3])  # FIFO
+    # model.addConstr(grb.quicksum(grb.quicksum((bi - br) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[4])  # usability
+    # model.addConstr(grb.quicksum(grb.quicksum((Is @ ((Rp @ w_subst) * Rv).T) * np.tile((obj_params[6] * t) + 1, (len(I), 1)) * x)) <= obj_params[5])  # substitution
 
     ################
     ## OBJECTIVES ##
@@ -140,10 +140,10 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
 
     # These are all I×R matrices.
     short = np.full([len(I),len(R)], obj_params[0] * -1)
-    # mism = obj_params[1] * (Iv @ ((Rp @ w) * Rm).T)
-    # FIFO = obj_params[2] * np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T
-    # usab = obj_params[3] * (bi - br)
-    # subst = obj_params[4] * (Is @ ((Rp @ w_subst) * Rv).T)
+    mism = obj_params[1] * (Iv @ ((Rp @ w) * Rm).T)
+    FIFO = obj_params[2] * np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T
+    usab = obj_params[3] * (bi - br)
+    subst = obj_params[4] * (Is @ ((Rp @ w_subst) * Rv).T)
 
     # short = np.full([len(I),len(R)], obj_params[0] * -1)
     # mism = obj_params[1] * (Iv @ ((Rp @ w) * Rm).T)
@@ -153,8 +153,8 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
     # subst = obj_params[5] * (Is @ ((Rp @ w_subst) * Rv).T)
 
     # x_penalties = (short + mism + youngblood + FIFO + usab + subst) * np.tile((obj_params[6] * t) + 1, (len(I), 1))
-    # x_penalties = (short + mism + FIFO + usab + subst) * np.tile((obj_params[5] * t) + 1, (len(I), 1))
-    x_penalties = short * np.tile((obj_params[6] * t) + 1, (len(I), 1))
+    x_penalties = (short + mism + FIFO + usab + subst) * np.tile((obj_params[5] * t) + 1, (len(I), 1))
+    # x_penalties = short * np.tile((obj_params[6] * t) + 1, (len(I), 1))
     
     model.setObjective(expr = grb.quicksum(grb.quicksum(x_penalties * x)))
 

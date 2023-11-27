@@ -51,30 +51,31 @@ def find_init_points(SETTINGS, PARAMS, scenario, objs):
 
     num_init_points = SETTINGS.num_init_points
     X_init = PARAMS.LHD[:num_init_points, 1:]
-    Y_init = np.zeros([num_init_points,len(objs)])
 
-    for o in range(len(objs)):
+    # Y_init = np.zeros([num_init_points,len(objs)])
+    df = pd.read_csv(SETTINGS.home_dir + f"analysis/single_{SETTIINGS.test_days}/{num_init_points}x{SETTINGS.replications}LHD/{SETTINGS.name+'_/' if len(SETTINGS.name)>0 else ''}tuning.csv", index_col=0)
+    Y_init = np.array(df[objs])
+    # for o in range(len(objs)):
+    #     if objs[o] == "total_antibodies":
+    #         Y_init[:,o] = [get_total_antibodies(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
 
-        if objs[o] == "total_antibodies":
-            Y_init[:,o] = [get_total_antibodies(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
+    #     elif objs[o] == "total_shortages":
+    #         Y_init[:,o] = [get_shortages(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
 
-        elif objs[o] == "total_shortages":
-            Y_init[:,o] = [get_shortages(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
+    #     elif objs[o] == "total_outdates":
+    #         Y_init[:,o] = [get_outdates(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
 
-        elif objs[o] == "total_outdates":
-            Y_init[:,o] = [get_outdates(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
+    #     elif objs[o] == "alloimm_patients":
+    #         Y_init[:,o] = [get_patients_with_antibodies(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
 
-        elif objs[o] == "alloimm_patients":
-            Y_init[:,o] = [get_patients_with_antibodies(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
+    #     elif objs[o] == "max_antibodies_pp":
+    #         Y_init[:,o] = [get_max_antibodies_per_patients(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
 
-        elif objs[o] == "max_antibodies_pp":
-            Y_init[:,o] = [get_max_antibodies_per_patients(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
+    #     elif objs[o] == "total_alloimm_risk":
+    #         Y_init[:,o] = [get_total_alloimmunization_risk(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
 
-        elif objs[o] == "total_alloimm_risk":
-            Y_init[:,o] = [get_total_alloimmunization_risk(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
-
-        elif objs[o] == "issuing_age_SCD":
-            Y_init[:,o] = [get_issued_products_nonoptimal_age_SCD(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
+    #     elif objs[o] == "issuing_age_SCD":
+    #         Y_init[:,o] = [get_issued_products_nonoptimal_age_SCD(SETTINGS=SETTINGS, PARAMS=PARAMS, method="LP", scenario=scenario, num_init_points=num_init_points, p=p) for p in range(num_init_points)]
 
     return X_init, Y_init
 
