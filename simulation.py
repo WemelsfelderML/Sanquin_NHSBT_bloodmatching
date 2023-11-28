@@ -38,12 +38,12 @@ def simulation(SETTINGS, PARAMS):
 
         episodes_for_execution = [e for e in range(SETTINGS.episodes[0],SETTINGS.episodes[1]) if os.path.exists(SETTINGS.generate_filename(method=SETTINGS.method, output_type="results", scenario="single", name="1"+htype, e=e)+".csv") == False]
         
-        # for e in episodes_for_execution:
-        #     simulate_episode_single(SETTINGS, PARAMS, htype, e)
+        for e in episodes_for_execution:
+            simulate_episode_single(SETTINGS, PARAMS, htype, e)
 
         # Create a pool of processes and map the function and arguments to it
-        with Pool(processes=SETTINGS.total_cores_max) as pool:
-            pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in episodes_for_execution])
+        # with Pool(processes=SETTINGS.total_cores_max) as pool:
+        #     pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in episodes_for_execution])
 
 
 
