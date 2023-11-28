@@ -32,7 +32,7 @@ class Settings():
 
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
-        self.method = "LP"
+        self.method = "BO"
         # self.LHD_configs = LHD_configs
         self.LHD_configs = 500
 
