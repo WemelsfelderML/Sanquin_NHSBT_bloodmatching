@@ -53,7 +53,7 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (emin, emax)
-        self.episodes = (0,100)
+        self.episodes = (500,600)
         # self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         self.total_cores_max = 76    # Set the maximum number of cores to be used in total when executing episodes in parallel.
@@ -95,11 +95,11 @@ class Settings():
         
         # Put 1 if the objective should be optimized in BO, 0 if not.
         self.n_obj = {
-            "total_antibodies"   : 0,
-            "total_shortages"    : 0,
+            "total_antibodies"   : 1,
+            "total_shortages"    : 1,
             "total_outdates"     : 0,
-            "alloimm_patients"   : 1,
-            "max_antibodies_pp"  : 1,
+            "alloimm_patients"   : 0,
+            "max_antibodies_pp"  : 0,
             "total_alloimm_risk" : 0,
             "issuing_age_SCD"    : 0,
             "subst_SCD_major"    : 0,
