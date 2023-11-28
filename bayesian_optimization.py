@@ -53,7 +53,7 @@ def find_init_points(SETTINGS, PARAMS, scenario, objs):
     X_init = PARAMS.LHD[:num_init_points, 1:]
 
     # Y_init = np.zeros([num_init_points,len(objs)])
-    df = pd.read_csv(SETTINGS.home_dir + f"analysis/single_{SETTINGS.test_days}/{num_init_points}x{SETTINGS.replications}LHD/{SETTINGS.name+'_/' if len(SETTINGS.name)>0 else ''}tuning.csv", index_col=0)
+    df = pd.read_csv(SETTINGS.home_dir + f"analysis/single_{SETTINGS.test_days}/{num_init_points}x{SETTINGS.replications}LHD/{SETTINGS.model_name+'_/' if len(SETTINGS.model_name)>0 else ''}tuning.csv", index_col=0)
     Y_init = np.array(df[objs])
     # for o in range(len(objs)):
     #     if objs[o] == "total_antibodies":
