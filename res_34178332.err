@@ -1,0 +1,32 @@
+srun: Loaded geopm plugin.
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:168: RuntimeWarning:overflow encountered in divide
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:581: RuntimeWarning:overflow encountered in multiply
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:581: RuntimeWarning:overflow encountered in square
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:581: RuntimeWarning:invalid value encountered in multiply
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:584: RuntimeWarning:overflow encountered in multiply
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:584: RuntimeWarning:invalid value encountered in subtract
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/GPy/kern/src/stationary.py:584: RuntimeWarning:overflow encountered in square
+ /home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/paramz/transformations.py:111: RuntimeWarning:overflow encountered in expm1
+Traceback (most recent call last):
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 108, in <module>
+    main()
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/main.py", line 84, in main
+    bayesian_optimization_multiobj(SETTINGS, PARAMS)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 157, in bayesian_optimization_multiobj
+    bo_loop.run_loop(func, stopping_condition)
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/emukit/core/loop/outer_loop.py", line 103, in run_loop
+    results = user_function.evaluate(new_x)
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/site-packages/emukit/core/loop/user_function.py", line 64, in evaluate
+    outputs = self.f(inputs)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 46, in evaluate_multiobj
+    fitness[i,:] = tuning(self.SETTINGS, self.PARAMS, self.scenario, self.objs, weights)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/bayesian_optimization.py", line 179, in tuning
+    simulation(SETTINGS, PARAMS)
+  File "/home/mw922/Sanquin_NHSBT_bloodmatching/simulation.py", line 46, in simulation
+    pool.starmap(simulate_episode_single, [(SETTINGS, PARAMS, htype, e) for e in episodes_for_execution])
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 372, in starmap
+    return self._map_async(func, iterable, starmapstar, chunksize).get()
+  File "/home/mw922/.pyenv/versions/3.9.16/lib/python3.9/multiprocessing/pool.py", line 771, in get
+    raise self._value
+multiprocessing.pool.MaybeEncodingError: Error sending result: '<multiprocessing.pool.ExceptionWithTraceback object at 0x146ba2972b50>'. Reason: 'TypeError("cannot pickle 'PyCapsule' object")'
+srun: error: cpu-q-382: task 0: Exited with exit code 1

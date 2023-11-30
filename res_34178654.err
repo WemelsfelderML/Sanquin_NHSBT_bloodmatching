@@ -1,0 +1,4 @@
+srun: Loaded geopm plugin.
+slurmstepd: error: *** STEP 34178654.0 ON cpu-q-124 CANCELLED AT 2023-11-30T21:06:47 ***
+slurmstepd: error: *** JOB 34178654 ON cpu-q-124 CANCELLED AT 2023-11-30T21:06:47 ***
+srun: Job step aborted: Waiting up to 122 seconds for job step to finish.
