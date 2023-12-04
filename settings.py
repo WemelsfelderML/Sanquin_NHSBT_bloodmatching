@@ -16,7 +16,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "cons"
+        self.model_name = "final_ta"
 
         
         ##########
@@ -34,7 +34,7 @@ class Settings():
         # "BO": Use bayesian optimization to tune objval parameters.
         self.method = "LP"
         # self.LHD_configs = LHD_configs
-        self.LHD_configs = 500
+        self.LHD_configs = 1
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -53,7 +53,7 @@ class Settings():
         # (x,y): Episode numbers range(x,y) will be optimized.
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (emin, emax)
-        self.episodes = (0,500)
+        self.episodes = (0,100)
         # self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
         self.total_cores_max = 24    # Set the maximum number of cores to be used in total when executing episodes in parallel.
