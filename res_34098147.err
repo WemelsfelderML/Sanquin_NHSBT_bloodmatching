@@ -1,4 +1,0 @@
-srun: Loaded geopm plugin.
-slurmstepd: error: *** STEP 34098147.0 ON cpu-q-303 CANCELLED AT 2023-11-29T09:17:56 DUE TO TIME LIMIT ***
-slurmstepd: error: *** JOB 34098147 ON cpu-q-303 CANCELLED AT 2023-11-29T09:17:56 DUE TO TIME LIMIT ***
-srun: Job step aborted: Waiting up to 122 seconds for job step to finish.

@@ -49,8 +49,8 @@ class Params():
 
         LHD = np.array([
             # shortages, mismatches, FIFO,   usability, substitution, today
-            # [100,        1,          0.05,   0,         0,            0.4708]     # minimizing objective "total_antibodies"
-            [100,        1,          0.6348, 0,         0.4832,       0.0081]     # minimizing objective "total_alloimm_risk"
+            [100,        1,          0.05,   0,         0,            0.4708]     # minimizing objective "total_antibodies"
+            # [100,        1,          0.6348, 0,         0.4832,       0.0081]     # minimizing objective "total_alloimm_risk"
         ])
         # LHD = np.tile(LHD, (SETTINGS.LHD_configs,1))
 
