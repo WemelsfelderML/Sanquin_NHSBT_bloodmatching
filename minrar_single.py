@@ -129,7 +129,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
 
     # Parameterization using constraints for each objective.
     # model.addConstr(grb.quicksum(grb.quicksum(np.full([len(I),len(R)], 1) * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) >= obj_params[0])    # shortages
-    model.addConstr(grb.quicksum(grb.quicksum((Iv @ ((Rp @ w) * Rm).T) * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) <= obj_params[1])    # mismatches
+    # model.addConstr(grb.quicksum(grb.quicksum((Iv @ ((Rp @ w) * Rm).T) * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) <= obj_params[1])    # mismatches
     # model.addConstr(grb.quicksum(grb.quicksum(np.tile(np.array([-0.5 ** ((35 - ip.age - 1) / 5) for ip in I]), (len(R), 1)).T * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) <= obj_params[2])  # FIFO
     # model.addConstr(grb.quicksum(grb.quicksum((bi - br) * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) <= obj_params[3])  # usability
     # model.addConstr(grb.quicksum(grb.quicksum((Is @ ((Rp @ w_subst) * Rv).T) * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) <= obj_params[4])  # substitution
