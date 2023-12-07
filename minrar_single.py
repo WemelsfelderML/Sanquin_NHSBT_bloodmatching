@@ -134,8 +134,8 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
     # model.addConstr(grb.quicksum(grb.quicksum((bi - br) * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) <= obj_params[3])  # usability
     # model.addConstr(grb.quicksum(grb.quicksum((Is @ ((Rp @ w_subst) * Rv).T) * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) <= obj_params[4])  # substitution
 
-    # # Upper bound on number of units mismatched for SCD patients.
-    # model.addConstr(grb.quicksum(Iv * ((x * IR_SCD) @ Rm.T)) <= SETTINGS.ub_mism_units)
+    # Upper bound on number of units mismatched for SCD patients.
+    model.addConstr(grb.quicksum(Iv * ((x * IR_SCD) @ Rm), axis=0) <= SETTINGS.ub_mism_units)
 
 
     ################
