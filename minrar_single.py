@@ -124,7 +124,6 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
         model.addConstr((x.T @ np.ones(len(I)))[0] <= num_units[0])
 
     # For each inventory product i∈I, ensure that i can not be issued more than once.
-    # model.addConstrs(quicksum(x[i,r] for r in R.keys()) <= 1 for i in I.keys())
     model.addConstr(x.sum(axis=1) <= 1)
 
     # Parameterization using constraints for each objective.
@@ -135,8 +134,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
     # model.addConstr(grb.quicksum(grb.quicksum((Is @ ((Rp @ w_subst) * Rv).T) * np.tile((obj_params[-1] * t) + 1, (len(I), 1)) * x)) <= obj_params[4])  # substitution
 
     # Upper bound on number of units mismatched for SCD patients.
-    model.addConstr(grb.quicksum(Iv * ((x * IR_SCD) @ Rm), axis=0) <= SETTINGS.ub_mism_units)
-
+    model.addConstrs((Iv * ((x * IR_SCD) @ Rm)).T @ np.ones(len(I)) <= SETTINGS.ub_mism_units)
 
     ################
     ## OBJECTIVES ##
