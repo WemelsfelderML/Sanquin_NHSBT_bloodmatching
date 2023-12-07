@@ -56,7 +56,7 @@ class Settings():
         self.episodes = (0,100)
         # self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
-        self.total_cores_max = 12    # Set the maximum number of cores to be used in total when executing episodes in parallel.
+        self.total_cores_max = 76    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
