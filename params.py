@@ -62,7 +62,7 @@ class Params():
         self.LHD = LHD
 
         #                         A  B  D  C  c  E  e  K  Fya Fyb Jka Jkb M  N  S 
-        ub_mism_units = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0,  4,  0, 0, 0])
+        self.ub_mism_units = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0,  4,  0, 0, 0])
 
         # self.BO_param_ranges = {
         #     "mismatches" : (0.25, 0.75),
