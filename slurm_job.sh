@@ -4,7 +4,7 @@
 #SBATCH -p icelake
 
 #SBATCH --job-name=mw922
-#SBATCH --nodelist=cpu-q-383
+#SBATCH --nodelist=cpu-q-533
 
 #SBATCH --output=res_%j.out
 #SBATCH --error=res_%j.err
