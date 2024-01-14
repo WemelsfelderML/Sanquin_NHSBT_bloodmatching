@@ -47,22 +47,24 @@ class Params():
         ###########################
         # Note: all objectives are normalized so no need to consider that in determining these weights.
 
-        LHD = np.array([
-            # shortages, mismatches, FIFO,   usability, substitution, today
-            [100,        1.0,        0.05,   0.0147,    0.0332,       37.386784]     # minimizing objective "total_antibodies"
-            # [100,        1.0,        0.6348, 0.0,       0.4832,       0.8128]     # minimizing objective "total_alloimm_risk"
-        ])
+        # LHD = np.array([
+        #     # shortages, mismatches, FIFO,     usability, substitution, today
+        #     # [100,        1.0,        0.05,     0.0147,    0.0332,       37.386784]    # minimizing objective "total_antibodies"
+        #     # [100,        1.0,        0.6348,   0.0,       0.4832,       0.8128]       # minimizing objective "total_alloimm_risk"
+        #     [100,        0.943229,   0.596743, 0.0,       0.487086,     0.001000]     # pareto optimum "total_alloimm_risk" - "total_shortages"
+        # ])
+
         # LHD = np.tile(LHD, (SETTINGS.LHD_configs,1))
 
         # LHD configurations -- shortages, mismatches, youngblood, FIFO, usability, substitution, today 
-        # LHD = np.hstack([np.tile(100, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}{'_'+SETTINGS.model_name if SETTINGS.model_name != '' else ''}")])
+        LHD = np.hstack([np.tile(100, (SETTINGS.LHD_configs,1)).reshape(-1,1), unpickle(SETTINGS.home_dir + f"LHD/{SETTINGS.LHD_configs}{'_'+SETTINGS.model_name if SETTINGS.model_name != '' else ''}")])
 
         if LHD.shape[0] < SETTINGS.episodes[1]:
             LHD = np.tile(LHD, (int(np.ceil(SETTINGS.episodes[1] / LHD.shape[0])), 1))
         self.LHD = LHD
 
-        #                         A  B  D  C  c  E  e  K  Fya Fyb Jka Jkb M  N  S 
-        self.ub_mism_units = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0,  4,  0, 0, 0])
+        # #                              A  B  D  C  c  E  e  K  Fya Fyb Jka Jkb M  N  S 
+        # self.ub_mism_units = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0,  4,  0, 0, 0])
 
         # self.BO_param_ranges = {
         #     "mismatches" : (0.25, 0.75),
