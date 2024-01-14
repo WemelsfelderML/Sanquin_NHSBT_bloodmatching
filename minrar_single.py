@@ -136,7 +136,7 @@ def minrar_single_hospital(SETTINGS, PARAMS, obj_params, hospital, I, R, day, e,
     # Upper bound on number of units mismatched for SCD patients.
     # model.addConstrs(grb.quicksum(grb.quicksum(x[i,r] * IR_SCD[i,r] * Iv[i,a] * Rm[r,a] for i in range(len(I))) for r in range(len(R))) <= PARAMS.ub_mism_units[a] for a in A)
     # model.addConstr(np.transpose(Iv * ((x * IR_SCD) @ Rm)) @ np.ones(len(I)) <= PARAMS.ub_mism_units)
-    model.addConstr(((IR_SCD.T @ Iv) * Rm).T @ (x.T @ np.ones(len(I))) <= PARAMS.ub_mism_units)
+    # model.addConstr(((IR_SCD.T @ Iv) * Rm).T @ (x.T @ np.ones(len(I))) <= PARAMS.ub_mism_units)
    
 
     ################
