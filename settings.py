@@ -16,7 +16,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "dim2"
+        self.model_name = "pareto_tar_ts_blue"
 
         
         ##########
@@ -34,7 +34,7 @@ class Settings():
         # "BO": Use bayesian optimization to tune objval parameters.
         self.method = "LP"
         # self.LHD_configs = LHD_configs
-        self.LHD_configs = 100
+        self.LHD_configs = 1
 
         # "on": online optimization.
         # "off": offline optimization.
