@@ -75,7 +75,7 @@ def generate_products(SETTINGS, PARAMS, size):
 
 
     #################
-    # NON-R0 DEMAND #
+    # NON-R0 SUPPLY #
     #################
 
     # Draw randomly from donation distribution of A, B, and Rh antigens to get the first 90.5% of the RBC issues
@@ -98,10 +98,10 @@ def generate_products(SETTINGS, PARAMS, size):
 
 
     #############
-    # R0 DEMAND #
+    # R0 SUPPLY #
     #############
 
-    # Fix R0 phenotype for all R0 demand.
+    # Fix R0 phenotype for all R0 supply.
     R0_Rh = np.tile([1,0,1,0,1], (R0_size, 1))
 
     # Sample antigens A and B according to their frequencies in national R0 donations.
