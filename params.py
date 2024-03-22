@@ -10,14 +10,13 @@ class Params():
         # BLOOD PARAMETERS #
         ####################
 
-        # Shelf life of the blood products in inventory.
-        self.max_age = 35           # The age at which inventory products expire, so the maximum age to be issued = 34. 
-        self.max_lead_time = 8      # Days 0,1,...,7.
+        # Shelf life of the thrombocyte products in inventory.
+        self.max_age = 7
+        self.num_bloodgroups = 8
 
         # Major blood groups, major antigens, and minor antigens.
-        self.ABOD =  ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"]
-        # self.antigens = {0:"A", 1:"B", 2:"D", 3:"C", 4:"c", 5:"E", 6:"e", 7:"K", 8:"k", 9:"Fya", 10:"Fyb", 11:"Jka", 12:"Jkb", 13:"M", 14:"N", 15:"S", 16:"s"}
-        self.antigens = {0:"A", 1:"B", 2:"D", 3:"C", 4:"c", 5:"E", 6:"e", 7:"K", 8:"Fya", 9:"Fyb", 10:"Jka", 11:"Jkb", 12:"M", 13:"N", 14:"S"}
+        self.ABOD = {0: "O-", 1: "O+", 2: "B-", 3: "B+", 4: "A-", 5: "A+", 6: "AB-", 7: "AB+"}
+        self.major = ["A", "B", "D"]
         self.ethnicities = {0 : "Caucasian", 1 : "African", 2 : "Asian"}
 
         #####################
@@ -52,8 +51,8 @@ class Params():
             # [100,       1.0,            0.05,           0.0147,     0.0332,         37.386784]  # minimizing objective "total_antibodies"
             # [100,       1.0,            0.6348,         0.0,        0.4832,         0.8128]     # minimizing objective "total_alloimm_risk"
             # [100,       0.978183641,    0.62163789,     0.0,        0.48339016,     0.1]        # pareto tar-ts (blue point)
-            [100,       1.0,            0.412738352,    0.0,        0.158888767,    0.1]        # pareto tar-ts (purple point)
-            # [100,       0.778642613,    0.05,           0.0,        0.043680794,    0.1]        # pareto tar-ts (green point)
+            # [100,       1.0,            0.412738352,    0.0,        0.158888767,    0.1]        # pareto tar-ts (purple point)
+            [100,       0.778642613,    0.05,           0.0,        0.043680794,    0.1]        # pareto tar-ts (green point)
             # [100,       1.0,            0.477828146,    0.0,        0.450897493,    6.2108915]  # pareto tar-ta (blue point)
             # [100,       0.769243203,    0.05,           0.0,        0.096401334,    0.1]        # pareto tar-ta (purple point)
             # [100,       0.991152423,    0.05,           0.0,        0.132964599,    0.1]        # pareto tar-ta (green point)

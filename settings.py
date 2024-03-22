@@ -16,7 +16,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "pareto_tar_ts_purple"
+        self.model_name = "pareto_tar_ts_green"
 
         
         ##########
