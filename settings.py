@@ -16,7 +16,7 @@ class Settings():
         self.mode = "optimize"
 
         # Output files will be stored in directory results/[model_name].
-        self.model_name = "pareto_tar_ts_green"
+        self.model_name = "name"
 
         
         ##########
@@ -33,8 +33,7 @@ class Settings():
         # "LP": Use linear programming.
         # "BO": Use bayesian optimization to tune objval parameters.
         self.method = "LP"
-        # self.LHD_configs = LHD_configs
-        self.LHD_configs = 1
+        self.LHD_configs = 100
 
         # "on": online optimization.
         # "off": offline optimization.
@@ -45,7 +44,6 @@ class Settings():
         #########################
 
         # Only the results of test days will be logged.
-        # self.test_days = 2 * (7 * 6)
         self.test_days = 26 * (7 * 6)     # Follow SCD patients over 26 transfusion episodes (~3 years)
         # self.test_days = 87 * (7 * 6)   # Follow SCD patients over 87 transfusion episodes (~10 years)
         self.init_days = 2 * 35
@@ -54,9 +52,10 @@ class Settings():
         # The total number of simulations executed will thus be y - x.
         # self.episodes = (emin, emax)
         self.episodes = (0,100)
-        # self.total_cores_max = total_cores_max    # Set the maximum number of cores to be used in total when executing episodes in parallel.
 
-        self.total_cores_max = 24    # Set the maximum number of cores to be used in total when executing episodes in parallel.
+        # Set the maximum number of cores to be used in total when executing episodes in parallel.
+        # self.total_cores_max = total_cores_max    
+        self.total_cores_max = 24
 
 
         # Number of hospitals considered. If more than 1 (regional and university combined), a distribution center is included.
@@ -86,7 +85,6 @@ class Settings():
         # BAYESIAN OPTIMIZATION #
         #########################
 
-        # self.num_init_points = 3
         self.num_init_points = 500
         self.num_iterations = 100
         self.replications = 1
